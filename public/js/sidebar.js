@@ -1,0 +1,110 @@
+document.addEventListener("DOMContentLoaded", () => {
+  initializeSubmenus()
+  initializeExpandAll()
+})
+
+function initializeSubmenus() {
+  const categoryToggles = document.querySelectorAll(".nav-category-toggle")
+
+  categoryToggles.forEach((toggle) => {
+    toggle.addEventListener("click", function () {
+      const sidebar = document.getElementById("sidebar")
+
+      // Não permitir toggle de submenus quando sidebar está colapsada
+      if (sidebar && sidebar.classList.contains("collapsed")) {
+        return
+      }
+
+      const targetId = this.dataset.target
+      const submenu = document.getElementById(targetId)
+      const isActive = this.classList.contains("active")
+
+      // Toggle do submenu atual
+      if (isActive) {
+        this.classList.remove("active")
+        if (submenu) submenu.classList.remove("show")
+      } else {
+        this.classList.add("active")
+        if (submenu) submenu.classList.add("show")
+      }
+    })
+  })
+
+  // Expandir automaticamente o submenu que contém a página ativa
+  const activeLink = document.querySelector(".nav-submenu .nav-link.active")
+  if (activeLink) {
+    const submenu = activeLink.closest(".nav-submenu")
+    const toggle = document.querySelector(`[data-target="${submenu.id}"]`)
+    if (toggle && submenu) {
+      toggle.classList.add("active")
+      submenu.classList.add("show")
+    }
+  }
+}
+
+function initializeExpandAll() {
+  const expandAllBtn = document.getElementById("expandAllBtn")
+  const categoryToggles = document.querySelectorAll(".nav-category-toggle")
+  const submenus = document.querySelectorAll(".nav-submenu")
+  let allExpanded = false
+
+  if (!expandAllBtn) return
+
+  expandAllBtn.addEventListener("click", () => {
+    const sidebar = document.getElementById("sidebar")
+
+    // Não permitir expandir todos quando sidebar está colapsada
+    if (sidebar && sidebar.classList.contains("collapsed")) {
+      return
+    }
+
+    allExpanded = !allExpanded
+
+    if (allExpanded) {
+      // Expandir todos
+      categoryToggles.forEach((toggle) => {
+        toggle.classList.add("active")
+      })
+      submenus.forEach((submenu) => {
+        submenu.classList.add("show")
+      })
+      expandAllBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i><span class="btn-text">Recolher Todos</span>'
+      expandAllBtn.title = "Recolher todos os menus"
+    } else {
+      // Recolher todos
+      categoryToggles.forEach((toggle) => {
+        toggle.classList.remove("active")
+      })
+      submenus.forEach((submenu) => {
+        submenu.classList.remove("show")
+      })
+      expandAllBtn.innerHTML = '<i class="fas fa-expand-arrows-alt"></i><span class="btn-text">Expandir Todos</span>'
+      expandAllBtn.title = "Expandir todos os menus"
+    }
+  })
+
+  // Verificar estado inicial
+  function checkExpandedState() {
+    const activeToggles = document.querySelectorAll(".nav-category-toggle.active")
+    const totalToggles = categoryToggles.length
+
+    if (activeToggles.length === totalToggles && totalToggles > 0) {
+      allExpanded = true
+      expandAllBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i><span class="btn-text">Recolher Todos</span>'
+      expandAllBtn.title = "Recolher todos os menus"
+    } else {
+      allExpanded = false
+      expandAllBtn.innerHTML = '<i class="fas fa-expand-arrows-alt"></i><span class="btn-text">Expandir Todos</span>'
+      expandAllBtn.title = "Expandir todos os menus"
+    }
+  }
+
+  // Verificar estado quando um submenu individual é alterado
+  categoryToggles.forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+      setTimeout(checkExpandedState, 100)
+    })
+  })
+
+  checkExpandedState()
+}
