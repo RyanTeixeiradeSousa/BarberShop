@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/', [App\Http\Controllers\AuthController::class, 'index'])->name('login'); 
-Route::get('/clientes', [App\Http\Controllers\ClienteController::class, 'index'])->name('clientes.index'); 
+Route::resource('/admin/clientes', App\Http\Controllers\ClienteController::class); 
 Route::get('/dashboard', function(){
     return view('admin.dashboard');
 })->name('admin.dashboard'); 

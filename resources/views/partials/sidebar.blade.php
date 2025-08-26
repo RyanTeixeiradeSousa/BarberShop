@@ -1,6 +1,7 @@
 <!-- Sidebar -->
+
 <div class="sidebar" id="sidebar">
-    <!-- Mobile Header -->
+    <!-- Botão de fechar para mobile -->
     <div class="sidebar-header d-lg-none">
         <div class="d-flex align-items-center justify-content-between p-3">
             <div class="d-flex align-items-center">
@@ -13,7 +14,7 @@
         </div>
     </div>
 
-    <!-- Sidebar Controls -->
+    <!-- Controles da Sidebar -->
     <div class="sidebar-controls">
         <button class="expand-all-btn" id="expandAllBtn" title="Expandir todos os menus">
             <i class="fas fa-expand-arrows-alt"></i>
@@ -21,37 +22,35 @@
         </button>
     </div>
 
-    <!-- Navigation -->
     <nav class="sidebar-nav">
         <!-- Dashboard -->
         <div class="nav-item">
             <a href="#" class="nav-link active" title="Dashboard">
-                <i class="fas fa-tachometer-alt"></i>
+                <i class="fas fa-home"></i>
                 <span class="nav-text">Dashboard</span>
             </a>
         </div>
 
         <!-- Categoria: Clientes -->
         <div class="nav-category">
-            <button class="nav-category-toggle active" data-target="clients-menu" title="Clientes">
+            <button class="nav-category-toggle" data-target="clients-menu" title="Clientes">
                 <div class="nav-category-header">
                     <i class="fas fa-users me-2"></i>
                     <span class="nav-text">Clientes</span>
                 </div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </button>
-            <div class="nav-submenu show" id="clients-menu">
+            <div class="nav-submenu" id="clients-menu">
                 <div class="nav-item">
-                    <a href="#" class="nav-link active" title="Gerenciar Clientes">
-                        <i class="fas fa-address-book"></i>
+                    <a href="#" class="nav-link" title="Gerenciar Clientes">
+                        <i class="fas fa-user-friends"></i>
                         <span class="nav-text">Gerenciar Clientes</span>
-                        <span class="nav-badge-primary">12</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Novo Cliente">
-                        <i class="fas fa-user-plus"></i>
-                        <span class="nav-text">Novo Cliente</span>
+                    <a href="#" class="nav-link" title="Histórico de Atendimentos">
+                        <i class="fas fa-history"></i>
+                        <span class="nav-text">Histórico</span>
                     </a>
                 </div>
             </div>
@@ -68,16 +67,21 @@
             </button>
             <div class="nav-submenu" id="services-menu">
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Gerenciar Serviços">
+                    <a href="#" class="nav-link" title="Cortes e Penteados">
                         <i class="fas fa-scissors"></i>
-                        <span class="nav-text">Gerenciar Serviços</span>
+                        <span class="nav-text">Cortes e Penteados</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Agendamentos">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span class="nav-text">Agendamentos</span>
-                        <span class="nav-badge-warning">5</span>
+                    <a href="#" class="nav-link" title="Barba e Bigode">
+                        <i class="fas fa-user-tie"></i>
+                        <span class="nav-text">Barba e Bigode</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" title="Tratamentos">
+                        <i class="fas fa-spa"></i>
+                        <span class="nav-text">Tratamentos</span>
                     </a>
                 </div>
             </div>
@@ -112,16 +116,16 @@
         <div class="nav-category">
             <button class="nav-category-toggle" data-target="financial-menu" title="Financeiro">
                 <div class="nav-category-header">
-                    <i class="fas fa-dollar-sign me-2"></i>
+                    <i class="fas fa-credit-card me-2"></i>
                     <span class="nav-text">Financeiro</span>
                 </div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </button>
             <div class="nav-submenu" id="financial-menu">
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Caixa">
-                        <i class="fas fa-cash-register"></i>
-                        <span class="nav-text">Caixa</span>
+                    <a href="#" class="nav-link" title="Faturamento">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span class="nav-text">Faturamento</span>
                     </a>
                 </div>
                 <div class="nav-item">
@@ -133,6 +137,15 @@
             </div>
         </div>
 
+        <!-- Agendamentos -->
+        <div class="nav-item">
+            <a href="#" class="nav-link" title="Agendamentos">
+                <i class="fas fa-calendar-alt"></i>
+                <span class="nav-text">Agendamentos</span>
+                <span class="nav-badge-primary">5</span>
+            </a>
+        </div>
+
         <!-- Configurações -->
         <div class="nav-item">
             <a href="#" class="nav-link" title="Configurações">
@@ -141,17 +154,9 @@
             </a>
         </div>
 
-        <!-- Ajuda -->
-        <div class="nav-item">
-            <a href="#" class="nav-link" title="Ajuda">
-                <i class="fas fa-question-circle"></i>
-                <span class="nav-text">Ajuda</span>
-            </a>
-        </div>
-
         <!-- Sair -->
         <div class="nav-item">
-            <a href="#" class="nav-link" title="Sair" onclick="logout()">
+            <a href="#" class="nav-link" title="Sair">
                 <i class="fas fa-right-from-bracket"></i>
                 <span class="nav-text">Sair</span>
             </a>

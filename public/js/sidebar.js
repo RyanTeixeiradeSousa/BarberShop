@@ -108,3 +108,82 @@ function initializeExpandAll() {
 
   checkExpandedState()
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Funcionalidade de toggle dos submenus
+  const categoryToggles = document.querySelectorAll('.nav-category-toggle');
+  
+  categoryToggles.forEach(toggle => {
+      toggle.addEventListener('click', function() {
+          const targetId = this.getAttribute('data-target');
+          const submenu = document.getElementById(targetId);
+          const icon = this.querySelector('.toggle-icon');
+          const category = this.closest('.nav-category');
+          
+          if (submenu) {
+              // Toggle do submenu
+              if (submenu.style.display === 'block') {
+                  submenu.style.display = 'none';
+                  icon.classList.remove('fa-chevron-up');
+                  icon.classList.add('fa-chevron-down');
+                  category.classList.remove('expanded');
+              } else {
+                  submenu.style.display = 'block';
+                  icon.classList.remove('fa-chevron-down');
+                  icon.classList.add('fa-chevron-up');
+                  category.classList.add('expanded');
+              }
+          }
+      });
+  });
+  
+  // Botão expandir todos
+  const expandAllBtn = document.getElementById('expandAllBtn');
+  let allExpanded = false;
+  
+  if (expandAllBtn) {
+      expandAllBtn.addEventListener('click', function() {
+          const submenus = document.querySelectorAll('.nav-submenu');
+          const icons = document.querySelectorAll('.toggle-icon');
+          const categories = document.querySelectorAll('.nav-category');
+          const btnText = this.querySelector('.btn-text');
+          const btnIcon = this.querySelector('i');
+          
+          if (!allExpanded) {
+              // Expandir todos
+              submenus.forEach(submenu => submenu.style.display = 'block');
+              icons.forEach(icon => {
+                  icon.classList.remove('fa-chevron-down');
+                  icon.classList.add('fa-chevron-up');
+              });
+              categories.forEach(category => category.classList.add('expanded'));
+              btnText.textContent = 'Recolher Todos';
+              btnIcon.classList.remove('fa-expand-arrows-alt');
+              btnIcon.classList.add('fa-compress-arrows-alt');
+              allExpanded = true;
+          } else {
+              // Recolher todos
+              submenus.forEach(submenu => submenu.style.display = 'none');
+              icons.forEach(icon => {
+                  icon.classList.remove('fa-chevron-up');
+                  icon.classList.add('fa-chevron-down');
+              });
+              categories.forEach(category => category.classList.remove('expanded'));
+              btnText.textContent = 'Expandir Todos';
+              btnIcon.classList.remove('fa-compress-arrows-alt');
+              btnIcon.classList.add('fa-expand-arrows-alt');
+              allExpanded = false;
+          }
+      });
+  }
+  
+  // Funcionalidade do botão de fechar sidebar (mobile)
+  const sidebarClose = document.getElementById('sidebarClose');
+  const sidebar = document.getElementById('sidebar');
+  
+  if (sidebarClose && sidebar) {
+      sidebarClose.addEventListener('click', function() {
+          sidebar.classList.remove('show');
+      });
+  }
+});
