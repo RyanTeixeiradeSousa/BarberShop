@@ -357,7 +357,8 @@
 
 @section('content')
 <div class="container-fluid">
-    
+   
+
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">

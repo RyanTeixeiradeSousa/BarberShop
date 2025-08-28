@@ -258,20 +258,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Header da Página -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h2 style="color: #1f2937; font-weight: 700;">Categorias Financeiras</h2>
-            <p style="color: #6b7280;">Gerencie as categorias para organizar suas movimentações financeiras</p>
-        </div>
-        <div class="col-md-6 text-end">
-            <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createCategoriaFinanceiraModal">
-                <i class="fas fa-plus me-1"></i>
-                Nova Categoria
-            </button>
-        </div>
-    </div>
-
+    
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
@@ -321,7 +308,7 @@
                     </div>
                     <div class="ms-3">
                         <h4 class="mb-0">{{ $movimentacoesVinculadas ?? 0 }}</h4>
-                        <p class="text-muted mb-0">Movimentações Vinculadas</p>
+                        <p class="text-muted mb-0">Mov. Vinculadas</p>
                     </div>
                 </div>
             </div>

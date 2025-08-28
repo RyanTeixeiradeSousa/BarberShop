@@ -271,22 +271,6 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h2 class="mb-0" style="color: #1f2937;">
-                <i class="fas fa-box me-2" style="color: #60a5fa;"></i>
-                Produtos/Serviços
-            </h2>
-            <p class="mb-0" style="color: #6b7280;">Gerencie produtos e serviços da barbearia</p>
-        </div>
-        <div class="col-md-6 text-end">
-            <button type="button" class="btn btn-primary-custom" onclick="openModal()">
-                <i class="fas fa-plus me-1"></i>
-                Novo Produto/Serviço
-            </button>
-        </div>
-    </div>
 
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">

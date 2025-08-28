@@ -133,8 +133,8 @@
 .nav-category-header {
   display: flex;
   align-items: center;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.91rem;
+  font-weight: 500;
 }
 
 .toggle-icon {
@@ -215,6 +215,7 @@
 .sidebar.collapsed .nav-link,
 .sidebar.collapsed .nav-category-toggle {
   position: relative;
+  
 }
 
 .sidebar.collapsed .nav-link:hover::after,

@@ -1,10 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Gerenciar Categorias')
-
+@section('title', 'Categorias de Produto - BarberShop Pro')
+@section('page-title', 'Categorias de Produto')
+@section('page-subtitle', 'Gerenciamento de categorias de produto da barbearia')
 @section('content')
 <div class="container-fluid">
-    <!-- Header da Página -->
+    {{-- <!-- Header da Página -->
     <div class="page-header mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <div class="page-title-section">
@@ -16,11 +17,9 @@
                     <p class="page-subtitle">Organize produtos e serviços por categorias</p>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#criarCategoriaModal">
-                <i class="fas fa-plus me-2"></i>Nova Categoria
-            </button>
+           
         </div>
-    </div>
+    </div> --}}
 
     <!-- Cards de Estatísticas -->
     <div class="row mb-4">
@@ -326,47 +325,6 @@
 
 @push('styles')
 <style>
-    .page-header {
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
-        border: 2px solid rgba(59, 130, 246, 0.2);
-        border-radius: 12px;
-        padding: 2rem;
-        backdrop-filter: blur(10px);
-    }
-
-    .page-title-section {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .page-icon {
-        width: 60px;
-        height: 60px;
-        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.5rem;
-    }
-
-    .page-title {
-        font-size: 2rem;
-        font-weight: 700;
-        margin: 0;
-        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .page-subtitle {
-        color: #64748b;
-        margin: 0;
-        font-size: 1rem;
-    }
 
     .stats-card {
         background: white;

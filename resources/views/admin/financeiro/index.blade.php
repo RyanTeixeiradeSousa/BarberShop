@@ -5,18 +5,6 @@
 @section('content')
 <div class="container-fluid">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0 text-gray-800">
-                <i class="fas fa-chart-line me-2"></i>
-                Controle Financeiro
-            </h1>
-            <p class="text-muted mb-0">Gerencie entradas e saídas da barbearia</p>
-        </div>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#criarMovimentacaoModal">
-            <i class="fas fa-plus me-2"></i>Nova Movimentação
-        </button>
-    </div>
 
     <!-- Cards de Estatísticas -->
     <div class="row mb-4">

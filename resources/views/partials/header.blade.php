@@ -1,5 +1,8 @@
 <!-- Header -->
+
 <div class="header">
+    <button id="btnSom" class="d-none">Tocar som</button>
+
     <div class="header-content">
         <div class="header-left">
             <button class="sidebar-toggle" id="sidebarToggle">
@@ -14,7 +17,7 @@
                 </a>
             </div>
             
-            <div class="page-info ms-4 d-none">
+            <div class="page-info ms-4">
                 <h1 class="page-title">@yield('page-title', 'Dashboard')</h1>
                 <p class="page-subtitle">@yield('page-subtitle', 'Sistema de Gerenciamento')</p>
             </div>
@@ -74,7 +77,10 @@
         </div>
     </div>
 </div>
-
+{{-- <script>
+    const audio = new Audio("{{asset('sounds/notification.mp3')}}");
+    audio.play();
+</script> --}}
 @if (session()->has('type') && session()->has('message'))
     <script>
         const type = @json(session('type'));
@@ -146,6 +152,5 @@
             }, 3000)
         }
         showToast(message, type)
-    
     </script>
 @endif

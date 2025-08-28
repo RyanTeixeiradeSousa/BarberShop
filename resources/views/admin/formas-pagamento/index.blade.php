@@ -6,22 +6,6 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Header da Página -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h2 class="mb-0" style="color: #1f2937;">
-                <i class="fas fa-credit-card me-2" style="color: #60a5fa;"></i>
-                Formas de Pagamento
-            </h2>
-            <p class="mb-0" style="color: #6b7280;">Gerencie as formas de pagamento aceitas pela barbearia</p>
-        </div>
-        <div class="col-md-6 text-end">
-            <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createFormaPagamentoModal">
-                <i class="fas fa-plus me-1"></i>
-                Nova Forma de Pagamento
-            </button>
-        </div>
-    </div>
 
     <!-- Cards de Estatísticas -->
     <div class="row g-4 mb-4">
@@ -72,7 +56,7 @@
                     </div>
                     <div class="ms-3">
                         <h4 class="mb-0">{{ $movimentacoesVinculadas ?? 0 }}</h4>
-                        <p class="text-muted mb-0">Movimentações Vinculadas</p>
+                        <p class="text-muted mb-0">Mov. Vinculadas</p>
                     </div>
                 </div>
             </div>
@@ -363,7 +347,6 @@
 @push('styles')
 <style>
     body {
-        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
         font-family: 'Inter', sans-serif;
     }
 
