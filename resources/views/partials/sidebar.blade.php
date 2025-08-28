@@ -1,4 +1,3 @@
-<!-- Sidebar -->
 
 <div class="sidebar" id="sidebar">
     <!-- Botão de fechar para mobile -->
@@ -92,7 +91,7 @@
             <button class="nav-category-toggle" data-target="financial-menu" title="Financeiro">
                 <div class="nav-category-header">
                     <i class="fas fa-credit-card me-2"></i>
-                    <span class="nav-text">Financeiro</span>
+                    <span class="nav-text ml-2">Financeiro</span>
                 </div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </button>

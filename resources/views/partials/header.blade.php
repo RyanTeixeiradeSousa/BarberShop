@@ -55,11 +55,20 @@
             </div>
             
             <!-- Perfil adaptado para barbeiro/admin -->
-            <div class="user-profile" onclick="logout()">
-                <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'AB', 0, 2)) }}</div>
+            <div class="user-profile">
+                @php
+                    $nome = auth()->user()->nome ?? 'AB';
+                    $partes = explode(' ', $nome);
+                    $iniciais = strtoupper(
+                        ($partes[0][0] ?? '') . ($partes[count($partes)-1][0] ?? '')
+                    );
+                    $primeiroUltimo = $partes[0] . (count($partes) > 1 ? ' ' . $partes[count($partes)-1] : '');
+
+                @endphp
+                <div class="user-avatar" style="background: linear-gradient(45deg, #3b82f6, #60a5fa) !important;">{{$iniciais}}</div>
                 <div class="user-info">
-                    <h6>{{ auth()->user()->name ?? 'Admin Barbeiro' }}</h6>
-                    <p>Administrador</p>
+                    <h6>{{ $primeiroUltimo }}</h6>
+                    <a style="font-size: 12px;" class="perfil-link" href="{{route('categorias.index')}}">Meu perfil</a>
                 </div>
             </div>
         </div>

@@ -35,7 +35,7 @@ class AuthController extends Controller
 
             if($authenticateUser->authenticated) {
                 Auth::login($userInstance);
-                return redirect('/admin/clientes')->with(['type' => 'success', 'message' => 'Usuário autenticado com sucesso. Seja Bem-vindo(a)!']);
+                return redirect('/admin/clientes')->with(['type' => 'success', 'message' => 'Autenticado com sucesso. Seja Bem-vindo(a)!']);
             }
         } 
         catch(Exception $e) {

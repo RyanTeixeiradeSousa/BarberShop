@@ -30,6 +30,24 @@
   flex: 1;
 }
 
+.perfil-link {
+  font-size: 12px;            /* tamanho da fonte */
+  font-style: italic;          /* itálico */
+  color: #6c757d;             /* cinza */
+  text-decoration: none;       /* remove sublinhado */
+  display: inline-block;       /* necessário para transform */
+  transition: color 0.3s, transform 0.3s, text-decoration 0.3s; /* transição suave */
+}
+
+.perfil-link:hover {
+  color: #60a5fa;             /* azul ao passar o mouse */
+  transform: translateY(-2px); /* sobe 2px */
+  text-decoration: underline;  /* sublinhado */
+}
+
+
+
+
 /* Responsividade do Header */
 @media (max-width: 768px) {
   .header-logo {

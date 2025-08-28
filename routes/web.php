@@ -19,7 +19,7 @@ Route::post('/entrar', [ App\Http\Controllers\AuthController::class, 'entrar'])-
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::post('/logout', [ App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+    Route::get('/logout', [ App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
 
     Route::get('/dashboard', function(){
