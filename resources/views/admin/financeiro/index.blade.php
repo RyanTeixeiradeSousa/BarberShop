@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Financeiro')
+
+@section('title', 'Movimentações Financeiras - BarberShop Pro')
+@section('page-title', 'Movimentações Financeiras')
+@section('page-subtitle', 'Gerencie as movimentações financeiras da barbearia.')
 
 @section('content')
 <div class="container-fluid">

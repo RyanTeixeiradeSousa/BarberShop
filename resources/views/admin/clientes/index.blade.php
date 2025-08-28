@@ -1107,7 +1107,7 @@
         const row = document.querySelector(`tr[data-client-id="${clientId}"]`);
         if (row) {
             // Configurar action do formulário
-            document.getElementById('editClientForm').action = `/clientes/${clientId}`;
+            document.getElementById('editClientForm').action = `clientes/${clientId}`;
             
             const nome = row.querySelector('.client-info h6') ? row.querySelector('.client-info h6').textContent : '';
             
@@ -1136,7 +1136,7 @@
 
     function confirmDelete(clientId, clientName) {
         // Configurar action do formulário
-        document.getElementById('deleteClientForm').action = `/clientes/${clientId}`;
+        document.getElementById('deleteClientForm').action = `clientes/${clientId}`;
         
         // Preencher nome do cliente
         document.getElementById('deleteClientName').textContent = clientName;

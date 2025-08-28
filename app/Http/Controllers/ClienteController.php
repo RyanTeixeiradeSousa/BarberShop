@@ -130,11 +130,11 @@ class ClienteController extends Controller
                     Rule::unique('clientes')->ignore($cliente->id),
                 ],
                 
-                'data_nascimento' => 'date|before:today',
+                'data_nascimento' => 'nullable|date|before:today',
                 'sexo' => 'required|in:M,F',
-                'telefone1' => 'string|max:15',
+                'telefone1' => 'nullable|string|max:15',
                 'telefone2' => 'nullable|string|max:15',
-                'endereco' => 'string'
+                'endereco' => 'nullable|string'
             ];
         
             // Mensagens personalizadas
