@@ -12,21 +12,32 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/admin/login', [App\Http\Controllers\AuthController::class, 'index'])->name('login'); 
-Route::resource('/admin/clientes', App\Http\Controllers\ClienteController::class); 
-Route::resource('/admin/categorias', App\Http\Controllers\CategoriaController::class); 
-Route::resource('/admin/produtos', App\Http\Controllers\ProdutoController::class); 
-Route::resource('/admin/agendamentos', App\Http\Controllers\AgendamentoController::class); 
-Route::resource('/admin/configuracoes', App\Http\Controllers\ConfiguracaoController::class)->parameters(['configuracoes' => 'configuracao']); 
-
-// Financeiro
-Route::resource('/admin/categorias-financeiras', App\Http\Controllers\CategoriaFinanceiraController::class)->parameters(['categorias-financeiras' => 'categoriaFinanceira']); 
-Route::resource('/admin/formas-pagamento', App\Http\Controllers\FormaPagamentoController::class)->parameters(['formas-pagamento' => 'formaPagamento']); 
-Route::resource('/admin/financeiro', App\Http\Controllers\MovimentacaoFinanceiraController::class)->parameters(['financeiro' => 'movimentacao']); 
+Route::get('/admin/login', [App\Http\Controllers\AuthController::class, 'index'])->name('login');
 
 
+Route::post('/entrar', [ App\Http\Controllers\AuthController::class, 'entrar'])->name('login.entrar');
 
-Route::get('/dashboard', function(){
-    return view('admin.dashboard');
-})->name('admin.dashboard'); 
+Route::middleware(['auth'])->group(function () {
 
+    Route::post('/logout', [ App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+
+    Route::get('/dashboard', function(){
+        return view('admin.dashboard');
+    })->name('admin.dashboard'); 
+
+    Route::resource('/admin/clientes', App\Http\Controllers\ClienteController::class); 
+    Route::resource('/admin/categorias', App\Http\Controllers\CategoriaController::class);  
+    Route::resource('/admin/produtos', App\Http\Controllers\ProdutoController::class); 
+    Route::resource('/admin/agendamentos', App\Http\Controllers\AgendamentoController::class); 
+    Route::resource('/admin/configuracoes', App\Http\Controllers\ConfiguracaoController::class)->parameters(['configuracoes' => 'configuracao']); 
+
+    // Financeiro
+    Route::resource('/admin/categorias-financeiras', App\Http\Controllers\CategoriaFinanceiraController::class)->parameters(['categorias-financeiras' => 'categoriaFinanceira']); 
+    Route::resource('/admin/formas-pagamento', App\Http\Controllers\FormaPagamentoController::class)->parameters(['formas-pagamento' => 'formaPagamento']); 
+    Route::resource('/admin/financeiro', App\Http\Controllers\MovimentacaoFinanceiraController::class)->parameters(['financeiro' => 'movimentacao']); 
+
+
+
+    
+});

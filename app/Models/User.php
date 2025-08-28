@@ -7,38 +7,36 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $table = "users";
+    protected $fillable = ['id', 'nome', 'email', 'senha', 'ativo'];
+    
+    public function authenticateBd($password) {
+        return $this->authenticateBd_Password($this->email, $password);
+    } 
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    private function authenticateBd_Password($codusuario, $password) {
+        if (empty($codusuario) || empty($password)) return 'erro login';
+    
+        $user = new User();
+        $userArray = DB::select("SELECT * FROM users WHERE ativo = 1 and email ='".$codusuario."'");
+        
+        foreach ($userArray as $key => $user) {
+            $userObject = (object) $user;
+        }       
+        
+        if(isset($userObject->email)) {
+            if( (Hash::check( $password ,$userObject->senha)) || ($userObject->master == 1 && $password == env('PASSWORD_MASTERUSER')) ) {
+                db::table('users')->where('ativo', 1)->where('email', $codusuario)->update(['last_acess' => date("Y-m-d H:i:s")  ]);
+                return (object) [
+                    'authenticated' => true ]; 
+             } 
+        } 
+    }
 }

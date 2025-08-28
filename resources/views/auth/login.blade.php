@@ -33,25 +33,15 @@
         /* Aplicando fonte Inter como padrão e background tecnológico */
         body.login-page {
           font-family: "Inter", sans-serif;
-          background: linear-gradient(135deg, var(--tech-black) 0%, var(--tech-dark-blue) 100%);
+          background: #ffffff; /* Alterando background de gradiente escuro para branco */
           min-height: 100vh;
           position: relative;
           overflow-x: hidden;
         }
 
-        /* Adicionando padrão de grid tecnológico no background */
+        /* Removendo padrão de grid tecnológico do background */
         body.login-page::before {
-          content: "";
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-image: 
-            linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
-          background-size: 50px 50px;
-          z-index: 1;
+          display: none;
         }
 
         .login-container {
@@ -64,16 +54,15 @@
           z-index: 2;
         }
 
-        /* Redesenhando card com estética tecnológica e glassmorphism */
+        /* Redesenhando card com design mais limpo e moderno */
         .login-card {
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 16px;
+          background: #ffffff;
+          border: none; /* Removendo borda azul que estava feia */
+          border-radius: 20px;
           padding: 50px 40px;
           box-shadow: 
-            0 25px 50px rgba(0, 0, 0, 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            0 20px 40px rgba(0, 0, 0, 0.1),
+            0 8px 25px rgba(0, 0, 0, 0.05);
           width: 100%;
           max-width: 450px;
           min-height: 650px;
@@ -83,21 +72,19 @@
           justify-content: center;
         }
 
-        /* Borda superior com gradiente azul tecnológico */
+        /* Removendo borda superior com gradiente que estava feia */
         .login-card::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 3px;
-          background: linear-gradient(90deg, var(--tech-blue), var(--tech-accent));
-          border-radius: 16px 16px 0 0;
+          display: none;
         }
 
+        /* Melhorando design da seção do logo */
         .logo-section {
           text-align: center;
           margin-bottom: 50px;
+          padding: 30px 20px;
+          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+          border-radius: 16px;
+          margin-bottom: 40px;
         }
 
         .logo-container {
@@ -108,31 +95,37 @@
           margin-bottom: 15px;
         }
 
-        /* Ícone com cor azul tecnológica */
+        /* Melhorando ícone com gradiente */
         .logo-icon {
-          font-size: 2.8rem;
-          color: var(--tech-light-blue);
-          filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.3));
+          font-size: 3rem;
+          background: linear-gradient(135deg, var(--tech-blue), var(--tech-accent));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.2));
         }
 
-        /* Texto com fonte Inter e cor branca */
+        /* Melhorando texto do logo */
         .logo-text {
           font-family: "Inter", sans-serif;
-          font-weight: 700;
-          font-size: 2.2rem;
-          color: var(--pure-white);
+          font-weight: 800;
+          font-size: 2.4rem;
+          background: linear-gradient(135deg, var(--tech-dark-blue), var(--tech-blue));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
           margin: 0;
-          text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
 
-        /* Subtítulo com fonte JetBrains Mono para aspecto tecnológico */
+        /* Melhorando subtítulo */
         .logo-subtitle {
           color: var(--tech-gray);
-          font-size: 1rem;
+          font-size: 0.9rem;
           font-weight: 500;
           margin: 0;
           font-family: "JetBrains Mono", monospace;
-          letter-spacing: 0.5px;
+          letter-spacing: 1px;
+          opacity: 0.8;
         }
 
         .login-form {
@@ -163,24 +156,23 @@
           font-size: 0.9rem;
         }
 
-        /* Inputs com design tecnológico escuro */
+        /* Melhorando inputs com design mais limpo */
         .form-control {
           width: 100%;
-          padding: 14px 16px;
-          border: 1px solid var(--tech-border);
-          border-radius: 8px;
+          padding: 16px 18px;
+          border: 2px solid #e2e8f0;
+          border-radius: 12px;
           font-size: 1rem;
           transition: all 0.3s ease;
-          background: rgba(255, 255, 255, 0.05);
-          color: var(--pure-white);
-          backdrop-filter: blur(10px);
+          background: #ffffff;
+          color: var(--tech-dark-blue);
         }
 
         .form-control:focus {
           outline: none;
           border-color: var(--tech-blue);
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-          background: rgba(255, 255, 255, 0.08);
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+          background: #ffffff;
         }
 
         .form-control::placeholder {
@@ -232,7 +224,7 @@
           height: 20px;
           border: 2px solid var(--tech-border);
           border-radius: 4px;
-          background: rgba(255, 255, 255, 0.05);
+          background: #ffffff; /* Ajustando checkbox para fundo branco */
         }
 
         .form-check-input:checked {
@@ -261,27 +253,29 @@
           text-decoration: underline;
         }
 
-        /* Botão com gradiente azul tecnológico */
+        /* Melhorando botão com design mais moderno */
         .btn-login {
           width: 100%;
-          padding: 14px;
+          padding: 16px;
           background: linear-gradient(135deg, var(--tech-blue), var(--tech-accent));
           color: var(--pure-white);
           border: none;
-          border-radius: 8px;
+          border-radius: 12px;
           font-size: 1.1rem;
-          font-weight: 600;
+          font-weight: 700;
           cursor: pointer;
           transition: all 0.3s ease;
           position: relative;
           overflow: hidden;
           margin-bottom: 25px;
-          box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+          box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .btn-login:hover {
-          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-          transform: translateY(-1px);
+          box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4);
+          transform: translateY(-2px);
         }
 
         .btn-login:active {
@@ -328,7 +322,7 @@
 
         /* Footer com cor tecnológica */
         .login-footer p {
-          color: rgba(100, 116, 139, 0.8);
+          color: var(--tech-dark-blue); /* Alterando cor do footer para azul escuro */
           font-size: 0.9rem;
           margin: 0;
           font-family: "JetBrains Mono", monospace;
@@ -409,6 +403,7 @@
         }
     </style>
 </head>
+
 <body class="login-page">
     <div class="login-container">
         <div class="login-card">
@@ -418,10 +413,10 @@
                     <h1 class="logo-text">BarberShop</h1>
                 </div>
                 <!-- Subtítulo com fonte monospace tecnológica -->
-                <p class="logo-subtitle">SISTEMA.ADMIN.V2.0</p>
+                <p class="logo-subtitle">SISTEMA.ADMIN.V1.0</p>
             </div>
 
-            <form method="POST" action="{{ route('login') }}" class="login-form" id="loginForm">
+            <form method="POST" action="{{ route('login.entrar') }}" class="login-form" id="loginForm">
                 @csrf
                 
                 <div class="form-group">
@@ -651,5 +646,81 @@
           }
         })
     </script>
+    <script src="{{asset('js/header.js')}}"></script>
 </body>
 </html>
+
+@if (session()->has('type') && session()->has('message'))
+    <script>
+        const type = @json(session('type'));
+        const message = @json(session('message'));
+        const toastColors = {
+            success: { background: "#10b981", icon: "check-circle" },  // verde
+            error: { background: "#ef4444", icon: "times-circle" },    // vermelho
+            warning: { background: "#f59e0b", icon: "exclamation-triangle" }, // amarelo
+            info: { background: "#3b82f6", icon: "info-circle" }       // azul
+        };
+        function showToast(message, type) {
+            const { background, icon } = toastColors[type] || toastColors.info;
+
+            // Criar toast simples sem Bootstrap
+            const toastHtml = `
+                <div class="custom-toast toast-${type}" style="
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${background};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 9999;
+                    font-size: 0.9rem;
+                    max-width: 300px;
+                    opacity: 0;
+                    transform: translateX(100%);
+                    transition: all 0.3s ease;
+                ">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-${icon}"></i>
+                        <span>${message}</span>
+                        <button onclick="this.parentElement.parentElement.remove()" style="
+                            background: none;
+                            border: none;
+                            color: white;
+                            margin-left: auto;
+                            cursor: pointer;
+                            padding: 0;
+                            font-size: 1.2rem;
+                        ">×</button>
+                    </div>
+                </div>
+            `;
+
+
+            document.body.insertAdjacentHTML("beforeend", toastHtml)
+            const toastElement = document.body.lastElementChild
+
+            // Animar entrada
+            setTimeout(() => {
+            toastElement.style.opacity = "1"
+            toastElement.style.transform = "translateX(0)"
+            }, 100)
+
+            // Remover automaticamente após 3 segundos
+            setTimeout(() => {
+            if (toastElement && toastElement.parentElement) {
+                toastElement.style.opacity = "0"
+                toastElement.style.transform = "translateX(100%)"
+                setTimeout(() => {
+                if (toastElement && toastElement.parentElement) {
+                    toastElement.remove()
+                }
+                }, 300)
+            }
+            }, 3000)
+        }
+        showToast(message, type)
+    
+    </script>
+@endif

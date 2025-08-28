@@ -25,7 +25,7 @@
     <nav class="sidebar-nav">
         <!-- Dashboard -->
         <div class="nav-item">
-            <a href="#" class="nav-link active" title="Dashboard">
+            <a href="{{route('admin.dashboard')}}" class="nav-link" title="Dashboard">
                 <i class="fas fa-home"></i>
                 <span class="nav-text">Dashboard</span>
             </a>
@@ -42,17 +42,17 @@
             </button>
             <div class="nav-submenu" id="clients-menu">
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Gerenciar Clientes">
+                    <a href="{{route('clientes.index')}}" class="nav-link " title="Gerenciar Clientes">
                         <i class="fas fa-user-friends"></i>
                         <span class="nav-text">Gerenciar Clientes</span>
                     </a>
                 </div>
-                <div class="nav-item">
+                {{-- <div class="nav-item">
                     <a href="#" class="nav-link" title="Histórico de Atendimentos">
                         <i class="fas fa-history"></i>
                         <span class="nav-text">Histórico</span>
                     </a>
-                </div>
+                </div> --}}
             </div>
         </div>
 
@@ -61,54 +61,29 @@
             <button class="nav-category-toggle" data-target="services-menu" title="Serviços">
                 <div class="nav-category-header">
                     <i class="fas fa-cut me-2"></i>
-                    <span class="nav-text">Serviços</span>
+                    <span class="nav-text">Produtos/Serviços</span>
                 </div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </button>
             <div class="nav-submenu" id="services-menu">
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Cortes e Penteados">
+                    <a href="{{route('categorias.index')}}" class="nav-link " title="Categorias">
                         <i class="fas fa-scissors"></i>
-                        <span class="nav-text">Cortes e Penteados</span>
+                        <span class="nav-text">Categorias</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Barba e Bigode">
+                    <a href="{{route('produtos.index')}}" class="nav-link " title="Gerenciar Produtos/Serviços">
                         <i class="fas fa-user-tie"></i>
-                        <span class="nav-text">Barba e Bigode</span>
+                        <span class="nav-text">Gerenciar Produtos/Serviços</span>
                     </a>
                 </div>
-                <div class="nav-item">
+                {{-- <div class="nav-item">
                     <a href="#" class="nav-link" title="Tratamentos">
                         <i class="fas fa-spa"></i>
                         <span class="nav-text">Tratamentos</span>
                     </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Categoria: Produtos -->
-        <div class="nav-category">
-            <button class="nav-category-toggle" data-target="products-menu" title="Produtos">
-                <div class="nav-category-header">
-                    <i class="fas fa-box me-2"></i>
-                    <span class="nav-text">Produtos</span>
-                </div>
-                <i class="fas fa-chevron-down toggle-icon"></i>
-            </button>
-            <div class="nav-submenu" id="products-menu">
-                <div class="nav-item">
-                    <a href="#" class="nav-link" title="Estoque">
-                        <i class="fas fa-boxes"></i>
-                        <span class="nav-text">Estoque</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="#" class="nav-link" title="Vendas">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="nav-text">Vendas</span>
-                    </a>
-                </div>
+                </div> --}}
             </div>
         </div>
 
@@ -123,15 +98,21 @@
             </button>
             <div class="nav-submenu" id="financial-menu">
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Faturamento">
+                    <a href="{{route('categorias-financeiras.index')}}" class="nav-link " title="Categorias">
                         <i class="fas fa-money-bill-wave"></i>
-                        <span class="nav-text">Faturamento</span>
+                        <span class="nav-text">Categorias</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Relatórios">
-                        <i class="fas fa-chart-line"></i>
-                        <span class="nav-text">Relatórios</span>
+                    <a href="{{route('formas-pagamento.index')}}" class="nav-link " title="Formas de Pagamento">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span class="nav-text">Formas de Pagamento</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{route('financeiro.index')}}" class="nav-link " title="Movimentações Financeiras">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span class="nav-text">Movimentações Financeiras</span>
                     </a>
                 </div>
             </div>
@@ -139,7 +120,7 @@
 
         <!-- Agendamentos -->
         <div class="nav-item">
-            <a href="#" class="nav-link" title="Agendamentos">
+            <a href="{{route('agendamentos.index')}}" class="nav-link " title="Agendamentos">
                 <i class="fas fa-calendar-alt"></i>
                 <span class="nav-text">Agendamentos</span>
                 <span class="nav-badge-primary">5</span>
@@ -148,7 +129,7 @@
 
         <!-- Configurações -->
         <div class="nav-item">
-            <a href="#" class="nav-link" title="Configurações">
+            <a href="{{route('configuracoes.index')}}" class="nav-link" title="Configurações">
                 <i class="fas fa-cog"></i>
                 <span class="nav-text">Configurações</span>
             </a>
@@ -156,7 +137,7 @@
 
         <!-- Sair -->
         <div class="nav-item">
-            <a href="#" class="nav-link" title="Sair">
+            <a href="{{route('logout')}}" class="nav-link" title="Sair">
                 <i class="fas fa-right-from-bracket"></i>
                 <span class="nav-text">Sair</span>
             </a>
