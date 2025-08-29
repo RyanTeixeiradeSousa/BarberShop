@@ -5,7 +5,6 @@
 @push('styles')
 <style>
     body {
-        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
         font-family: 'Inter', sans-serif;
     }
 
@@ -406,7 +405,7 @@
                         <div class="col-md-6">
                             <input type="text" class="form-control" name="busca" value="{{ request('busca') }}" placeholder="Buscar categorias..." style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                             <select class="form-select" name="per_page" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
                                 <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 por página</option>
                                 <option value="25" {{ request('per_page') == 25 || !request('per_page') ? 'selected' : '' }}>25 por página</option>
@@ -417,6 +416,11 @@
                             <button type="submit" class="btn btn-outline-primary w-100" style="border-color: #60a5fa; color: #60a5fa;">
                                 <i class="fas fa-search"></i>
                             </button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ route('categorias.index') }}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-times"></i>
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -669,12 +673,12 @@
 <script>
     // Auto-submit do filtro de busca
     let buscaTimeout;
-    document.querySelector('input[name="busca"]').addEventListener('input', function() {
-        clearTimeout(buscaTimeout);
-        buscaTimeout = setTimeout(() => {
-            document.getElementById('filterForm').submit();
-        }, 500);
-    });
+    // document.querySelector('input[name="busca"]').addEventListener('input', function() {
+    //     clearTimeout(buscaTimeout);
+    //     buscaTimeout = setTimeout(() => {
+    //         document.getElementById('filterForm').submit();
+    //     }, 500);
+    // });
 
     // Seletor de itens por página
     document.querySelector('select[name="per_page"]').addEventListener('change', function() {

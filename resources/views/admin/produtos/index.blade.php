@@ -7,7 +7,6 @@
 @push('styles')
 <style>
     body {
-        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
         font-family: 'Inter', sans-serif;
     }
 
@@ -286,7 +285,7 @@
             <p class="mb-0" style="color: #6b7280;">Gerencie produtos e serviços da barbearia</p>
         </div>
         <div class="col-md-6 text-end">
-            <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#criarProdutoModal">
+            <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#productModal">
                 <i class="fas fa-plus me-1"></i>
                 Novo Produto/Serviço
             </button>
@@ -521,7 +520,7 @@
                     <i class="fas fa-box fa-3x text-muted mb-3"></i>
                     <h5 class="text-muted">Nenhum produto/serviço encontrado</h5>
                     <p class="text-muted">Cadastre o primeiro produto ou serviço para começar.</p>
-                    <button type="button" class="btn btn-primary-custom btn-sm" data-bs-toggle="modal" data-bs-target="#criarProdutoModal">
+                    <button type="button" class="btn btn-primary-custom btn-sm" data-bs-toggle="modal" data-bs-target="#productModal">
                         <i class="fas fa-plus me-2"></i>Cadastrar Primeiro Item
                     </button>
                 </div>
@@ -841,40 +840,150 @@
 @push('scripts')
 <script>
     // Auto-submit dos filtros
-    document.querySelector('input[name="busca"]').addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(() => {
-            document.getElementById('filterForm').submit();
-        }, 500);
-    });
+    // document.querySelector('input[name="busca"]').addEventListener('input', function() {
+    //     clearTimeout(this.searchTimeout);
+    //     this.searchTimeout = setTimeout(() => {
+    //         document.getElementById('filterForm').submit();
+    //     }, 500);
+    // });
 
-    document.querySelector('select[name="tipo"]').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
+    // document.querySelector('select[name="tipo"]').addEventListener('change', function() {
+    //     document.getElementById('filterForm').submit();
+    // });
 
-    document.querySelector('select[name="status"]').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
+    // document.querySelector('select[name="status"]').addEventListener('change', function() {
+    //     document.getElementById('filterForm').submit();
+    // });
 
     // Seletor de itens por página
-    document.getElementById('perPage').addEventListener('change', function() {
-        const url = new URL(window.location);
-        url.searchParams.set('per_page', this.value);
-        url.searchParams.delete('page');
-        window.location.href = url.toString();
-    });
+    const perPageEl = document.getElementById('perPage');
 
-    // Funções dos modais (placeholder - implementar conforme necessário)
+    if (perPageEl) {
+        perPageEl.addEventListener('change', function() {
+            const url = new URL(window.location);
+            url.searchParams.set('per_page', this.value);
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        });
+    }
+
+    function aplicarMascaraMonetaria(elemento) {
+        elemento.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = (value / 100).toFixed(2) + '';
+            value = value.replace(".", ",");
+            value = value.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
+            value = value.replace(/(\d)(\d{3}),/g, "$1.$2,");
+            e.target.value = "R$ " + value;
+        });
+    }
+
+    // Aplicar máscaras nos campos de preço
+    aplicarMascaraMonetaria(document.getElementById('preco'));
+    aplicarMascaraMonetaria(document.getElementById('edit_preco'));
+
+    function toggleEstoqueField(tipoSelect, estoqueField) {
+        tipoSelect.addEventListener('change', function() {
+            if (this.value === 'produto') {
+                estoqueField.style.display = 'block';
+            } else {
+                estoqueField.style.display = 'none';
+                estoqueField.querySelector('input').value = '';
+            }
+        });
+    }
+
+    toggleEstoqueField(document.getElementById('tipo'), document.getElementById('estoqueField'));
+    toggleEstoqueField(document.getElementById('edit_tipo'), document.getElementById('editEstoqueField'));
+
+    function setupImagePreview(inputId, previewId, imgId) {
+        document.getElementById(inputId).addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById(previewId);
+            const img = document.getElementById(imgId);
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    }
+
+    setupImagePreview('imagem', 'imagePreview', 'previewImg');
+    setupImagePreview('edit_imagem', 'newImagePreview', 'newPreviewImg');
+
     function visualizarProduto(id) {
-        // Implementar visualização
+        const row = document.querySelector(`tr[data-produto-id="${id}"]`);
+        if (!row) return;
+
+        document.getElementById('viewProductName').textContent = row.dataset.nome;
+        document.getElementById('viewProductType').textContent = row.dataset.tipo === 'produto' ? 'Produto' : 'Serviço';
+        document.getElementById('viewProductCategory').textContent = row.querySelector('td:nth-child(3)').textContent;
+        document.getElementById('viewProductPrice').textContent = row.querySelector('td:nth-child(4)').textContent;
+        document.getElementById('viewProductStock').textContent = row.querySelector('td:nth-child(5)').textContent;
+        document.getElementById('viewProductStatus').textContent = row.dataset.ativo === '1' ? 'Ativo' : 'Inativo';
+        document.getElementById('viewProductDescription').textContent = row.dataset.descricao || 'Sem descrição';
+        document.getElementById('viewProductSite').textContent = row.dataset.site === '1' ? 'Sim' : 'Não';
+
+        // Avatar
+        const avatar = document.getElementById('viewProductAvatar');
+        avatar.innerHTML = row.dataset.tipo === 'produto' ? '<i class="fas fa-cube"></i>' : '<i class="fas fa-cut"></i>';
+
+        new bootstrap.Modal(document.getElementById('viewProductModal')).show();
     }
 
     function editarProduto(id) {
-        // Implementar edição
+        const row = document.querySelector(`tr[data-produto-id="${id}"]`);
+        if (!row) return;
+
+        // Preencher campos
+        document.getElementById('edit_nome').value = row.dataset.nome;
+        document.getElementById('edit_tipo').value = row.dataset.tipo;
+        document.getElementById('edit_categoria_id').value = row.dataset.categoriaId;
+        document.getElementById('edit_preco').value = `R$ ${parseFloat(row.dataset.preco).toFixed(2).replace('.', ',')}`;
+        document.getElementById('edit_estoque').value = row.dataset.estoque || '';
+        document.getElementById('edit_descricao').value = row.dataset.descricao || '';
+        document.getElementById('edit_ativo').checked = row.dataset.ativo === '1';
+        document.getElementById('edit_site').checked = row.dataset.site === '1';
+
+        // Mostrar imagem atual se existir
+        if (row.dataset.imagem) {
+            document.getElementById('currentImg').src = row.dataset.imagem;
+            document.getElementById('currentImage').style.display = 'block';
+        } else {
+            document.getElementById('currentImage').style.display = 'none';
+        }
+
+        // Configurar form action
+        document.getElementById('editProductForm').action = `/admin/produtos/${id}`;
+
+        // Controlar campo estoque
+        const estoqueField = document.getElementById('editEstoqueField');
+        estoqueField.style.display = row.dataset.tipo === 'produto' ? 'block' : 'none';
+
+        new bootstrap.Modal(document.getElementById('editProductModal')).show();
     }
 
     function confirmarExclusao(id, nome) {
-        // Implementar exclusão
+        document.getElementById('deleteProductName').textContent = nome;
+        document.getElementById('deleteProductForm').action = `/admin/produtos/${id}`;
+        new bootstrap.Modal(document.getElementById('deleteProductModal')).show();
     }
+
+    document.getElementById('productForm').addEventListener('submit', function() {
+        const precoInput = document.getElementById('preco');
+        precoInput.value = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
+    });
+
+    document.getElementById('editProductForm').addEventListener('submit', function() {
+        const precoInput = document.getElementById('edit_preco');
+        precoInput.value = precoInput.value.replace(/[^\d,]/g, '').replace(',', '.');
+    });
 </script>
 @endpush

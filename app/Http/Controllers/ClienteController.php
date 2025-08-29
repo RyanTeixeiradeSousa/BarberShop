@@ -93,6 +93,7 @@ class ClienteController extends Controller
             // Verifica se falhou
             if ($validator->fails()) {
                 // Para uma aplicação web
+                
                 return redirect()->route('clientes.index')->with(['type' => 'error' , 'message'=> 'Campos inválidos para cadastro de Cliente.', 'errors' => $validator->errors()]);
         
                 // Para uma API JSON, você poderia usar:

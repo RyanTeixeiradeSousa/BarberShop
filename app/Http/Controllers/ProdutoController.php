@@ -13,8 +13,8 @@ class ProdutoController extends Controller
         $query = Produto::with('categoria');
 
         // Filtros backend
-        if ($request->filled('search')) {
-            $search = $request->search;
+        if ($request->filled('busca')) {
+            $search = $request->busca;
             $query->where(function($q) use ($search) {
                 $q->where('nome', 'like', "%{$search}%")
                   ->orWhere('descricao', 'like', "%{$search}%");
@@ -52,7 +52,7 @@ class ProdutoController extends Controller
     public function store(Request $request)
     {
         try{
-            $request['preco'] = (float) str_replace(',', '.', preg_replace('/[^\d,]/', '', $request->preco));
+        
             $request->validate([
                 'nome' => 'required|string|max:255',
                 'preco' => 'required|numeric|min:0',
@@ -85,7 +85,7 @@ class ProdutoController extends Controller
     public function update(Request $request, Produto $produto)
     {
         try{
-            $request['preco'] = (float) str_replace(',', '.', preg_replace('/[^\d,]/', '', $request->preco));
+            
             $request->validate([
                 'nome' => 'required|string|max:255',
                 'preco' => 'required|numeric|min:0',

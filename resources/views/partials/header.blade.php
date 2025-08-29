@@ -17,10 +17,10 @@
                 </a>
             </div>
             
-            <div class="page-info ms-4">
+            {{-- <div class="page-info ms-4">
                 <h1 class="page-title">@yield('page-title', 'Dashboard')</h1>
                 <p class="page-subtitle">@yield('page-subtitle', 'Sistema de Gerenciamento')</p>
-            </div>
+            </div> --}}
         </div>
         
         <div class="header-right">

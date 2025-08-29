@@ -734,12 +734,16 @@
     // });
 
     // Seletor de itens por página
-    document.getElementById('perPage').addEventListener('change', function() {
-        const url = new URL(window.location);
-        url.searchParams.set('per_page', this.value);
-        url.searchParams.delete('page');
-        window.location.href = url.toString();
-    });
+    const perPageEl = document.getElementById('perPage');
+
+    if (perPageEl) {
+        perPageEl.addEventListener('change', function() {
+            const url = new URL(window.location);
+            url.searchParams.set('per_page', this.value);
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        });
+    }
 
     // Máscaras
     function aplicarMascaraCPF(elemento) {
