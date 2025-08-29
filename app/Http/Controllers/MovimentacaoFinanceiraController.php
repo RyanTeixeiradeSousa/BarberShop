@@ -6,6 +6,8 @@ use App\Models\MovimentacaoFinanceira;
 use App\Models\Cliente;
 use App\Models\CategoriaFinanceira;
 use App\Models\FormaPagamento;
+use App\Models\Produto; // Adicionando model Produto
+use App\Models\Agendamento; // Adicionando model Agendamento
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +15,7 @@ class MovimentacaoFinanceiraController extends Controller
 {
     public function index(Request $request)
     {
-        $query = MovimentacaoFinanceira::with(['cliente', 'categoriaFinanceira', 'formaPagamento']);
+        $query = MovimentacaoFinanceira::with(['cliente', 'categoriaFinanceira', 'formaPagamento', 'agendamento', 'produtos']);
 
         if ($request->filled('busca')) {
             $query->where(function($q) use ($request) {
@@ -60,6 +62,8 @@ class MovimentacaoFinanceiraController extends Controller
         $clientes = Cliente::where('ativo', true)->orderBy('nome')->get();
         $categorias = CategoriaFinanceira::where('ativo', true)->orderBy('nome')->get();
         $formasPagamento = FormaPagamento::where('ativo', true)->orderBy('nome')->get();
+        $produtos = Produto::where('ativo', true)->orderBy('nome')->get(); // Adicionando produtos
+        $agendamentos = Agendamento::with('cliente')->orderBy('data_agendamento', 'desc')->get(); // Adicionando agendamentos
 
         return view('admin.financeiro.index', compact(
             'movimentacoes', 
@@ -70,7 +74,9 @@ class MovimentacaoFinanceiraController extends Controller
             'movimentacoesAbertas',
             'clientes',
             'categorias',
-            'formasPagamento'
+            'formasPagamento',
+            'produtos', // Passando produtos para view
+            'agendamentos' // Passando agendamentos para view
         ));
     }
 
@@ -89,8 +95,14 @@ class MovimentacaoFinanceiraController extends Controller
             'desconto' => 'nullable|numeric|min:0',
             'valor_pago' => 'nullable|numeric|min:0',
             'categoria_financeira_id' => 'nullable|exists:categorias_financeiras,id',
+            'agendamento_id' => 'nullable|exists:agendamentos,id', // Validação para agendamento
             'observacoes' => 'nullable|string',
-            'ativo' => 'boolean'
+            'ativo' => 'boolean',
+            'baixado' => 'boolean',
+            'produtos' => 'nullable|array', // Validação para produtos
+            'produtos.*.id' => 'required|exists:produtos,id',
+            'produtos.*.quantidade' => 'required|numeric|min:1',
+            'produtos.*.valor_unitario' => 'required|numeric|min:0'
         ]);
 
         $data = $request->all();
@@ -103,7 +115,30 @@ class MovimentacaoFinanceiraController extends Controller
 
         $data['ativo'] = $request->has('ativo') ? 1 : 0;
 
-        MovimentacaoFinanceira::create($data);
+        if ($request->has('baixado') && $request->baixado) {
+            $data['situacao'] = 'pago';
+            $data['data_pagamento'] = $data['data_pagamento'] ?? now()->format('Y-m-d');
+            if (!$data['valor_pago']) {
+                $data['valor_pago'] = $data['valor'] - ($data['desconto'] ?? 0);
+            }
+        }
+
+        unset($data['baixado'], $data['produtos']); // Removendo produtos dos dados principais
+
+        DB::transaction(function () use ($data, $request) {
+            $movimentacao = MovimentacaoFinanceira::create($data);
+
+            // Associar produtos se fornecidos
+            if ($request->has('produtos') && is_array($request->produtos)) {
+                foreach ($request->produtos as $produto) {
+                    $valorUnitario = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $produto['valor_unitario']);
+                    $movimentacao->produtos()->attach($produto['id'], [
+                        'quantidade' => $produto['quantidade'],
+                        'valor_unitario' => $valorUnitario
+                    ]);
+                }
+            }
+        });
 
         return redirect()->route('financeiro.index')
                         ->with('success', 'Movimentação cadastrada com sucesso!');
@@ -124,8 +159,14 @@ class MovimentacaoFinanceiraController extends Controller
             'desconto' => 'nullable|numeric|min:0',
             'valor_pago' => 'nullable|numeric|min:0',
             'categoria_financeira_id' => 'nullable|exists:categorias_financeiras,id',
+            'agendamento_id' => 'nullable|exists:agendamentos,id', // Validação para agendamento
             'observacoes' => 'nullable|string',
-            'ativo' => 'boolean'
+            'ativo' => 'boolean',
+            'baixado' => 'boolean',
+            'produtos' => 'nullable|array', // Validação para produtos
+            'produtos.*.id' => 'required|exists:produtos,id',
+            'produtos.*.quantidade' => 'required|numeric|min:1',
+            'produtos.*.valor_unitario' => 'required|numeric|min:0'
         ]);
 
         $data = $request->all();
@@ -138,7 +179,32 @@ class MovimentacaoFinanceiraController extends Controller
 
         $data['ativo'] = $request->has('ativo') ? 1 : 0;
 
-        $movimentacao->update($data);
+        if ($request->has('baixado') && $request->baixado && $movimentacao->situacao == 'em_aberto') {
+            $data['situacao'] = 'pago';
+            $data['data_pagamento'] = $data['data_pagamento'] ?? now()->format('Y-m-d');
+            if (!$data['valor_pago']) {
+                $data['valor_pago'] = $data['valor'] - ($data['desconto'] ?? 0);
+            }
+        }
+
+        unset($data['baixado'], $data['produtos']); // Removendo produtos dos dados principais
+
+        DB::transaction(function () use ($data, $request, $movimentacao) {
+            $movimentacao->update($data);
+
+            // Remover produtos existentes e adicionar novos
+            $movimentacao->produtos()->detach();
+            
+            if ($request->has('produtos') && is_array($request->produtos)) {
+                foreach ($request->produtos as $produto) {
+                    $valorUnitario = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $produto['valor_unitario']);
+                    $movimentacao->produtos()->attach($produto['id'], [
+                        'quantidade' => $produto['quantidade'],
+                        'valor_unitario' => $valorUnitario
+                    ]);
+                }
+            }
+        });
 
         return redirect()->route('financeiro.index')
                         ->with('success', 'Movimentação atualizada com sucesso!');
@@ -150,5 +216,11 @@ class MovimentacaoFinanceiraController extends Controller
 
         return redirect()->route('financeiro.index')
                         ->with('success', 'Movimentação excluída com sucesso!');
+    }
+
+    public function show(MovimentacaoFinanceira $movimentacao)
+    {
+        $movimentacao->load(['cliente', 'categoriaFinanceira', 'formaPagamento', 'agendamento', 'produtos']);
+        return response()->json($movimentacao);
     }
 }

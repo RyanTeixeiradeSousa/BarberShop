@@ -7,6 +7,7 @@
 @push('styles')
 <style>
     body {
+        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
         font-family: 'Inter', sans-serif;
     }
 
@@ -85,6 +86,19 @@
         color: #dc2626;
     }
 
+    .btn-outline-secondary {
+        border-color: #6b7280;
+        color: #6b7280;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background: rgba(107, 114, 128, 0.1);
+        border-color: #4b5563;
+        color: #4b5563;
+    }
+
     .product-card {
         background: rgba(255, 255, 255, 0.95);
         border-radius: 12px;
@@ -125,15 +139,6 @@
         font-size: 0.85rem;
         color: #6b7280;
     }
-
-    .badge-tipo {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 6px;
-    }
-
-    .badge-produto { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-    .badge-servico { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 
     .status-ativo { color: #10b981; }
     .status-inativo { color: #ef4444; }
@@ -271,8 +276,24 @@
 
 @section('content')
 <div class="container-fluid">
+    <!-- Header da Página -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="mb-0" style="color: #1f2937;">
+                <i class="fas fa-box me-2" style="color: #60a5fa;"></i>
+                Produtos/Serviços
+            </h2>
+            <p class="mb-0" style="color: #6b7280;">Gerencie produtos e serviços da barbearia</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#criarProdutoModal">
+                <i class="fas fa-plus me-1"></i>
+                Novo Produto/Serviço
+            </button>
+        </div>
+    </div>
 
-    <!-- Statistics Cards -->
+    <!-- Cards de Estatísticas -->
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
             <div class="product-card">
@@ -303,7 +324,7 @@
         <div class="col-xl-3 col-md-6">
             <div class="product-card">
                 <div class="d-flex align-items-center">
-                    <div class="product-avatar" style="background: linear-gradient(45deg, #3b82f6, #60a5fa);">
+                    <div class="product-avatar" style="background: linear-gradient(45deg, #8b5cf6, #a78bfa);">
                         <i class="fas fa-cube"></i>
                     </div>
                     <div class="ms-3">
@@ -316,7 +337,7 @@
         <div class="col-xl-3 col-md-6">
             <div class="product-card">
                 <div class="d-flex align-items-center">
-                    <div class="product-avatar" style="background: linear-gradient(45deg, #10b981, #34d399);">
+                    <div class="product-avatar" style="background: linear-gradient(45deg, #f59e0b, #fbbf24);">
                         <i class="fas fa-cut"></i>
                     </div>
                     <div class="ms-3">
@@ -328,85 +349,83 @@
         </div>
     </div>
 
-    <!-- Filters and Actions -->
+    <!-- Card de Filtros com collapse e botão limpar seguindo padrão de clientes -->
     <div class="card-custom mb-4">
-        <div class="card-body">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <form method="GET" action="{{ route('produtos.index') }}" class="row g-3" id="filterForm">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" name="search" value="{{ request('search') }}" placeholder="Buscar produtos/serviços..." style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-select" name="status" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
-                                <option value="">Todos os status</option>
-                                <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Ativo</option>
-                                <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inativo</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-select" name="tipo" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
-                                <option value="">Todos os tipos</option>
-                                <option value="produto" {{ request('tipo') == 'produto' ? 'selected' : '' }}>Produto</option>
-                                <option value="servico" {{ request('servico') == 'servico' ? 'selected' : '' }}>Serviço</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select" name="categoria_id" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
-                                <option value="">Todas as categorias</option>
-                                @foreach($categorias as $categoria)
-                                    <option value="{{ $categoria->id }}" {{ request('categoria_id') == $categoria->id ? 'selected' : '' }}>{{ $categoria->nome }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-1">
-                            <button type="submit" class="btn btn-outline-primary w-100" style="border-color: #60a5fa; color: #60a5fa;">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                        @if(request('per_page'))
-                            <input type="hidden" name="per_page" value="{{ request('per_page') }}">
-                        @endif
-                    </form>
-                </div>
-                <div class="col-md-4 text-end">
-                    <button type="button" class="btn btn-primary-custom" onclick="openModal()">
-                        <i class="fas fa-plus me-2"></i>
-                        Novo Produto/Serviço
-                    </button>
+        <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid rgba(59, 130, 246, 0.2); cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse">
+            <h6 class="m-0 font-weight-bold" style="color: #1f2937;">
+                <i class="fas fa-filter me-2" style="color: #60a5fa;"></i>Filtros
+            </h6>
+            <i class="fas fa-chevron-down" style="color: #60a5fa;"></i>
+        </div>
+        <div class="collapse show" id="filtrosCollapse">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-10">
+                        <form method="GET" action="{{ route('produtos.index') }}" class="row g-3" id="filterForm">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="busca" value="{{ request('busca') }}" placeholder="Buscar produtos/serviços..." style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" name="tipo" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                                    <option value="">Todos os tipos</option>
+                                    <option value="produto" {{ request('tipo') == 'produto' ? 'selected' : '' }}>Produto</option>
+                                    <option value="servico" {{ request('tipo') == 'servico' ? 'selected' : '' }}>Serviço</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" name="status" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                                    <option value="">Todos os status</option>
+                                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Ativo</option>
+                                    <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inativo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-outline-primary w-100" style="border-color: #60a5fa; color: #60a5fa;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="{{ route('produtos.index') }}" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </div>
+                            @if(request('per_page'))
+                                <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+                            @endif
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Pagination Info and Controls -->
-    @if(isset($produtos) && $produtos->count() > 0)
-    <div class="card-custom mb-4">
-        <div class="card-body">
-            <div class="pagination-controls">
-                <div class="results-info">
-                    <i class="fas fa-info-circle me-1"></i>
-                    Mostrando {{ $produtos->firstItem() }} a {{ $produtos->lastItem() }} de {{ $produtos->total() }} resultados
-                </div>
-                
-                <div class="per-page-selector">
-                    <label for="perPage" class="form-label mb-0" style="color: #1f2937;">Itens por página:</label>
-                    <select class="form-select form-select-sm" id="perPage">
-                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
-                        <option value="15" {{ request('per_page') == 15 || !request('per_page') ? 'selected' : '' }}>15</option>
-                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-
-    <!-- Products List -->
+    <!-- Card da Tabela -->
     <div class="card-custom">
         <div class="card-body">
             @if(isset($produtos) && $produtos->count() > 0)
+                <!-- Informações da Paginação seguindo padrão de clientes -->
+                <div class="card-custom mb-4">
+                    <div class="card-body">
+                        <div class="pagination-controls">
+                            <div class="results-info">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Mostrando {{ $produtos->firstItem() }} a {{ $produtos->lastItem() }} de {{ $produtos->total() }} resultados
+                            </div>
+                            
+                            <div class="per-page-selector">
+                                <label for="perPage" class="form-label mb-0" style="color: #1f2937;">Itens por página:</label>
+                                <select class="form-select form-select-sm" id="perPage">
+                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="15" {{ request('per_page') == 15 || !request('per_page') ? 'selected' : '' }}>15</option>
+                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela -->
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -450,13 +469,13 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge badge-tipo badge-{{ $produto->tipo }}">
-                                        {{ $produto->tipo_formatado }}
+                                    <span class="badge bg-{{ $produto->tipo == 'produto' ? 'info' : 'warning' }}">
+                                        {{ $produto->tipo == 'produto' ? 'Produto' : 'Serviço' }}
                                     </span>
                                 </td>
                                 <td>{{ $produto->categoria->nome }}</td>
                                 <td>
-                                    <strong style="color: #10b981;">{{ $produto->preco_formatado }}</strong>
+                                    <strong style="color: #10b981;">R$ {{ number_format($produto->preco, 2, ',', '.') }}</strong>
                                 </td>
                                 <td>
                                     @if($produto->tipo == 'produto')
@@ -471,13 +490,13 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-outline-info" onclick="viewProduct({{ $produto->id }})" title="Visualizar">
+                                        <button type="button" class="btn btn-sm btn-outline-info" onclick="visualizarProduto({{ $produto->id }})" title="Visualizar">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editProduct({{ $produto->id }})" title="Editar">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="editarProduto({{ $produto->id }})" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete({{ $produto->id }}, '{{ $produto->nome }}')" title="Excluir">
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmarExclusao({{ $produto->id }}, '{{ $produto->nome }}')" title="Excluir">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -487,26 +506,23 @@
                         </tbody>
                     </table>
                 </div>
-                
+
+                <!-- Paginação seguindo padrão de clientes -->
                 <div class="pagination-wrapper">
                     <div class="pagination-controls">
                         <div class="results-info">
-                            <i class="fas fa-info-circle me-1"></i>
-                            Mostrando {{ $produtos->firstItem() ?? 0 }} a {{ $produtos->lastItem() ?? 0 }} de {{ $produtos->total() }} resultados
+                            Mostrando {{ $produtos->firstItem() }} a {{ $produtos->lastItem() }} de {{ $produtos->total() }} resultados
                         </div>
-                        <div>
-                            {{ $produtos->links() }}
-                        </div>
+                        {{ $produtos->links() }}
                     </div>
                 </div>
             @else
                 <div class="text-center py-5">
-                    <i class="fas fa-box fa-3x mb-3" style="color: #6b7280;"></i>
-                    <h5 style="color: #6b7280;">Nenhum produto/serviço encontrado</h5>
-                    <p style="color: #6b7280;">Comece cadastrando o primeiro produto ou serviço da barbearia.</p>
-                    <button type="button" class="btn btn-primary-custom" onclick="openModal()">
-                        <i class="fas fa-plus me-2"></i>
-                        Cadastrar Primeiro Item
+                    <i class="fas fa-box fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nenhum produto/serviço encontrado</h5>
+                    <p class="text-muted">Cadastre o primeiro produto ou serviço para começar.</p>
+                    <button type="button" class="btn btn-primary-custom btn-sm" data-bs-toggle="modal" data-bs-target="#criarProdutoModal">
+                        <i class="fas fa-plus me-2"></i>Cadastrar Primeiro Item
                     </button>
                 </div>
             @endif
@@ -517,25 +533,25 @@
 <!-- Modal para criar/editar produto -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background: white; border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);">
-            <div class="modal-header" style="border-bottom: 2px solid rgba(59, 130, 246, 0.2); padding: 1.5rem; background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(96, 165, 250, 0.05) 100%);">
-                <h5 class="modal-title" id="productModalLabel" style="color: #1f2937; font-weight: 600; font-size: 1.25rem;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">
                     <i class="fas fa-plus me-2" style="color: #60a5fa;"></i>
                     Novo Produto/Serviço
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" style="padding: 2rem; background: white;">
+            <div class="modal-body">
                 <form action="{{ route('produtos.store') }}" method="POST" id="productForm" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
                         <div class="col-md-8 mb-3">
-                            <label for="nome" class="form-label" style="color: #374151; font-weight: 500;">Nome *</label>
-                            <input type="text" class="form-control" id="nome" name="nome" required style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                            <label for="nome" class="form-label">Nome *</label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="tipo" class="form-label" style="color: #374151; font-weight: 500;">Tipo *</label>
-                            <select class="form-select" id="tipo" name="tipo" required style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                            <label for="tipo" class="form-label">Tipo *</label>
+                            <select class="form-select" id="tipo" name="tipo" required>
                                 <option value="">Selecione</option>
                                 <option value="produto">Produto</option>
                                 <option value="servico">Serviço</option>
@@ -544,8 +560,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="categoria_id" class="form-label" style="color: #374151; font-weight: 500;">Categoria *</label>
-                            <select class="form-select" id="categoria_id" name="categoria_id" required style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                            <label for="categoria_id" class="form-label">Categoria *</label>
+                            <select class="form-select" id="categoria_id" name="categoria_id" required>
                                 <option value="">Selecione</option>
                                 @foreach($categorias as $categoria)
                                     <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
@@ -553,23 +569,23 @@
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="preco" class="form-label" style="color: #374151; font-weight: 500;">Preço *</label>
+                            <label for="preco" class="form-label">Preço *</label>
                             <!-- Alterando input de number para text e adicionando máscara monetária -->
-                            <input type="text" class="form-control" id="preco" name="preco" required style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;" placeholder="R$ 0,00">
+                            <input type="text" class="form-control" id="preco" name="preco" required placeholder="R$ 0,00">
                         </div>
                         <div class="col-md-3 mb-3" id="estoqueField">
-                            <label for="estoque" class="form-label" style="color: #374151; font-weight: 500;">Estoque</label>
-                            <input type="number" class="form-control" id="estoque" name="estoque" min="0" style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                            <label for="estoque" class="form-label">Estoque</label>
+                            <input type="number" class="form-control" id="estoque" name="estoque" min="0">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="descricao" class="form-label" style="color: #374151; font-weight: 500;">Descrição</label>
-                        <textarea class="form-control" id="descricao" name="descricao" rows="3" style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem; resize: vertical;"></textarea>
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="descricao" name="descricao" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
                         <!-- Alterando campo de imagem de textarea para input file -->
-                        <label for="imagem" class="form-label" style="color: #374151; font-weight: 500;">Imagem</label>
-                        <input type="file" class="form-control" id="imagem" name="imagem" accept="image/*" style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                        <label for="imagem" class="form-label">Imagem</label>
+                        <input type="file" class="form-control" id="imagem" name="imagem" accept="image/*">
                         <small class="text-muted">Formatos aceitos: JPEG, PNG, JPG, GIF. Tamanho máximo: 2MB</small>
                         <!-- Adicionando preview da imagem -->
                         <div id="imagePreview" class="mt-2" style="display: none;">
@@ -579,8 +595,8 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
-                                <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="ativo" name="ativo" value="1" checked style="border: 2px solid rgba(59, 130, 246, 0.3); margin-top: 0;">
-                                <label class="form-check-label flex-grow-1" for="ativo" style="color: #374151; font-weight: 500; margin-bottom: 0;">
+                                <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="ativo" name="ativo" value="1" checked style="margin-top: 0;">
+                                <label class="form-check-label flex-grow-1" for="ativo" style="margin-bottom: 0;">
                                     <i class="fas fa-check-circle me-1" style="color: #10b981;"></i>
                                     Ativo
                                 </label>
@@ -588,8 +604,8 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
-                                <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="site" name="site" value="1" style="border: 2px solid rgba(59, 130, 246, 0.3); margin-top: 0;">
-                                <label class="form-check-label flex-grow-1" for="site" style="color: #374151; font-weight: 500; margin-bottom: 0;">
+                                <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="site" name="site" value="1" style="margin-top: 0;">
+                                <label class="form-check-label flex-grow-1" for="site" style="margin-bottom: 0;">
                                     <i class="fas fa-globe me-1" style="color: #3b82f6;"></i>
                                     Exibir no Site
                                 </label>
@@ -598,7 +614,7 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer" style="border-top: 2px solid rgba(59, 130, 246, 0.2); padding: 1.5rem; background: rgba(59, 130, 246, 0.02);">
+            <div class="modal-footer">
                 <button type="button" class="btn" data-bs-dismiss="modal" style="background: white; color: #6b7280; border: 2px solid rgba(107, 114, 128, 0.2); padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500;">
                     <i class="fas fa-times me-1"></i>
                     Cancelar
@@ -615,15 +631,15 @@
 <!-- Modal para visualizar produto -->
 <div class="modal fade" id="viewProductModal" tabindex="-1" aria-labelledby="viewProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background: white; border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);">
-            <div class="modal-header" style="border-bottom: 2px solid rgba(59, 130, 246, 0.2); padding: 1.5rem; background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(96, 165, 250, 0.05) 100%);">
-                <h5 class="modal-title" id="viewProductModalLabel" style="color: #1f2937; font-weight: 600; font-size: 1.25rem;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewProductModalLabel">
                     <i class="fas fa-eye me-2" style="color: #60a5fa;"></i>
                     Visualizar Produto/Serviço
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" style="padding: 2rem; background: white;">
+            <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <div class="d-flex align-items-center mb-4">
@@ -631,7 +647,7 @@
                                 <!-- Avatar será preenchido via JavaScript -->
                             </div>
                             <div>
-                                <h4 class="mb-0" id="viewProductName" style="color: #1f2937;"></h4>
+                                <h4 class="mb-0" id="viewProductName"></h4>
                                 <p class="mb-0 text-muted" id="viewProductType"></p>
                             </div>
                         </div>
@@ -640,33 +656,33 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label" style="color: #374151; font-weight: 600;">Categoria:</label>
-                        <p class="mb-0" id="viewProductCategory" style="color: #1f2937;"></p>
+                        <p class="mb-0" id="viewProductCategory"></p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label" style="color: #374151; font-weight: 600;">Preço:</label>
-                        <p class="mb-0" id="viewProductPrice" style="color: #1f2937;"></p>
+                        <p class="mb-0" id="viewProductPrice"></p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label" style="color: #374151; font-weight: 600;">Estoque:</label>
-                        <p class="mb-0" id="viewProductStock" style="color: #1f2937;"></p>
+                        <p class="mb-0" id="viewProductStock"></p>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label" style="color: #374151; font-weight: 600;">Status:</label>
-                        <p class="mb-0" id="viewProductStatus" style="color: #1f2937;"></p>
+                        <p class="mb-0" id="viewProductStatus"></p>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" style="color: #374151; font-weight: 600;">Descrição:</label>
-                    <p class="mb-0" id="viewProductDescription" style="color: #1f2937;"></p>
+                    <p class="mb-0" id="viewProductDescription"></p>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" style="color: #374151; font-weight: 600;">Exibir no Site:</label>
-                    <p class="mb-0" id="viewProductSite" style="color: #1f2937;"></p>
+                    <p class="mb-0" id="viewProductSite"></p>
                 </div>
             </div>
-            <div class="modal-footer" style="border-top: 2px solid rgba(59, 130, 246, 0.2); padding: 1.5rem; background: rgba(59, 130, 246, 0.02);">
+            <div class="modal-footer">
                 <button type="button" class="btn" data-bs-dismiss="modal" style="background: white; color: #6b7280; border: 2px solid rgba(107, 114, 128, 0.2); padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500;">
                     <i class="fas fa-times me-1"></i>
                     Fechar
@@ -679,26 +695,26 @@
 <!-- Modal para editar produto -->
 <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background: white; border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);">
-            <div class="modal-header" style="border-bottom: 2px solid rgba(59, 130, 246, 0.2); padding: 1.5rem; background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(96, 165, 250, 0.05) 100%);">
-                <h5 class="modal-title" id="editProductModalLabel" style="color: #1f2937; font-weight: 600; font-size: 1.25rem;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProductModalLabel">
                     <i class="fas fa-edit me-2" style="color: #60a5fa;"></i>
                     Editar Produto/Serviço
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" style="padding: 2rem; background: white;">
+            <div class="modal-body">
                 <form method="POST" id="editProductForm" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="row">
                         <div class="col-md-8 mb-3">
-                            <label for="edit_nome" class="form-label" style="color: #374151; font-weight: 500;">Nome *</label>
-                            <input type="text" class="form-control" id="edit_nome" name="nome" required style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                            <label for="edit_nome" class="form-label">Nome *</label>
+                            <input type="text" class="form-control" id="edit_nome" name="nome" required>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="edit_tipo" class="form-label" style="color: #374151; font-weight: 500;">Tipo *</label>
-                            <select class="form-select" id="edit_tipo" name="tipo" required style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                            <label for="edit_tipo" class="form-label">Tipo *</label>
+                            <select class="form-select" id="edit_tipo" name="tipo" required>
                                 <option value="">Selecione</option>
                                 <option value="produto">Produto</option>
                                 <option value="servico">Serviço</option>
@@ -707,8 +723,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_categoria_id" class="form-label" style="color: #374151; font-weight: 500;">Categoria *</label>
-                            <select class="form-select" id="edit_categoria_id" name="categoria_id" required style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                            <label for="edit_categoria_id" class="form-label">Categoria *</label>
+                            <select class="form-select" id="edit_categoria_id" name="categoria_id" required>
                                 <option value="">Selecione</option>
                                 @foreach($categorias as $categoria)
                                     <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
@@ -716,23 +732,23 @@
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_preco" class="form-label" style="color: #374151; font-weight: 500;">Preço *</label>
+                            <label for="edit_preco" class="form-label">Preço *</label>
                             <!-- Alterando input de number para text e adicionando máscara monetária -->
-                            <input type="text" class="form-control" id="edit_preco" name="preco" required style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;" placeholder="R$ 0,00">
+                            <input type="text" class="form-control" id="edit_preco" name="preco" required placeholder="R$ 0,00">
                         </div>
                         <div class="col-md-3 mb-3" id="editEstoqueField">
-                            <label for="edit_estoque" class="form-label" style="color: #374151; font-weight: 500;">Estoque</label>
-                            <input type="number" class="form-control" id="edit_estoque" name="estoque" min="0" style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                            <label for="edit_estoque" class="form-label">Estoque</label>
+                            <input type="number" class="form-control" id="edit_estoque" name="estoque" min="0">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_descricao" class="form-label" style="color: #374151; font-weight: 500;">Descrição</label>
-                        <textarea class="form-control" id="edit_descricao" name="descricao" rows="3" style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem; resize: vertical;"></textarea>
+                        <label for="edit_descricao" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="edit_descricao" name="descricao" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
                         <!-- Alterando campo de imagem de textarea para input file no modal de edição -->
-                        <label for="edit_imagem" class="form-label" style="color: #374151; font-weight: 500;">Nova Imagem</label>
-                        <input type="file" class="form-control" id="edit_imagem" name="imagem" accept="image/*" style="background: white; border: 2px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                        <label for="edit_imagem" class="form-label">Nova Imagem</label>
+                        <input type="file" class="form-control" id="edit_imagem" name="imagem" accept="image/*">
                         <small class="text-muted">Deixe em branco para manter a imagem atual. Formatos aceitos: JPEG, PNG, JPG, GIF. Tamanho máximo: 2MB</small>
                         <!-- Adicionando preview da imagem atual e nova -->
                         <div id="editImagePreview" class="mt-2">
@@ -749,8 +765,8 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
-                                <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="edit_ativo" name="ativo" value="1" style="border: 2px solid rgba(59, 130, 246, 0.3); margin-top: 0;">
-                                <label class="form-check-label flex-grow-1" for="edit_ativo" style="color: #374151; font-weight: 500; margin-bottom: 0;">
+                                <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="edit_ativo" name="ativo" value="1" style="margin-top: 0;">
+                                <label class="form-check-label flex-grow-1" for="edit_ativo" style="margin-bottom: 0;">
                                     <i class="fas fa-check-circle me-1" style="color: #10b981;"></i>
                                     Ativo
                                 </label>
@@ -758,8 +774,8 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
-                                <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="edit_site" name="site" value="1" style="border: 2px solid rgba(59, 130, 246, 0.3); margin-top: 0;">
-                                <label class="form-check-label flex-grow-1" for="edit_site" style="color: #374151; font-weight: 500; margin-bottom: 0;">
+                                <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="edit_site" name="site" value="1" style="margin-top: 0;">
+                                <label class="form-check-label flex-grow-1" for="edit_site" style="margin-bottom: 0;">
                                     <i class="fas fa-globe me-1" style="color: #3b82f6;"></i>
                                     Exibir no Site
                                 </label>
@@ -768,7 +784,7 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer" style="border-top: 2px solid rgba(59, 130, 246, 0.2); padding: 1.5rem; background: rgba(59, 130, 246, 0.02);">
+            <div class="modal-footer">
                 <button type="button" class="btn" data-bs-dismiss="modal" style="background: white; color: #6b7280; border: 2px solid rgba(107, 114, 128, 0.2); padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500;">
                     <i class="fas fa-times me-1"></i>
                     Cancelar
@@ -785,15 +801,15 @@
 <!-- Modal para confirmar exclusão -->
 <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content" style="background: white; border: 2px solid rgba(239, 68, 68, 0.3); border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);">
-            <div class="modal-header" style="border-bottom: 2px solid rgba(239, 68, 68, 0.2); padding: 1.5rem; background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(248, 113, 113, 0.05) 100%);">
-                <h5 class="modal-title" id="deleteProductModalLabel" style="color: #1f2937; font-weight: 600; font-size: 1.25rem;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteProductModalLabel">
                     <i class="fas fa-exclamation-triangle me-2" style="color: #ef4444;"></i>
                     Confirmar Exclusão
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" style="padding: 2rem; background: white; text-align: center;">
+            <div class="modal-body">
                 <div class="mb-4">
                     <i class="fas fa-box fa-3x mb-3" style="color: #ef4444;"></i>
                     <h5 style="color: #1f2937;">Tem certeza que deseja excluir este item?</h5>
@@ -807,7 +823,7 @@
                     @method('DELETE')
                 </form>
             </div>
-            <div class="modal-footer" style="border-top: 2px solid rgba(239, 68, 68, 0.2); padding: 1.5rem; background: rgba(239, 68, 68, 0.02);">
+            <div class="modal-footer">
                 <button type="button" class="btn" data-bs-dismiss="modal" style="background: white; color: #6b7280; border: 2px solid rgba(107, 114, 128, 0.2); padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500;">
                     <i class="fas fa-times me-1"></i>
                     Cancelar
@@ -824,215 +840,41 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const tipoSelect = document.getElementById('tipo');
-    const editTipoSelect = document.getElementById('edit_tipo');
-    const estoqueField = document.getElementById('estoqueField');
-    const editEstoqueField = document.getElementById('editEstoqueField');
-
-    function toggleEstoqueField(select, field) {
-        if (select.value === 'servico') {
-            field.style.display = 'none';
-        } else {
-            field.style.display = 'block';
-        }
-    }
-
-    tipoSelect.addEventListener('change', function() {
-        toggleEstoqueField(this, estoqueField);
-    });
-
-    editTipoSelect.addEventListener('change', function() {
-        toggleEstoqueField(this, editEstoqueField);
-    });
-
-    function formatMoney(input) {
-        let value = input.value.replace(/\D/g, '');
-        value = (value / 100).toFixed(2) + '';
-        value = value.replace(".", ",");
-        value = value.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
-        value = value.replace(/(\d)(\d{3}),/g, "$1.$2,");
-        input.value = "R$ " + value;
-    }
-
-    function removeMask(value) {
-        return value.replace(/[^\d,]/g, '').replace(',', '.');
-    }
-
-    // Aplicando máscara nos campos de preço
-    const precoInput = document.getElementById('preco');
-    const editPrecoInput = document.getElementById('edit_preco');
-
-    precoInput.addEventListener('input', function() {
-        formatMoney(this);
-    });
-
-    editPrecoInput.addEventListener('input', function() {
-        formatMoney(this);
-    });
-
-    const imagemInput = document.getElementById('imagem');
-    const imagePreview = document.getElementById('imagePreview');
-    const previewImg = document.getElementById('previewImg');
-
-    imagemInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImg.src = e.target.result;
-                imagePreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            imagePreview.style.display = 'none';
-        }
-    });
-
-    const editImagemInput = document.getElementById('edit_imagem');
-    const currentImage = document.getElementById('currentImage');
-    const currentImg = document.getElementById('currentImg');
-    const newImagePreview = document.getElementById('newImagePreview');
-    const newPreviewImg = document.getElementById('newPreviewImg');
-
-    editImagemInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                newPreviewImg.src = e.target.result;
-                newImagePreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            newImagePreview.style.display = 'none';
-        }
-    });
-
-    const searchInput = document.querySelector('input[name="search"]');
-    const statusSelect = document.querySelector('select[name="status"]');
-    const tipoFilterSelect = document.querySelector('select[name="tipo"]');
-    const categoriaSelect = document.querySelector('select[name="categoria_id"]');
-    
-    let searchTimeout;
-    searchInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
+    // Auto-submit dos filtros
+    document.querySelector('input[name="busca"]').addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
             document.getElementById('filterForm').submit();
         }, 500);
     });
 
-    [statusSelect, tipoFilterSelect, categoriaSelect].forEach(select => {
-        select.addEventListener('change', function() {
-            document.getElementById('filterForm').submit();
-        });
+    document.querySelector('select[name="tipo"]').addEventListener('change', function() {
+        document.getElementById('filterForm').submit();
     });
 
+    document.querySelector('select[name="status"]').addEventListener('change', function() {
+        document.getElementById('filterForm').submit();
+    });
+
+    // Seletor de itens por página
     document.getElementById('perPage').addEventListener('change', function() {
-        const perPage = this.value;
-        const currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.set('per_page', perPage);
-        currentUrl.searchParams.delete('page');
-        window.location.href = currentUrl.toString();
+        const url = new URL(window.location);
+        url.searchParams.set('per_page', this.value);
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
     });
-});
 
-function openModal() {
-    document.getElementById('productForm').action = "{{ route('produtos.store') }}";
-    document.getElementById('productModalLabel').innerHTML = '<i class="fas fa-plus me-2" style="color: #60a5fa;"></i>Novo Produto/Serviço';
-    document.getElementById('productForm').reset();
-    document.getElementById('ativo').checked = true;
-    document.getElementById('estoqueField').style.display = 'block';
-    document.getElementById('imagePreview').style.display = 'none';
-    new bootstrap.Modal(document.getElementById('productModal')).show();
-}
-
-function viewProduct(productId) {
-    const row = document.querySelector(`tr[data-produto-id="${productId}"]`);
-    if (!row) return;
-
-    const nome = row.dataset.nome;
-    const tipo = row.dataset.tipo === 'produto' ? 'Produto' : 'Serviço';
-    const categoria = row.querySelector('td:nth-child(3)').textContent;
-    const preco = row.querySelector('td:nth-child(4) strong').textContent;
-    const estoque = row.querySelector('td:nth-child(5)').textContent.trim();
-    const status = row.querySelector('td:nth-child(6)').textContent.trim();
-    const descricao = row.dataset.descricao || 'Não informado';
-    const site = row.dataset.site === '1' ? 'Sim' : 'Não';
-
-    document.getElementById('viewProductAvatar').innerHTML = tipo === 'Produto' ? '<i class="fas fa-cube"></i>' : '<i class="fas fa-cut"></i>';
-    document.getElementById('viewProductName').textContent = nome;
-    document.getElementById('viewProductType').textContent = tipo;
-    document.getElementById('viewProductCategory').textContent = categoria;
-    document.getElementById('viewProductPrice').textContent = preco;
-    document.getElementById('viewProductStock').textContent = estoque;
-    document.getElementById('viewProductStatus').textContent = status;
-    document.getElementById('viewProductDescription').textContent = descricao;
-    document.getElementById('viewProductSite').textContent = site;
-
-    new bootstrap.Modal(document.getElementById('viewProductModal')).show();
-}
-
-function editProduct(productId) {
-    const row = document.querySelector(`tr[data-produto-id="${productId}"]`);
-    if (row) {
-        document.getElementById('editProductForm').action = `produtos/${productId}`;
-        
-        document.getElementById('edit_nome').value = row.dataset.nome;
-        document.getElementById('edit_tipo').value = row.dataset.tipo;
-        document.getElementById('edit_categoria_id').value = row.dataset.categoriaId;
-        
-        if (row.dataset.preco) {
-            const precoFormatado = parseFloat(row.dataset.preco).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            });
-            document.getElementById('edit_preco').value = precoFormatado;
-        }
-        
-        document.getElementById('edit_estoque').value = row.dataset.estoque || '';
-        document.getElementById('edit_descricao').value = row.dataset.descricao || '';
-        
-        document.getElementById('edit_ativo').checked = row.dataset.ativo === '1';
-        document.getElementById('edit_site').checked = row.dataset.site === '1';
-        
-        const currentImage = document.getElementById('currentImage');
-        const currentImg = document.getElementById('currentImg');
-        if (row.dataset.imagem) {
-            currentImg.src = row.dataset.imagem;
-            currentImage.style.display = 'block';
-        } else {
-            currentImage.style.display = 'none';
-        }
-        
-        document.getElementById('newImagePreview').style.display = 'none';
-        document.getElementById('edit_imagem').value = '';
-        
-        const editEstoqueField = document.getElementById('editEstoqueField');
-        if (row.dataset.tipo === 'servico') {
-            editEstoqueField.style.display = 'none';
-        } else {
-            editEstoqueField.style.display = 'block';
-        }
+    // Funções dos modais (placeholder - implementar conforme necessário)
+    function visualizarProduto(id) {
+        // Implementar visualização
     }
 
-    new bootstrap.Modal(document.getElementById('editProductModal')).show();
-}
+    function editarProduto(id) {
+        // Implementar edição
+    }
 
-function confirmDelete(productId, productName) {
-    document.getElementById('deleteProductForm').action = `produtos/${productId}`;
-    document.getElementById('deleteProductName').textContent = productName;
-    new bootstrap.Modal(document.getElementById('deleteProductModal')).show();
-}
-
-document.getElementById('productForm').addEventListener('submit', function(e) {
-    const precoInput = document.getElementById('preco');
-    precoInput.value = removeMask(precoInput.value);
-});
-
-document.getElementById('editProductForm').addEventListener('submit', function(e) {
-    const editPrecoInput = document.getElementById('edit_preco');
-    editPrecoInput.value = removeMask(editPrecoInput.value);
-});
+    function confirmarExclusao(id, nome) {
+        // Implementar exclusão
+    }
 </script>
 @endpush

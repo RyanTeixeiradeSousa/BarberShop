@@ -24,6 +24,7 @@ class MovimentacaoFinanceira extends Model
         'desconto',
         'valor_pago',
         'categoria_financeira_id',
+        'agendamento_id', // Adicionando relacionamento com agendamento
         'observacoes',
         'ativo'
     ];
@@ -51,6 +52,18 @@ class MovimentacaoFinanceira extends Model
     public function formaPagamento()
     {
         return $this->belongsTo(FormaPagamento::class);
+    }
+
+    public function agendamento()
+    {
+        return $this->belongsTo(Agendamento::class);
+    }
+
+    public function produtos()
+    {
+        return $this->belongsToMany(Produto::class, 'movimentacao_produto')
+                    ->withPivot('quantidade', 'valor_unitario')
+                    ->withTimestamps();
     }
 
     public function getValorFormatadoAttribute()

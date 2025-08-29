@@ -15,6 +15,7 @@ return new class extends Migration
             $table->decimal('valor', 10, 2);
             $table->date('data');
             $table->foreignId('cliente_id')->nullable()->constrained('clientes')->onDelete('set null');
+            $table->foreignId('agendamento_id')->nullable()->constrained('agendamentos')->onDelete('set null');
             $table->enum('situacao', ['em_aberto', 'cancelado', 'pago'])->default('em_aberto');
             $table->date('data_vencimento')->nullable();
             $table->foreignId('forma_pagamento_id')->nullable()->constrained('formas_pagamento')->onDelete('set null');

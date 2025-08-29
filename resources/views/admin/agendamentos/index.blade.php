@@ -1,289 +1,312 @@
 @extends('layouts.app')
 
-@section('title', 'Agendamentos')
+@section('title', 'Agendamentos - BarberShop Pro')
+@section('page-title', 'Agendamentos')
+@section('page-subtitle', 'Gerencie todos os agendamentos de serviços')
 
 @section('content')
-<div class="container-fluid px-4">
+<div class="container-fluid">
     <!-- Header da Página -->
-    <div class="page-header mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <div class="icon-container me-3">
-                    <i class="fas fa-calendar-alt"></i>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="mb-0" style="color: #1f2937;">
+                <i class="fas fa-calendar-alt me-2" style="color: #60a5fa;"></i>
+                Agendamentos
+            </h2>
+            <p class="mb-0" style="color: #6b7280;">Gerencie todos os agendamentos de serviços</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="d-flex gap-2 justify-content-end">
+                <div class="dropdown">
+                    <button class="btn btn-processos dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-cogs me-2"></i>
+                        <span>Processos</span>
+                        <i class="fas fa-chevron-down ms-2 dropdown-icon"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-processos">
+                        <li>
+                            <h6 class="dropdown-header">
+                                <i class="fas fa-list-ul me-2"></i>Processos Disponíveis
+                            </h6>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item dropdown-item-processos" href="#" data-bs-toggle="modal" data-bs-target="#gerarLoteModal">
+                                <div class="dropdown-item-icon">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </div>
+                                <div class="dropdown-item-content">
+                                    <div class="dropdown-item-title">Gerar em Lote</div>
+                                    <div class="dropdown-item-description">Criar múltiplos agendamentos automaticamente</div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                <div>
-                    <h1 class="page-title mb-0">Agendamentos</h1>
-                    <p class="page-subtitle mb-0">Gerencie todos os agendamentos de serviços</p>
-                </div>
+                <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createModal">
+                    <i class="fas fa-plus me-1"></i>
+                    Novo Agendamento
+                </button>
             </div>
-            <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createModal">
-                <i class="fas fa-plus me-2"></i>Novo Agendamento
-            </button>
         </div>
     </div>
 
     <!-- Cards de Estatísticas -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card-custom">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-stat bg-primary">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="ms-3">
-                            <div class="stat-number">{{ $total }}</div>
-                            <div class="stat-label">Total de Agendamentos</div>
-                        </div>
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="product-card">
+                <div class="d-flex align-items-center">
+                    <div class="product-avatar">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h4 class="mb-0">{{ $total ?? 0 }}</h4>
+                        <p class="text-muted mb-0">Total de Agendamentos</p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card-custom">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-stat bg-warning">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="ms-3">
-                            <div class="stat-number">{{ $agendados }}</div>
-                            <div class="stat-label">Agendados</div>
-                        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="product-card">
+                <div class="d-flex align-items-center">
+                    <div class="product-avatar" style="background: linear-gradient(45deg, #f59e0b, #fbbf24);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h4 class="mb-0">{{ $agendados ?? 0 }}</h4>
+                        <p class="text-muted mb-0">Agendados</p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card-custom">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-stat bg-success">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="ms-3">
-                            <div class="stat-number">{{ $concluidos }}</div>
-                            <div class="stat-label">Concluídos</div>
-                        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="product-card">
+                <div class="d-flex align-items-center">
+                    <div class="product-avatar" style="background: linear-gradient(45deg, #10b981, #34d399);">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h4 class="mb-0">{{ $concluidos ?? 0 }}</h4>
+                        <p class="text-muted mb-0">Concluídos</p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card-custom">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="icon-stat bg-danger">
-                            <i class="fas fa-times-circle"></i>
-                        </div>
-                        <div class="ms-3">
-                            <div class="stat-number">{{ $cancelados }}</div>
-                            <div class="stat-label">Cancelados</div>
-                        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="product-card">
+                <div class="d-flex align-items-center">
+                    <div class="product-avatar" style="background: linear-gradient(45deg, #ef4444, #f87171);">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h4 class="mb-0">{{ $cancelados ?? 0 }}</h4>
+                        <p class="text-muted mb-0">Cancelados</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Filtros -->
+    <!-- Card de Filtros -->
     <div class="card-custom mb-4">
-        <div class="card-body">
-            <form method="GET" action="{{ route('agendamentos.index') }}" id="filterForm">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label for="busca" class="form-label">Buscar</label>
-                        <input type="text" class="form-control" id="busca" name="busca" 
-                               value="{{ request('busca') }}" placeholder="Cliente ou serviço...">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-select" id="status" name="status">
-                            <option value="">Todos</option>
-                            <option value="agendado" {{ request('status') == 'agendado' ? 'selected' : '' }}>Agendado</option>
-                            <option value="confirmado" {{ request('status') == 'confirmado' ? 'selected' : '' }}>Confirmado</option>
-                            <option value="em_andamento" {{ request('status') == 'em_andamento' ? 'selected' : '' }}>Em Andamento</option>
-                            <option value="concluido" {{ request('status') == 'concluido' ? 'selected' : '' }}>Concluído</option>
-                            <option value="cancelado" {{ request('status') == 'cancelado' ? 'selected' : '' }}>Cancelado</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="data_inicio" class="form-label">Data Início</label>
-                        <input type="date" class="form-control" id="data_inicio" name="data_inicio" 
-                               value="{{ request('data_inicio') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="data_fim" class="form-label">Data Fim</label>
-                        <input type="date" class="form-control" id="data_fim" name="data_fim" 
-                               value="{{ request('data_fim') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="per_page" class="form-label">Itens por página</label>
-                        <select class="form-select" id="per_page" name="per_page">
-                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
-                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                        </select>
-                    </div>
-                    <div class="col-md-1 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary-custom w-100">
-                            <i class="fas fa-search"></i>
-                        </button>
+        <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid rgba(59, 130, 246, 0.2); cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse">
+            <h6 class="m-0 font-weight-bold" style="color: #1f2937;">
+                <i class="fas fa-filter me-2" style="color: #60a5fa;"></i>Filtros
+            </h6>
+            <i class="fas fa-chevron-down" style="color: #60a5fa;"></i>
+        </div>
+        <div class="collapse show" id="filtrosCollapse">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-10">
+                        <form method="GET" action="{{ route('agendamentos.index') }}" class="row g-3" id="filterForm">
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" name="busca" value="{{ request('busca') }}" placeholder="Buscar agendamentos..." style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" name="status" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                                    <option value="">Todos os status</option>
+                                    <option value="disponivel" {{ request('status') == 'disponivel' ? 'selected' : '' }}>Disponível</option>
+                                    <option value="agendado" {{ request('status') == 'agendado' ? 'selected' : '' }}>Agendado</option>
+                                    <option value="confirmado" {{ request('status') == 'confirmado' ? 'selected' : '' }}>Confirmado</option>
+                                    <option value="em_andamento" {{ request('status') == 'em_andamento' ? 'selected' : '' }}>Em Andamento</option>
+                                    <option value="concluido" {{ request('status') == 'concluido' ? 'selected' : '' }}>Concluído</option>
+                                    <option value="cancelado" {{ request('status') == 'cancelado' ? 'selected' : '' }}>Cancelado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="date" class="form-control" name="data_inicio" value="{{ request('data_inicio') }}" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="date" class="form-control" name="data_fim" value="{{ request('data_fim') }}" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" class="btn btn-outline-primary w-100" style="border-color: #60a5fa; color: #60a5fa;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="{{ route('agendamentos.index') }}" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </div>
+                            @if(request('per_page'))
+                                <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+                            @endif
+                        </form>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
-    <!-- Tabela de Agendamentos -->
+    <!-- Card dos Agendamentos -->
     <div class="card-custom">
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Cliente</th>
-                            <th>Serviço</th>
-                            <th>Data</th>
-                            <th>Horário</th>
-                            <th>Status</th>
-                            <th>Valor</th>
-                            <th width="120">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($agendamentos as $agendamento)
-                        <tr data-id="{{ $agendamento->id }}"
-                            data-cliente-id="{{ $agendamento->cliente_id }}"
-                            data-produto-id="{{ $agendamento->produto_id }}"
-                            data-data="{{ $agendamento->data_agendamento->format('Y-m-d') }}"
-                            data-hora-inicio="{{ $agendamento->hora_inicio->format('H:i') }}"
-                            data-status="{{ $agendamento->status }}"
-                            data-observacoes="{{ $agendamento->observacoes }}"
-                            data-valor="{{ $agendamento->valor }}">
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-sm me-2">
-                                        {{ substr($agendamento->cliente->nome, 0, 2) }}
-                                    </div>
-                                    <div>
-                                        <strong>{{ $agendamento->cliente->nome }}</strong>
-                                        <br><small class="text-muted">{{ $agendamento->cliente->telefone1 }}</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <strong>{{ $agendamento->produto->nome }}</strong>
-                                <br><small class="text-muted">{{ $agendamento->produto->categoria->nome ?? '' }}</small>
-                            </td>
-                            <td>{{ $agendamento->data_agendamento->format('d/m/Y') }}</td>
-                            <td>
-                                {{ $agendamento->hora_inicio->format('H:i') }} - 
-                                {{ $agendamento->hora_fim->format('H:i') }}
-                            </td>
-                            <td>
-                                <span class="badge bg-{{ $agendamento->status_color }}">
-                                    {{ $agendamento->status_label }}
-                                </span>
-                            </td>
-                            <td>
-                                @if($agendamento->valor)
-                                    <strong>R$ {{ number_format($agendamento->valor, 2, ',', '.') }}</strong>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-info btn-sm" 
-                                            onclick="viewAgendamento({{ $agendamento->id }})"
-                                            data-bs-toggle="modal" data-bs-target="#viewModal">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm" 
-                                            onclick="editAgendamento({{ $agendamento->id }})"
-                                            data-bs-toggle="modal" data-bs-target="#editModal">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-danger btn-sm" 
-                                            onclick="deleteAgendamento({{ $agendamento->id }}, '{{ $agendamento->cliente->nome }}')"
-                                            data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="text-center py-4">
-                                <div class="empty-state">
-                                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
-                                    <h5>Nenhum agendamento encontrado</h5>
-                                    <p class="text-muted">Crie o primeiro agendamento do sistema.</p>
-                                    <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createModal">
-                                        <i class="fas fa-plus me-2"></i>Novo Agendamento
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Paginação -->
-            @if($agendamentos->hasPages())
-            <div class="pagination-wrapper mt-4">
-                <div class="pagination-controls d-flex justify-content-between align-items-center">
-                    <div class="pagination-info text-muted">
-                        Mostrando {{ $agendamentos->firstItem() ?? 0 }} a {{ $agendamentos->lastItem() ?? 0 }} de {{ $agendamentos->total() }} resultados
+            @if(isset($agendamentos) && $agendamentos->count() > 0)
+                <!-- Informações da Paginação -->
+                <div class="card-custom mb-4">
+                    <div class="card-body">
+                        <div class="pagination-controls">
+                            <div class="results-info">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Mostrando {{ $agendamentos->firstItem() }} a {{ $agendamentos->lastItem() }} de {{ $agendamentos->total() }} resultados
+                            </div>
+                            
+                            <div class="per-page-selector">
+                                <label for="perPage" class="form-label mb-0" style="color: #1f2937;">Itens por página:</label>
+                                <select class="form-select form-select-sm" id="perPage">
+                                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="15" {{ request('per_page') == 15 || !request('per_page') ? 'selected' : '' }}>15</option>
+                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    {{ $agendamentos->appends(request()->query())->links() }}
                 </div>
-            </div>
+
+                <!-- Cards de Agendamentos -->
+                <div class="row">
+                    @foreach($agendamentos as $agendamento)
+                    <div class="col-xl-4 col-lg-6 mb-4">
+                        <div class="card-agendamento" onclick="viewAgendamento({{ $agendamento->id }})" data-bs-toggle="modal" data-bs-target="#viewModal"
+                             data-id="{{ $agendamento->id }}"
+                             data-cliente-id="{{ $agendamento->cliente_id }}"
+                             data-data="{{ $agendamento->data_agendamento->format('Y-m-d') }}"
+                             data-hora-inicio="{{ $agendamento->hora_inicio->format('H:i') }}"
+                             data-status="{{ $agendamento->status }}"
+                             data-observacoes="{{ $agendamento->observacoes }}"
+                             data-valor="{{ $agendamento->valor_total }}">
+                            <div class="card-header-agendamento">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="product-avatar me-2">
+                                            {{ $agendamento->cliente ? strtoupper(substr($agendamento->cliente->nome, 0, 2)) : 'SL' }}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">{{ $agendamento->cliente->nome ?? 'Slot Livre' }}</h6>
+                                            <small class="text-muted">{{ $agendamento->cliente->telefone1 ?? '' }}</small>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-{{ $agendamento->status_color }}">
+                                        {{ $agendamento->status_label }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body-agendamento">
+                                <!-- Mostrando múltiplos serviços em vez de um único produto -->
+                                <div class="service-info mb-3">
+                                    @if($agendamento->produtos->count() > 0)
+                                        @foreach($agendamento->produtos as $produto)
+                                            <div class="service-item mb-2">
+                                                <h6 class="service-name mb-1">{{ $produto->nome }}</h6>
+                                                <div class="d-flex justify-content-between">
+                                                    <small class="text-muted">Qtd: {{ $produto->pivot->quantidade }}</small>
+                                                    <small class="text-success fw-bold">R$ {{ number_format($produto->pivot->valor_unitario, 2, ',', '.') }}</small>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <h5 class="service-name">Serviços não definidos</h5>
+                                        <p class="service-category text-muted mb-0">Slot disponível</p>
+                                    @endif
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-calendar text-primary me-2"></i>
+                                        <span>{{ $agendamento->data_agendamento->format('d/m/Y') }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-clock text-primary me-2"></i>
+                                        <span>{{ $agendamento->hora_inicio->format('H:i') }} - {{ $agendamento->hora_fim->format('H:i') }}</span>
+                                    </div>
+                                    @if($agendamento->valor_total)
+                                    <div class="detail-item">
+                                        <i class="fas fa-dollar-sign text-success me-2"></i>
+                                        <span class="fw-bold">R$ {{ number_format($agendamento->valor_total, 2, ',', '.') }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                @if($agendamento->isSlotDisponivel())
+                                    <button type="button" class="btn btn-outline-success btn-sm" 
+                                            onclick="event.stopPropagation(); associarSlot({{ $agendamento->id }})"
+                                            data-bs-toggle="modal" data-bs-target="#associarModal">
+                                        <i class="fas fa-user-plus"></i> Associar
+                                    </button>
+                                @endif
+                                <button type="button" class="btn btn-outline-primary btn-sm" 
+                                        onclick="event.stopPropagation(); editAgendamento({{ $agendamento->id }})"
+                                        data-bs-toggle="modal" data-bs-target="#editModal">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm" 
+                                        onclick="event.stopPropagation(); deleteAgendamento({{ $agendamento->id }}, '{{ $agendamento->cliente->nome ?? 'Slot' }}')"
+                                        data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
+                <!-- Paginação -->
+                <div class="pagination-wrapper">
+                    <div class="pagination-controls">
+                        <div class="results-info">
+                            Mostrando {{ $agendamentos->firstItem() }} a {{ $agendamentos->lastItem() }} de {{ $agendamentos->total() }} resultados
+                        </div>
+                        {{ $agendamentos->links() }}
+                    </div>
+                </div>
+            @else
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nenhum agendamento encontrado</h5>
+                    <p class="text-muted">Crie o primeiro agendamento para começar.</p>
+                    <button type="button" class="btn btn-primary-custom btn-sm" data-bs-toggle="modal" data-bs-target="#createModal">
+                        <i class="fas fa-plus me-2"></i>Cadastrar Primeiro Agendamento
+                    </button>
+                </div>
             @endif
         </div>
     </div>
 </div>
 
-<!-- Modal Criar -->
+<!-- Modal Criar Slot -->
 <div class="modal fade" id="createModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form action="{{ route('agendamentos.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title">Novo Agendamento</h5>
+                    <h5 class="modal-title">Criar Slot de Agendamento</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="cliente_id" class="form-label">Cliente *</label>
-                                <select class="form-select" id="cliente_id" name="cliente_id" required>
-                                    <option value="">Selecione um cliente</option>
-                                    @foreach($clientes as $cliente)
-                                    <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="produto_id" class="form-label">Serviço *</label>
-                                <select class="form-select" id="produto_id" name="produto_id" required>
-                                    <option value="">Selecione um serviço</option>
-                                    @foreach($produtos as $produto)
-                                    <option value="{{ $produto->id }}" data-preco="{{ $produto->preco }}">
-                                        {{ $produto->nome }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -299,14 +322,84 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="observacoes" class="form-label">Observações</label>
-                        <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Este slot será criado como "disponível" e poderá ser associado a clientes e serviços posteriormente.
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary-custom">Agendar</button>
+                    <button type="submit" class="btn btn-primary-custom">Criar Slot</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Associar Cliente e Serviços -->
+<div class="modal fade" id="associarModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="associarForm" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Associar Cliente e Serviços</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="associar-cliente_id" class="form-label">Cliente *</label>
+                        <select class="form-select" id="associar-cliente_id" name="cliente_id" required>
+                            <option value="">Selecione um cliente</option>
+                            @foreach($clientes as $cliente)
+                            <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <!-- Seção para múltiplos serviços -->
+                    <div class="mb-3">
+                        <label class="form-label">Serviços *</label>
+                        <div id="servicos-container">
+                            <div class="servico-item border rounded p-3 mb-3">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Serviço</label>
+                                        <select class="form-select servico-select" name="servicos[0][produto_id]" required>
+                                            <option value="">Selecione um serviço</option>
+                                            @foreach($produtos as $produto)
+                                            <option value="{{ $produto->id }}" data-preco="{{ $produto->preco }}">
+                                                {{ $produto->nome }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Quantidade</label>
+                                        <input type="number" class="form-control quantidade-input" name="servicos[0][quantidade]" value="1" min="1" required>
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-servico" style="display: none;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="add-servico">
+                            <i class="fas fa-plus me-1"></i> Adicionar Serviço
+                        </button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="associar-observacoes" class="form-label">Observações</label>
+                        <textarea class="form-control" id="associar-observacoes" name="observacoes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-custom">Associar</button>
                 </div>
             </form>
         </div>
@@ -328,8 +421,8 @@
                         <p id="view-cliente"></p>
                     </div>
                     <div class="col-md-6">
-                        <strong>Serviço:</strong>
-                        <p id="view-servico"></p>
+                        <strong>Status:</strong>
+                        <p id="view-status"></p>
                     </div>
                 </div>
                 <div class="row">
@@ -342,14 +435,15 @@
                         <p id="view-horario"></p>
                     </div>
                     <div class="col-md-4">
-                        <strong>Status:</strong>
-                        <p id="view-status"></p>
+                        <strong>Valor Total:</strong>
+                        <p id="view-valor"></p>
                     </div>
                 </div>
+                <!-- Seção para mostrar múltiplos serviços -->
                 <div class="row">
-                    <div class="col-md-6">
-                        <strong>Valor:</strong>
-                        <p id="view-valor"></p>
+                    <div class="col-12">
+                        <strong>Serviços:</strong>
+                        <div id="view-servicos"></div>
                     </div>
                 </div>
                 <div class="row">
@@ -392,35 +486,9 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit-produto_id" class="form-label">Serviço *</label>
-                                <select class="form-select" id="edit-produto_id" name="produto_id" required>
-                                    <option value="">Selecione um serviço</option>
-                                    @foreach($produtos as $produto)
-                                    <option value="{{ $produto->id }}">
-                                        {{ $produto->nome }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="edit-data_agendamento" class="form-label">Data *</label>
-                                <input type="date" class="form-control" id="edit-data_agendamento" name="data_agendamento" required>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="edit-hora_inicio" class="form-label">Horário *</label>
-                                <input type="time" class="form-control" id="edit-hora_inicio" name="hora_inicio" required>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
                                 <label for="edit-status" class="form-label">Status *</label>
                                 <select class="form-select" id="edit-status" name="status" required>
+                                    <option value="disponivel">Disponível</option>
                                     <option value="agendado">Agendado</option>
                                     <option value="confirmado">Confirmado</option>
                                     <option value="em_andamento">Em Andamento</option>
@@ -430,6 +498,32 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit-data_agendamento" class="form-label">Data *</label>
+                                <input type="date" class="form-control" id="edit-data_agendamento" name="data_agendamento" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit-hora_inicio" class="form-label">Horário *</label>
+                                <input type="time" class="form-control" id="edit-hora_inicio" name="hora_inicio" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Seção para editar múltiplos serviços -->
+                    <div class="mb-3">
+                        <label class="form-label">Serviços *</label>
+                        <div id="edit-servicos-container">
+                            <!-- Serviços serão carregados via JavaScript -->
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="edit-add-servico">
+                            <i class="fas fa-plus me-1"></i> Adicionar Serviço
+                        </button>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="edit-observacoes" class="form-label">Observações</label>
                         <textarea class="form-control" id="edit-observacoes" name="observacoes" rows="3"></textarea>
@@ -474,240 +568,555 @@
     </div>
 </div>
 
+<!-- Modal Gerar em Lote -->
+<div class="modal fade" id="gerarLoteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Gerar Agendamentos em Lote</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="data_inicio_lote" class="form-label">Data Início *</label>
+                                <input type="date" class="form-control" id="data_inicio_lote" name="data_inicio" 
+                                       min="{{ date('Y-m-d') }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="data_fim_lote" class="form-label">Data Fim *</label>
+                                <input type="date" class="form-control" id="data_fim_lote" name="data_fim" 
+                                       min="{{ date('Y-m-d') }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="hora_inicio_lote" class="form-label">Hora Início *</label>
+                        <input type="time" class="form-control" id="hora_inicio_lote" name="hora_inicio" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dias da Semana *</label>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="segunda" name="dias[]" value="1">
+                                    <label class="form-check-label" for="segunda">Segunda</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="terca" name="dias[]" value="2">
+                                    <label class="form-check-label" for="terca">Terça</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="quarta" name="dias[]" value="3">
+                                    <label class="form-check-label" for="quarta">Quarta</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="quinta" name="dias[]" value="4">
+                                    <label class="form-check-label" for="quinta">Quinta</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="sexta" name="dias[]" value="5">
+                                    <label class="form-check-label" for="sexta">Sexta</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="sabado" name="dias[]" value="6">
+                                    <label class="form-check-label" for="sabado">Sábado</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="domingo" name="dias[]" value="0">
+                                    <label class="form-check-label" for="domingo">Domingo</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Os agendamentos serão criados como "slots disponíveis" nos dias e horários selecionados.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-custom">Gerar Agendamentos</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @push('styles')
 <style>
-    .page-header {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-        border-radius: 12px;
-        padding: 2rem;
-        color: white;
-        margin-bottom: 2rem;
+    
+    /* Estilos para múltiplos serviços */
+    .servico-item {
+        background: rgba(248, 250, 252, 0.5);
+        border: 1px solid rgba(59, 130, 246, 0.2) !important;
     }
-
-    .icon-container {
-        width: 60px;
-        height: 60px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
+    
+    .service-item {
+        padding: 0.5rem;
+        background: rgba(59, 130, 246, 0.05);
+        border-radius: 6px;
+        border-left: 3px solid #3b82f6;
     }
-
-    .page-title {
-        font-size: 1.8rem;
+    
+    .service-name {
+        color: #1f2937;
         font-weight: 600;
-        margin: 0;
+        font-size: 0.9rem;
     }
 
-    .page-subtitle {
-        opacity: 0.8;
-        font-size: 0.95rem;
+    /* Aplicando estilos CSS no padrão da tela de clientes */
+    body {
+        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .container-fluid {
+        background: transparent;
     }
 
     .card-custom {
         background: white;
-        border: 2px solid #e2e8f0;
+        border: 2px solid rgba(59, 130, 246, 0.2);
         border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.15s ease;
     }
 
     .card-custom:hover {
-        border-color: #3b82f6;
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        border-color: rgba(59, 130, 246, 0.5);
     }
 
-    .icon-stat {
+    .btn-primary-custom {
+        background: linear-gradient(45deg, #3b82f6, #60a5fa);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary-custom:hover {
+        background: linear-gradient(45deg, #2563eb, #3b82f6);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        color: white;
+    }
+
+    .product-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        border-color: rgba(59, 130, 246, 0.5);
+    }
+
+    .product-avatar {
         width: 50px;
         height: 50px;
+        border-radius: 8px;
+        background: linear-gradient(45deg, #60a5fa, #3b82f6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    /* Botão Processos melhorado */
+    .btn-processos {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-processos::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-processos:hover::before {
+        left: 100%;
+    }
+
+    .btn-processos:hover {
+        background: linear-gradient(135deg, #7c3aed 0%, #6b21a8 100%);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+        color: white;
+    }
+
+    .btn-processos .dropdown-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-processos:hover .dropdown-icon {
+        transform: rotate(180deg);
+    }
+
+    .dropdown-menu-processos {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 15px;
+        box-shadow: 0 20px 60px rgba(139, 92, 246, 0.15);
+        padding: 0.5rem;
+        min-width: 320px;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dropdown-item-processos {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        border: none;
+        margin-bottom: 0.25rem;
+    }
+
+    .dropdown-item-processos:hover {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
+    }
+
+    .dropdown-item-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 1.2rem;
+        margin-right: 1rem;
+        font-size: 1.1rem;
     }
 
-    .stat-number {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1e293b;
+    .dropdown-item-title {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
     }
 
-    .stat-label {
+    .dropdown-item-description {
         font-size: 0.85rem;
-        color: #64748b;
-        font-weight: 500;
+        color: #6b7280;
+        line-height: 1.3;
     }
 
-    .btn-primary-custom {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        border: none;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
+    /* Cards de Agendamento */
+    .card-agendamento {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1);
+        backdrop-filter: blur(10px);
     }
 
-    .btn-primary-custom:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    .card-agendamento:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
+        border-color: rgba(59, 130, 246, 0.4);
     }
 
-    .avatar-sm {
-        width: 35px;
-        height: 35px;
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-    }
-
-    .table th {
-        background: #f8fafc;
-        border-bottom: 2px solid #e2e8f0;
-        font-weight: 600;
-        color: #374151;
-        padding: 1rem 0.75rem;
-    }
-
-    .table td {
-        padding: 1rem 0.75rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-    .table tbody tr:hover {
-        background-color: #f8fafc;
-    }
-
-    .btn-outline-info, .btn-outline-primary, .btn-outline-danger {
-        border-width: 1.5px;
-        padding: 0.375rem 0.5rem;
-        transition: all 0.15s ease;
-    }
-
-    .empty-state {
-        padding: 3rem 1rem;
-    }
-
-    .modal-content {
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .modal-header {
+    .card-header-agendamento {
         background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border-bottom: 2px solid #e2e8f0;
-        border-radius: 12px 12px 0 0;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
     }
 
-    .form-control, .form-select {
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 0.75rem;
-        transition: all 0.2s ease;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    .pagination-wrapper {
-        background: white;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
+    .card-body-agendamento {
         padding: 1rem;
     }
 
-    .pagination-controls {
-        align-items: center;
+    .service-name {
+        color: #1f2937;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
     }
 
-    .pagination-info {
+    .detail-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: #4b5563;
+    }
+
+    .card-actions {
+        padding: 0.75rem 1rem;
+        background: rgba(248, 250, 252, 0.5);
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .pagination-wrapper {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        margin-top: 1.5rem;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .pagination-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .per-page-selector {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .per-page-selector select {
+        width: auto;
+        min-width: 80px;
+        background: white;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 6px;
+        padding: 0.5rem;
+        color: #1f2937;
+    }
+
+    .pagination {
+        margin: 0;
+        justify-content: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .page-item {
+        margin: 0;
+    }
+
+    .page-link {
+        color: #3b82f6 !important;
+        border: 1px solid rgba(59, 130, 246, 0.2) !important;
+        padding: 0.5rem 0.75rem !important;
+        border-radius: 6px !important;
+        transition: all 0.3s ease !important;
+        background: white !important;
+        text-decoration: none !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+    }
+
+    .page-link:hover {
+        background: rgba(59, 130, 246, 0.1) !important;
+        color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        text-decoration: none !important;
+    }
+
+    .page-item.active .page-link {
+        background: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: white !important;
+    }
+
+    .page-item.disabled .page-link {
+        color: #6b7280 !important;
+        background: rgba(248, 250, 252, 0.5) !important;
+        border-color: rgba(59, 130, 246, 0.1) !important;
+        cursor: not-allowed !important;
+    }
+
+    .results-info {
+        color: #1f2937;
         font-size: 0.9rem;
-        color: #64748b;
+    }
+
+    @media (max-width: 768px) {
+        .pagination-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .per-page-selector {
+            justify-content: center;
+        }
+        
+        .pagination {
+            gap: 0.125rem;
+        }
+        
+        .page-link {
+            padding: 0.375rem 0.5rem !important;
+            min-width: 35px;
+            height: 35px;
+            font-size: 0.875rem;
+        }
     }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-    // Auto-submit filtros
-    let searchTimeout;
-    document.getElementById('busca').addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
+    // Auto-submit dos filtros
+    document.querySelector('input[name="busca"]').addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
             document.getElementById('filterForm').submit();
         }, 500);
     });
 
-    document.getElementById('status').addEventListener('change', function() {
+    document.querySelector('select[name="status"]').addEventListener('change', function() {
         document.getElementById('filterForm').submit();
     });
 
-    document.getElementById('data_inicio').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
-
-    document.getElementById('data_fim').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
-
-    document.getElementById('per_page').addEventListener('change', function() {
+    // Seletor de itens por página
+    document.getElementById('perPage').addEventListener('change', function() {
         const url = new URL(window.location);
         url.searchParams.set('per_page', this.value);
         url.searchParams.delete('page');
         window.location.href = url.toString();
     });
 
+    // Funções dos agendamentos
     function viewAgendamento(id) {
-        const row = document.querySelector(`tr[data-id="${id}"]`);
-        if (row) {
-            const cliente = row.querySelector('td:nth-child(1) strong').textContent;
-            const servico = row.querySelector('td:nth-child(2) strong').textContent;
-            const data = row.querySelector('td:nth-child(3)').textContent;
-            const horario = row.querySelector('td:nth-child(4)').textContent;
-            const status = row.querySelector('td:nth-child(5) .badge').textContent;
-            const valor = row.querySelector('td:nth-child(6)').textContent;
-            const observacoes = row.dataset.observacoes || '-';
-
-            document.getElementById('view-cliente').textContent = cliente;
-            document.getElementById('view-servico').textContent = servico;
-            document.getElementById('view-data').textContent = data;
-            document.getElementById('view-horario').textContent = horario;
-            document.getElementById('view-status').innerHTML = `<span class="badge bg-${row.querySelector('td:nth-child(5) .badge').className.split(' ').pop()}">${status}</span>`;
-            document.getElementById('view-valor').textContent = valor;
-            document.getElementById('view-observacoes').textContent = observacoes;
-        }
+        // Implementar visualização do agendamento
+        console.log('Visualizar agendamento:', id);
     }
 
     function editAgendamento(id) {
-        const row = document.querySelector(`tr[data-id="${id}"]`);
-        if (row) {
-            document.getElementById('edit-cliente_id').value = row.dataset.clienteId;
-            document.getElementById('edit-produto_id').value = row.dataset.produtoId;
-            document.getElementById('edit-data_agendamento').value = row.dataset.data;
-            document.getElementById('edit-hora_inicio').value = row.dataset.horaInicio;
-            document.getElementById('edit-status').value = row.dataset.status;
-            document.getElementById('edit-observacoes').value = row.dataset.observacoes || '';
-            document.getElementById('editForm').action = `/agendamentos/${id}`;
-        }
+        // Implementar edição do agendamento
+        console.log('Editar agendamento:', id);
     }
 
-    function deleteAgendamento(id, cliente) {
-        document.getElementById('delete-agendamento-name').textContent = cliente;
-        document.getElementById('deleteForm').action = `/agendamentos/${id}`;
+    function deleteAgendamento(id, nome) {
+        // Implementar exclusão do agendamento
+        console.log('Excluir agendamento:', id, nome);
     }
+    
+    let servicoIndex = 1;
+    
+    // Adicionar serviço no modal de associar
+    document.getElementById('add-servico').addEventListener('click', function() {
+        const container = document.getElementById('servicos-container');
+        const servicoHtml = `
+            <div class="servico-item border rounded p-3 mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Serviço</label>
+                        <select class="form-select servico-select" name="servicos[${servicoIndex}][produto_id]" required>
+                            <option value="">Selecione um serviço</option>
+                            @foreach($produtos as $produto)
+                            <option value="{{ $produto->id }}" data-preco="{{ $produto->preco }}">
+                                {{ $produto->nome }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Quantidade</label>
+                        <input type="number" class="form-control quantidade-input" name="servicos[${servicoIndex}][quantidade]" value="1" min="1" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-servico">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', servicoHtml);
+        servicoIndex++;
+        updateRemoveButtons();
+    });
+    
+    // Remover serviço
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-servico')) {
+            e.target.closest('.servico-item').remove();
+            updateRemoveButtons();
+        }
+    });
+    
+    function updateRemoveButtons() {
+        const items = document.querySelectorAll('.servico-item');
+        items.forEach((item, index) => {
+            const removeBtn = item.querySelector('.remove-servico');
+            if (items.length > 1) {
+                removeBtn.style.display = 'block';
+            } else {
+                removeBtn.style.display = 'none';
+            }
+        });
+    }
+    
+    function associarSlot(id) {
+        document.getElementById('associarForm').action = `/agendamentos/${id}/associar`;
+    }
+    
 </script>
 @endpush
 @endsection
