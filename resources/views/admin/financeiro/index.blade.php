@@ -208,7 +208,7 @@
                                                 @if($movimentacao->situacao == 'em_aberto')
                                                     <li><a class="dropdown-item" href="#" onclick="abrirModalBaixar({{ $movimentacao->id }})"><i class="fas fa-check me-2"></i>Baixar</a></li>
                                                 @endif
-                                                @if($movimentacao->situacao == 'pago' || $movimentacao->situacao == 'em_aberto')
+                                                @if($movimentacao->situacao == 'em_aberto' || $movimentacao->situacao == 'pago')
                                                     <li><a class="dropdown-item" href="#" onclick="abrirModalCancelar({{ $movimentacao->id }}, '{{ $movimentacao->descricao }}')"><i class="fas fa-ban me-2"></i>Cancelar</a></li>
                                                 @endif
                                             </ul>
@@ -372,7 +372,7 @@
 </div>
 
  <!-- CHANGE> Removendo modal de visualizar completamente -->
-<div class="modal fade" id="excluirMovimentacaoModal" tabindex="-1">
+ <div class="modal fade" id="excluirMovimentacaoModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content" style="border: 2px solid #dc3545; border-radius: 12px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #fee 0%, #fdd 100%); border-bottom: 1px solid #dc3545;">
@@ -485,7 +485,38 @@
                         </div>
                     </div>
                     
-                     <!-- CHANGE> Removendo seção de campos de pagamento -->
+                     <!-- CHANGE> Adicionando seção de dados de pagamento para visualização quando status for "Pago" -->
+                    <div id="dadosPagamento" style="display: none;">
+                        <hr>
+                        <h6 class="text-primary mb-3">
+                            <i class="fas fa-credit-card me-2"></i>Dados do Pagamento
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="edit_forma_pagamento_id" class="form-label">Forma de Pagamento</label>
+                                <select class="form-select" id="edit_forma_pagamento_id" name="forma_pagamento_id" disabled>
+                                    <option value="">Selecione...</option>
+                                    @foreach($formasPagamento as $forma)
+                                        <option value="{{ $forma->id }}">{{ $forma->nome }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="edit_data_pagamento" class="form-label">Data do Pagamento</label>
+                                <input type="date" class="form-control" id="edit_data_pagamento" name="data_pagamento" readonly>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="edit_desconto" class="form-label">Desconto</label>
+                                <input type="text" class="form-control" id="edit_desconto" name="desconto" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="edit_valor_pago" class="form-label">Valor Pago</label>
+                                <input type="text" class="form-control" id="edit_valor_pago" name="valor_pago" readonly>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="mb-3">
                         <label for="edit_observacoes" class="form-label">Observações</label>
@@ -923,19 +954,31 @@
         fetch(`/admin/financeiro/${id}`)
             .then(response => response.json())
             .then(data => {
-                document.getElementById('editarMovimentacaoForm').action = `/admin/financeiro/${id}`;
-
-             
+                document.getElementById('editarMovimentacaoForm').action = `/financeiro/${id}`;
+                
                 // Preencher campos
                 document.getElementById('edit_tipo').value = data.tipo || '';
                 document.getElementById('edit_descricao').value = data.descricao || '';
                 document.getElementById('edit_valor').value = data.valor ? `R$ ${parseFloat(data.valor).toFixed(2).replace('.', ',')}` : '';
-                document.getElementById('edit_data').value = new Date(data.data).toISOString().split("T")[0] || '';
-                document.getElementById('edit_data_vencimento').value = new Date(data.data_vencimento).toISOString().split("T")[0] || '';
+                document.getElementById('edit_data').value = data.data || '';
+                document.getElementById('edit_data_vencimento').value = data.data_vencimento || '';
                 document.getElementById('edit_cliente_id').value = data.cliente_id || '';
                 document.getElementById('edit_categoria_financeira_id').value = data.categoria_financeira_id || '';
                 document.getElementById('edit_situacao').value = data.situacao || '';
                 document.getElementById('edit_observacoes').value = data.observacoes || '';
+                
+                const dadosPagamento = document.getElementById('dadosPagamento');
+                if (data.situacao === 'pago') {
+                    dadosPagamento.style.display = 'block';
+                    
+                    // Preencher campos de pagamento
+                    document.getElementById('edit_forma_pagamento_id').value = data.forma_pagamento_id || '';
+                    document.getElementById('edit_data_pagamento').value = data.data_pagamento || '';
+                    document.getElementById('edit_desconto').value = data.desconto ? `R$ ${parseFloat(data.desconto).toFixed(2).replace('.', ',')}` : 'R$ 0,00';
+                    document.getElementById('edit_valor_pago').value = data.valor_pago ? `R$ ${parseFloat(data.valor_pago).toFixed(2).replace('.', ',')}` : '';
+                } else {
+                    dadosPagamento.style.display = 'none';
+                }
                 
                 const modal = new bootstrap.Modal(document.getElementById('editarMovimentacaoModal'));
                 modal.show();

@@ -10,6 +10,9 @@ use App\Models\Produto;
 use App\Models\Agendamento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Exception;
+use Illuminate\Support\Facades\Validator;
+
 
 class MovimentacaoFinanceiraController extends Controller
 {
@@ -82,55 +85,64 @@ class MovimentacaoFinanceiraController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'tipo' => 'required|in:entrada,saida',
-            'descricao' => 'required|string|max:255',
-            'valor' => 'required|numeric|min:0.01',
-            'data' => 'required|date',
-            'cliente_id' => 'nullable|exists:clientes,id',
-            'situacao' => 'required|in:em_aberto,cancelado,pago',
-            'data_vencimento' => 'nullable|date',
-            'forma_pagamento_id' => 'nullable|exists:formas_pagamento,id',
-            'data_pagamento' => 'nullable|date',
-            'desconto' => 'nullable|numeric|min:0',
-            'valor_pago' => 'nullable|numeric|min:0',
-            'categoria_financeira_id' => 'nullable|exists:categorias_financeiras,id',
-            'agendamento_id' => 'nullable|exists:agendamentos,id',
-            'observacoes' => 'nullable|string',
-            'produtos' => 'nullable|array',
-            'produtos.*.id' => 'required|exists:produtos,id',
-            'produtos.*.quantidade' => 'required|numeric|min:1',
-            'produtos.*.valor_unitario' => 'required|numeric|min:0'
-        ]);
-
-        $data = $request->all();
+        try{
+            $validator = Validator::make($request->all(), [
+                'tipo' => 'required|in:entrada,saida',
+                'descricao' => 'required|string|max:255',
+                'valor' => 'required|numeric|min:0.01',
+                'data' => 'required|date',
+                'cliente_id' => 'nullable|exists:clientes,id',
+                'situacao' => 'required|in:em_aberto,cancelado,pago',
+                'data_vencimento' => 'nullable|date',
+                'forma_pagamento_id' => 'nullable|exists:formas_pagamento,id',
+                'data_pagamento' => 'nullable|date',
+                'desconto' => 'nullable|numeric|min:0',
+                'valor_pago' => 'nullable|numeric|min:0',
+                'categoria_financeira_id' => 'nullable|exists:categorias_financeiras,id',
+                'agendamento_id' => 'nullable|exists:agendamentos,id',
+                'observacoes' => 'nullable|string',
+                'produtos' => 'nullable|array',
+                'produtos.*.id' => 'required|exists:produtos,id',
+                'produtos.*.quantidade' => 'required|numeric|min:1',
+                'produtos.*.valor_unitario' => 'required|numeric|min:0',
+            ]);
         
-        foreach (['valor', 'desconto', 'valor_pago'] as $campo) {
-            if (isset($data[$campo])) {
-                $data[$campo] = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $data[$campo]);
+            if ($validator->fails()) {
+                return redirect()->route('financeiro.index') ->with(['type' => 'error', 'message' => 'Erro ao cadastrar movimentalção: ' . $validator->errors()->first()]);
             }
-        }
-
-        $data['ativo'] = true;
-
-        unset($data['produtos']);
-
-        DB::transaction(function () use ($data, $request) {
-            $movimentacao = MovimentacaoFinanceira::create($data);
-
-            if ($request->has('produtos') && is_array($request->produtos)) {
-                foreach ($request->produtos as $produto) {
-                    $valorUnitario = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $produto['valor_unitario']);
-                    $movimentacao->produtos()->attach($produto['id'], [
-                        'quantidade' => $produto['quantidade'],
-                        'valor_unitario' => $valorUnitario
-                    ]);
+    
+            $data = $request->all();
+            
+            foreach (['valor', 'desconto', 'valor_pago'] as $campo) {
+                if (isset($data[$campo])) {
+                    $data[$campo] = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $data[$campo]);
                 }
             }
-        });
+    
+            $data['ativo'] = true;
+    
+            unset($data['produtos']);
+    
+            DB::transaction(function () use ($data, $request) {
+                $movimentacao = MovimentacaoFinanceira::create($data);
+    
+                if ($request->has('produtos') && is_array($request->produtos)) {
+                    foreach ($request->produtos as $produto) {
+                        $valorUnitario = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $produto['valor_unitario']);
+                        $movimentacao->produtos()->attach($produto['id'], [
+                            'quantidade' => $produto['quantidade'],
+                            'valor_unitario' => $valorUnitario
+                        ]);
+                    }
+                }
+            });
+    
+            return redirect()->route('financeiro.index') ->with(['type' => 'success', 'message' => 'Movimentação cadastrada com sucesso!']);
 
-        return redirect()->route('financeiro.index')
-                        ->with('success', 'Movimentação cadastrada com sucesso!');
+        } catch(Exception $e){
+            return redirect()->route('financeiro.index') ->with(['type' => 'error', 'message' => 'Erro ao cadastrar movimentalção: ' . $e->getMessage()]);
+
+        }
     }
 
     public function update(Request $request, MovimentacaoFinanceira $movimentacao)
@@ -177,32 +189,37 @@ class MovimentacaoFinanceiraController extends Controller
 
     public function baixar(Request $request, MovimentacaoFinanceira $financeiro)
     {
-        $movimentacao = $financeiro;
-        $request->validate([
-            'forma_pagamento_id' => 'required|exists:formas_pagamento,id',
-            'data_pagamento' => 'required|date',
-            'desconto' => 'nullable|numeric|min:0',
-            'valor_pago' => 'required|numeric|min:0',
-        ]);
+        try{
 
-        $data = $request->all();
-        
-        foreach (['desconto', 'valor_pago'] as $campo) {
-            if (isset($data[$campo])) {
-                $data[$campo] = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $data[$campo]);
+            $movimentacao = $financeiro;
+            $request->validate([
+                'forma_pagamento_id' => 'required|exists:formas_pagamento,id',
+                'data_pagamento' => 'required|date',
+                'desconto' => 'nullable|numeric|min:0',
+                'valor_pago' => 'required|numeric|min:0',
+            ]);
+    
+            $data = $request->all();
+            
+            foreach (['desconto', 'valor_pago'] as $campo) {
+                if (isset($data[$campo])) {
+                    $data[$campo] = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $data[$campo]);
+                }
             }
+    
+            $movimentacao->update([
+                'situacao' => 'pago',
+                'forma_pagamento_id' => $data['forma_pagamento_id'],
+                'data_pagamento' => $data['data_pagamento'],
+                'desconto' => $data['desconto'] ?? 0,
+                'valor_pago' => $data['valor_pago'],
+            ]);
+    
+            return redirect()->route('financeiro.index') ->with(['type' => 'success', 'message' => 'Movimentação baixada com sucesso!']);
+        } catch(Exception $e){
+            return redirect()->route('financeiro.index') ->with(['type' => 'error', 'message' => 'Erro ao baixa movimentação: ' . $e->getMessage()]);
+
         }
-
-        $movimentacao->update([
-            'situacao' => 'pago',
-            'forma_pagamento_id' => $data['forma_pagamento_id'],
-            'data_pagamento' => $data['data_pagamento'],
-            'desconto' => $data['desconto'] ?? 0,
-            'valor_pago' => $data['valor_pago'],
-        ]);
-
-        return redirect()->route('financeiro.index')
-                        ->with('success', 'Movimentação baixada com sucesso!');
     }
 
     public function cancelar(MovimentacaoFinanceira $financeiro)

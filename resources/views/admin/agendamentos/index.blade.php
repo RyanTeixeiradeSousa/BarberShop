@@ -255,19 +255,19 @@
                                             <button type="button" class="btn btn-outline-primary btn-sm w-100" 
                                                     onclick="iniciarAtendimento({{ $agendamento->id }})"
                                                     title="Iniciar Atendimento">
-                                                <i class="fas fa-play"></i> Iniciar Atendimento
+                                                <i class="fas fa-play"></i> Iniciar
                                             </button>
                                         @elseif($agendamento->status === 'em_andamento')
                                             <button type="button" class="btn btn-outline-success btn-sm w-100" 
                                                     onclick="finalizarAtendimentoDireto({{ $agendamento->id }})"
                                                     title="Finalizar Atendimento">
-                                                <i class="fas fa-check"></i> Finalizar Atendimento
+                                                <i class="fas fa-check"></i> Finalizar
                                             </button>
                                         @elseif($agendamento->status === 'disponivel')
                                             <button type="button" class="btn btn-outline-success btn-sm w-100" 
                                                     onclick="associarSlot({{ $agendamento->id }})"
                                                     data-bs-toggle="modal" data-bs-target="#associarModal">
-                                                <i class="fas fa-user-plus"></i> Associar Cliente
+                                                <i class="fas fa-user-plus"></i> Associar
                                             </button>
                                         @endif
                                     </div>
