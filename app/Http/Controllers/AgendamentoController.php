@@ -411,6 +411,7 @@ class AgendamentoController extends Controller
             'descricao' => 'Atendimento - ' . $agendamento->cliente->nome,
             'valor' => $request->valor_pago_decimal,
             'data' => now()->format('Y-m-d'),
+            'data_vencimento' => now()->format('Y-m-d'),
             'cliente_id' => $agendamento->cliente_id,
             'agendamento_id' => $agendamento->id,
             'situacao' => 'pago',

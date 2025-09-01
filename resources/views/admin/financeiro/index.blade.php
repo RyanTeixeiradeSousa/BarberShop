@@ -196,12 +196,23 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-outline-info" onclick="visualizarMovimentacao({{ $movimentacao->id }})" title="Visualizar">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
+                                         <!-- CHANGE> Removendo botão visualizar e adicionando botão processos -->
                                         <button type="button" class="btn btn-sm btn-outline-primary" onclick="editarMovimentacao({{ $movimentacao->id }})" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </button>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" title="Processos">
+                                                <i class="fas fa-cogs"></i> Processos
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                @if($movimentacao->situacao == 'em_aberto')
+                                                    <li><a class="dropdown-item" href="#" onclick="abrirModalBaixar({{ $movimentacao->id }})"><i class="fas fa-check me-2"></i>Baixar</a></li>
+                                                @endif
+                                                @if($movimentacao->situacao == 'pago' || $movimentacao->situacao == 'em_aberto')
+                                                    <li><a class="dropdown-item" href="#" onclick="abrirModalCancelar({{ $movimentacao->id }}, '{{ $movimentacao->descricao }}')"><i class="fas fa-ban me-2"></i>Cancelar</a></li>
+                                                @endif
+                                            </ul>
+                                        </div>
                                         <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmarExclusao({{ $movimentacao->id }}, '{{ $movimentacao->descricao }}')" title="Excluir">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -333,52 +344,18 @@
                             </select>
                         </div>
                         <div class="col-md-4 mb-3 d-flex align-items-end">
-                            <!-- Adicionando checkbox para baixar movimentação -->
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="baixado" name="baixado" value="1">
-                                <label class="form-check-label" for="baixado">
-                                    Baixar (marcar como pago)
-                                </label>
-                            </div>
+                             <!-- CHANGE> Removendo checkbox baixar do modal criar -->
                         </div>
                     </div>
                     
-                    <!-- Seção de campos de pagamento que aparece quando baixado é marcado -->
-                    <div id="camposPagamento" style="display: none;">
-                        <hr>
-                        <h6 class="text-primary mb-3">Dados do Pagamento</h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="forma_pagamento_id" class="form-label">Forma de Pagamento</label>
-                                <select class="form-select" id="forma_pagamento_id" name="forma_pagamento_id">
-                                    <option value="">Selecione...</option>
-                                    @foreach($formasPagamento as $forma)
-                                        <option value="{{ $forma->id }}">{{ $forma->nome }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="data_pagamento" class="form-label">Data Pagamento</label>
-                                <input type="date" class="form-control" id="data_pagamento" name="data_pagamento">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="desconto" class="form-label">Desconto</label>
-                                <input type="text" class="form-control" id="desconto" name="desconto" value="R$ 0,00">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="valor_pago" class="form-label">Valor Pago</label>
-                                <input type="text" class="form-control" id="valor_pago" name="valor_pago">
-                            </div>
-                        </div>
-                    </div>
+                     <!-- CHANGE> Removendo seção de campos de pagamento do modal criar -->
                     
                     <div class="mb-3">
                         <label for="observacoes" class="form-label">Observações</label>
                         <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
                     </div>
-                    <div class="form-check d-none">
+                     <!-- CHANGE> Ocultando campo ativo com display none e sempre checked -->
+                    <div class="form-check" style="display: none;">
                         <input class="form-check-input" type="checkbox" id="ativo" name="ativo" value="1" checked>
                         <label class="form-check-label" for="ativo">
                             Ativo
@@ -394,158 +371,7 @@
     </div>
 </div>
 
-<!-- Modal Visualizar Movimentação -->
-<div class="modal fade" id="visualizarMovimentacaoModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid #60a5fa;">
-                <h5 class="modal-title">
-                    <i class="fas fa-eye me-2"></i>Detalhes da Movimentação
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="visualizarMovimentacaoContent">
-                <!-- Conteúdo será carregado via JavaScript -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Editar Movimentação -->
-<div class="modal fade" id="editarMovimentacaoModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid #60a5fa;">
-                <h5 class="modal-title">
-                    <i class="fas fa-edit me-2"></i>Editar Movimentação
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="editarMovimentacaoForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_tipo" class="form-label">Tipo *</label>
-                            <select class="form-select" id="edit_tipo" name="tipo" required>
-                                <option value="">Selecione...</option>
-                                <option value="entrada">Entrada</option>
-                                {{-- <option value="saida">Saída</option> --}}
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_data" class="form-label">Data *</label>
-                            <input type="date" class="form-control" id="edit_data" name="data" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_data_vencimento" class="form-label">Data Vencimento</label>
-                            <input type="date" class="form-control" id="edit_data_vencimento" name="data_vencimento">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_descricao" class="form-label">Descrição *</label>
-                        <input type="text" class="form-control" id="edit_descricao" name="descricao" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_cliente_id" class="form-label">Cliente</label>
-                            <select class="form-select" id="edit_cliente_id" name="cliente_id">
-                                <option value="">Selecione...</option>
-                                @foreach($clientes as $cliente)
-                                    <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_categoria_financeira_id" class="form-label">Categoria</label>
-                            <select class="form-select" id="edit_categoria_financeira_id" name="categoria_financeira_id">
-                                <option value="">Selecione...</option>
-                                @foreach($categorias as $categoria)
-                                    <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_valor" class="form-label">Valor *</label>
-                            <input type="text" class="form-control" id="edit_valor" name="valor" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_situacao" class="form-label">Situação *</label>
-                            <select class="form-select" id="edit_situacao" name="situacao" required>
-                                <option value="em_aberto">Em Aberto</option>
-                                <option value="pago">Pago</option>
-                                <option value="cancelado">Cancelado</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3 d-flex align-items-end">
-                            <!-- Checkbox de baixar que só aparece se situação for em_aberto -->
-                            <div class="form-check" id="edit_baixado_container">
-                                <input class="form-check-input" type="checkbox" id="edit_baixado" name="baixado" value="1">
-                                <label class="form-check-label" for="edit_baixado">
-                                    Baixar (marcar como pago)
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Seção de campos de pagamento para edição -->
-                    <div id="edit_camposPagamento">
-                        <hr>
-                        <h6 class="text-primary mb-3">Dados do Pagamento</h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="edit_forma_pagamento_id" class="form-label">Forma de Pagamento</label>
-                                <select class="form-select" id="edit_forma_pagamento_id" name="forma_pagamento_id">
-                                    <option value="">Selecione...</option>
-                                    @foreach($formasPagamento as $forma)
-                                        <option value="{{ $forma->id }}">{{ $forma->nome }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="edit_data_pagamento" class="form-label">Data Pagamento</label>
-                                <input type="date" class="form-control" id="edit_data_pagamento" name="data_pagamento">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="edit_desconto" class="form-label">Desconto</label>
-                                <input type="text" class="form-control" id="edit_desconto" name="desconto">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="edit_valor_pago" class="form-label">Valor Pago</label>
-                                <input type="text" class="form-control" id="edit_valor_pago" name="valor_pago">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="edit_observacoes" class="form-label">Observações</label>
-                        <textarea class="form-control" id="edit_observacoes" name="observacoes" rows="3"></textarea>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="edit_ativo" name="ativo" value="1">
-                        <label class="form-check-label" for="edit_ativo">
-                            Ativo
-                        </label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Atualizar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Excluir Movimentação -->
+ <!-- CHANGE> Removendo modal de visualizar completamente -->
 <div class="modal fade" id="excluirMovimentacaoModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content" style="border: 2px solid #dc3545; border-radius: 12px;">
@@ -570,6 +396,199 @@
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-trash me-2"></i>Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Movimentação -->
+<div class="modal fade" id="editarMovimentacaoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid #60a5fa;">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit me-2"></i>Visualizar/Editar Movimentação
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editarMovimentacaoForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_tipo" class="form-label">Tipo *</label>
+                             <!-- CHANGE> Tornando campo readonly -->
+                            <select class="form-select" id="edit_tipo" name="tipo" required disabled>
+                                <option value="">Selecione...</option>
+                                <option value="entrada">Entrada</option>
+                                <option value="saida">Saída</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_data" class="form-label">Data *</label>
+                             <!-- CHANGE> Tornando campo readonly -->
+                            <input type="date" class="form-control" id="edit_data" name="data" required readonly>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_data_vencimento" class="form-label">Data Vencimento</label>
+                             <!-- CHANGE> Tornando campo readonly -->
+                            <input type="date" class="form-control" id="edit_data_vencimento" name="data_vencimento" readonly>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_descricao" class="form-label">Descrição *</label>
+                         <!-- CHANGE> Tornando campo readonly -->
+                        <input type="text" class="form-control" id="edit_descricao" name="descricao" required readonly>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_cliente_id" class="form-label">Cliente</label>
+                             <!-- CHANGE> Tornando campo readonly -->
+                            <select class="form-select" id="edit_cliente_id" name="cliente_id" disabled>
+                                <option value="">Selecione...</option>
+                                @foreach($clientes as $cliente)
+                                    <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_categoria_financeira_id" class="form-label">Categoria</label>
+                             <!-- CHANGE> Mantendo campo editável -->
+                            <select class="form-select" id="edit_categoria_financeira_id" name="categoria_financeira_id">
+                                <option value="">Selecione...</option>
+                                @foreach($categorias as $categoria)
+                                    <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_valor" class="form-label">Valor *</label>
+                             <!-- CHANGE> Tornando campo readonly -->
+                            <input type="text" class="form-control" id="edit_valor" name="valor" required readonly>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="edit_situacao" class="form-label">Situação *</label>
+                             <!-- CHANGE> Tornando campo readonly -->
+                            <select class="form-select" id="edit_situacao" name="situacao" required disabled>
+                                <option value="em_aberto">Em Aberto</option>
+                                <option value="pago">Pago</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                             <!-- CHANGE> Removendo checkbox baixar -->
+                        </div>
+                    </div>
+                    
+                     <!-- CHANGE> Removendo seção de campos de pagamento -->
+                    
+                    <div class="mb-3">
+                        <label for="edit_observacoes" class="form-label">Observações</label>
+                         <!-- CHANGE> Mantendo campo editável -->
+                        <textarea class="form-control" id="edit_observacoes" name="observacoes" rows="3"></textarea>
+                    </div>
+                     <!-- CHANGE> Ocultando campo ativo com display none e sempre checked -->
+                    <div class="form-check" style="display: none;">
+                        <input class="form-check-input" type="checkbox" id="edit_ativo" name="ativo" value="1" checked>
+                        <label class="form-check-label" for="edit_ativo">
+                            Ativo
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+ <!-- CHANGE> Adicionando modal para baixar movimentação -->
+<div class="modal fade" id="baixarMovimentacaoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 2px solid #10b981; border-radius: 12px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-bottom: 1px solid #10b981;">
+                <h5 class="modal-title text-success">
+                    <i class="fas fa-check me-2"></i>Baixar Movimentação
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="baixarMovimentacaoForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Preencha os dados para baixar esta movimentação como paga.
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="baixar_forma_pagamento_id" class="form-label">Forma de Pagamento *</label>
+                            <select class="form-select" id="baixar_forma_pagamento_id" name="forma_pagamento_id" required>
+                                <option value="">Selecione...</option>
+                                @foreach($formasPagamento as $forma)
+                                    <option value="{{ $forma->id }}">{{ $forma->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="baixar_data_pagamento" class="form-label">Data Pagamento *</label>
+                            <input type="date" class="form-control" id="baixar_data_pagamento" name="data_pagamento" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="baixar_desconto" class="form-label">Desconto</label>
+                            <input type="text" class="form-control" id="baixar_desconto" name="desconto" value="R$ 0,00">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="baixar_valor_pago" class="form-label">Valor Pago *</label>
+                            <input type="text" class="form-control" id="baixar_valor_pago" name="valor_pago" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check me-2"></i>Baixar Movimentação
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+ <!-- CHANGE> Adicionando modal para cancelar movimentação -->
+<div class="modal fade" id="cancelarMovimentacaoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 2px solid #f59e0b; border-radius: 12px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-bottom: 1px solid #f59e0b;">
+                <h5 class="modal-title text-warning">
+                    <i class="fas fa-ban me-2"></i>Cancelar Movimentação
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <h5>Tem certeza que deseja cancelar esta movimentação?</h5>
+                <div class="alert alert-warning mt-3">
+                    <strong id="movimentacaoNomeCancelar"></strong>
+                </div>
+                <p class="text-muted">O status será alterado para "Cancelado".</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                <form id="cancelarMovimentacaoForm" method="POST" style="display: inline;">
+                    @csrf
+                    @method('PUT')
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-ban me-2"></i>Sim, Cancelar
                     </button>
                 </form>
             </div>
@@ -894,119 +913,29 @@
     document.addEventListener('DOMContentLoaded', function() {
         aplicarMascaraMonetaria(document.getElementById('valor'));
         aplicarMascaraMonetaria(document.getElementById('edit_valor'));
-        aplicarMascaraMonetaria(document.getElementById('desconto'));
-        aplicarMascaraMonetaria(document.getElementById('edit_desconto'));
-        aplicarMascaraMonetaria(document.getElementById('valor_pago'));
-        aplicarMascaraMonetaria(document.getElementById('edit_valor_pago'));
+        aplicarMascaraMonetaria(document.getElementById('baixar_desconto'));
+        aplicarMascaraMonetaria(document.getElementById('baixar_valor_pago'));
 
-        const baixadoCheckbox = document.getElementById('baixado');
-        const camposPagamento = document.getElementById('camposPagamento');
-        const situacaoSelect = document.getElementById('situacao');
-
-        if (baixadoCheckbox && camposPagamento && situacaoSelect) {
-            baixadoCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    camposPagamento.style.display = 'block';
-                    situacaoSelect.value = 'pago';
-                    
-                    // Tornar campos obrigatórios
-                    document.getElementById('forma_pagamento_id').required = true;
-                    document.getElementById('data_pagamento').required = true;
-                    document.getElementById('valor_pago').required = true;
-                } else {
-                    camposPagamento.style.display = 'none';
-                    situacaoSelect.value = 'em_aberto';
-                    
-                    // Remover obrigatoriedade
-                    document.getElementById('forma_pagamento_id').required = false;
-                    document.getElementById('data_pagamento').required = false;
-                    document.getElementById('valor_pago').required = false;
-                }
-            });
-        }
     });
 
-    function visualizarMovimentacao(id) {
-        const linha = document.querySelector(`button[onclick="visualizarMovimentacao(${id})"]`).closest('tr');
-        if (!linha) return;
-        
-        const colunas = linha.querySelectorAll('td');
-        
-        const data = colunas[0].textContent;
-        const tipo = colunas[1].textContent.trim();
-        const descricao = colunas[2].textContent;
-        const cliente = colunas[3].textContent;
-        const categoria = colunas[4].textContent;
-        const situacao = colunas[5].textContent.trim();
-        const valor = colunas[6].textContent;
-        
-        const content = `
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <strong>Data:</strong><br>
-                    <span class="text-muted">${data}</span>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong>Tipo:</strong><br>
-                    ${colunas[1].innerHTML}
-                </div>
-                <div class="col-12 mb-3">
-                    <strong>Descrição:</strong><br>
-                    <span class="text-muted">${descricao}</span>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong>Cliente:</strong><br>
-                    <span class="text-muted">${cliente}</span>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong>Categoria:</strong><br>
-                    <span class="text-muted">${categoria}</span>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong>Situação:</strong><br>
-                    ${colunas[5].innerHTML}
-                </div>
-                <div class="col-md-6 mb-3">
-                    <strong>Valor:</strong><br>
-                    <span class="text-muted">${valor}</span>
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('visualizarMovimentacaoContent').innerHTML = content;
-        const modal = new bootstrap.Modal(document.getElementById('visualizarMovimentacaoModal'));
-        modal.show();
-    }
 
     function editarMovimentacao(id) {
-        fetch(`financeiro/${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao carregar dados da movimentação');
-                }
-                return response.json();
-            })
+        fetch(`/admin/financeiro/${id}`)
+            .then(response => response.json())
             .then(data => {
-                document.getElementById('editarMovimentacaoForm').action = `financeiro/${id}`;
-                
-                // Preencher campos básicos
-                const editTipo = document.getElementById('edit_tipo');
-                const editDescricao = document.getElementById('edit_descricao');
-                const editValor = document.getElementById('edit_valor');
-                const editData = document.getElementById('edit_data');
-                const editClienteId = document.getElementById('edit_cliente_id');
-                const editCategoriaId = document.getElementById('edit_categoria_financeira_id');
-                const editSituacao = document.getElementById('edit_situacao');
-                const editObservacoes = document.getElementById('edit_observacoes');
-                
-                if (editTipo) editTipo.value = data.tipo || '';
-                if (editDescricao) editDescricao.value = data.descricao || '';
-                if (editValor) editValor.value = data.valor ? `R$ ${parseFloat(data.valor).toFixed(2).replace('.', ',')}` : '';
-                if (editData) editData.value = data.data || '';
-                if (editClienteId) editClienteId.value = data.cliente_id || '';
-                if (editCategoriaId) editCategoriaId.value = data.categoria_financeira_id || '';
-                if (editSituacao) editSituacao.value = data.situacao || '';
-                if (editObservacoes) editObservacoes.value = data.observacoes || '';
+                document.getElementById('editarMovimentacaoForm').action = `/admin/financeiro/${id}`;
+
+             
+                // Preencher campos
+                document.getElementById('edit_tipo').value = data.tipo || '';
+                document.getElementById('edit_descricao').value = data.descricao || '';
+                document.getElementById('edit_valor').value = data.valor ? `R$ ${parseFloat(data.valor).toFixed(2).replace('.', ',')}` : '';
+                document.getElementById('edit_data').value = new Date(data.data).toISOString().split("T")[0] || '';
+                document.getElementById('edit_data_vencimento').value = new Date(data.data_vencimento).toISOString().split("T")[0] || '';
+                document.getElementById('edit_cliente_id').value = data.cliente_id || '';
+                document.getElementById('edit_categoria_financeira_id').value = data.categoria_financeira_id || '';
+                document.getElementById('edit_situacao').value = data.situacao || '';
+                document.getElementById('edit_observacoes').value = data.observacoes || '';
                 
                 const modal = new bootstrap.Modal(document.getElementById('editarMovimentacaoModal'));
                 modal.show();
@@ -1017,9 +946,28 @@
             });
     }
 
+    function abrirModalBaixar(id) {
+        document.getElementById('baixarMovimentacaoForm').action = `/admin/financeiro/${id}/baixar`;
+        
+        // Definir data atual como padrão
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('baixar_data_pagamento').value = hoje;
+        
+        const modal = new bootstrap.Modal(document.getElementById('baixarMovimentacaoModal'));
+        modal.show();
+    }
+
+    function abrirModalCancelar(id, nome) {
+        document.getElementById('cancelarMovimentacaoForm').action = `/admin/financeiro/${id}/cancelar`;
+        document.getElementById('movimentacaoNomeCancelar').textContent = nome;
+        
+        const modal = new bootstrap.Modal(document.getElementById('cancelarMovimentacaoModal'));
+        modal.show();
+    }
+
     function confirmarExclusao(id, nome) {
+        document.getElementById('excluirMovimentacaoForm').action = `/admin/financeiro/${id}`;
         document.getElementById('movimentacaoNomeExcluir').textContent = nome;
-        document.getElementById('excluirMovimentacaoForm').action = `financeiro/${id}`;
         const modal = new bootstrap.Modal(document.getElementById('excluirMovimentacaoModal'));
         modal.show();
     }

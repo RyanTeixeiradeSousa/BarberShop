@@ -6,11 +6,10 @@ use App\Models\MovimentacaoFinanceira;
 use App\Models\Cliente;
 use App\Models\CategoriaFinanceira;
 use App\Models\FormaPagamento;
-use App\Models\Produto; // Adicionando model Produto
-use App\Models\Agendamento; // Adicionando model Agendamento
+use App\Models\Produto;
+use App\Models\Agendamento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class MovimentacaoFinanceiraController extends Controller
 {
@@ -63,8 +62,8 @@ class MovimentacaoFinanceiraController extends Controller
         $clientes = Cliente::where('ativo', true)->orderBy('nome')->get();
         $categorias = CategoriaFinanceira::where('ativo', true)->orderBy('nome')->get();
         $formasPagamento = FormaPagamento::where('ativo', true)->orderBy('nome')->get();
-        $produtos = Produto::where('ativo', true)->orderBy('nome')->get(); // Adicionando produtos
-        $agendamentos = Agendamento::with('cliente')->orderBy('data_agendamento', 'desc')->get(); // Adicionando agendamentos
+        $produtos = Produto::where('ativo', true)->orderBy('nome')->get();
+        $agendamentos = Agendamento::with('cliente')->orderBy('data_agendamento', 'desc')->get();
 
         return view('admin.financeiro.index', compact(
             'movimentacoes', 
@@ -76,175 +75,153 @@ class MovimentacaoFinanceiraController extends Controller
             'clientes',
             'categorias',
             'formasPagamento',
-            'produtos', // Passando produtos para view
-            'agendamentos' // Passando agendamentos para view
+            'produtos', 
+            'agendamentos' 
         ));
     }
 
     public function store(Request $request)
     {
-        try{
-            $validator = Validator::make($request->all(), [
-                'tipo' => 'required|in:entrada,saida',
-                'descricao' => 'required|string|max:255',
-                'valor' => 'required|string|min:0.01',
-                'data' => 'required|date',
-                'cliente_id' => 'nullable|exists:clientes,id',
-                'situacao' => 'in:em_aberto,cancelado,pago',
-                'data_vencimento' => 'nullable|date',
-                'forma_pagamento_id' => 'nullable|exists:formas_pagamento,id',
-                'data_pagamento' => 'nullable|date',
-                'desconto' => 'nullable|string|min:0',
-                'valor_pago' => 'nullable|string|min:0',
-                'categoria_financeira_id' => 'nullable|exists:categorias_financeiras,id',
-                'agendamento_id' => 'nullable|exists:agendamentos,id',
-                'observacoes' => 'nullable|string',
-                'ativo' => 'boolean',
-                'baixado' => 'boolean',
-                'produtos' => 'nullable|array',
-                'produtos.*.id' => 'required|exists:produtos,id',
-                'produtos.*.quantidade' => 'required|numeric|min:1',
-                'produtos.*.valor_unitario' => 'required|numeric|min:0',
-            ]);
+        $request->validate([
+            'tipo' => 'required|in:entrada,saida',
+            'descricao' => 'required|string|max:255',
+            'valor' => 'required|numeric|min:0.01',
+            'data' => 'required|date',
+            'cliente_id' => 'nullable|exists:clientes,id',
+            'situacao' => 'required|in:em_aberto,cancelado,pago',
+            'data_vencimento' => 'nullable|date',
+            'forma_pagamento_id' => 'nullable|exists:formas_pagamento,id',
+            'data_pagamento' => 'nullable|date',
+            'desconto' => 'nullable|numeric|min:0',
+            'valor_pago' => 'nullable|numeric|min:0',
+            'categoria_financeira_id' => 'nullable|exists:categorias_financeiras,id',
+            'agendamento_id' => 'nullable|exists:agendamentos,id',
+            'observacoes' => 'nullable|string',
+            'produtos' => 'nullable|array',
+            'produtos.*.id' => 'required|exists:produtos,id',
+            'produtos.*.quantidade' => 'required|numeric|min:1',
+            'produtos.*.valor_unitario' => 'required|numeric|min:0'
+        ]);
 
-            if ($validator->fails()) {
-                dd($validator->errors());
-                return redirect()->route('financeiro.index')
-                                 ->withErrors($validator)
-                                 ->withInput()
-                                 ->with(['type' => 'error', 'message' => 'Erro de validação: ' . $validator->errors()->first()]);
+        $data = $request->all();
+        
+        foreach (['valor', 'desconto', 'valor_pago'] as $campo) {
+            if (isset($data[$campo])) {
+                $data[$campo] = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $data[$campo]);
             }
-
-            $data = $request->all();
-            
-            foreach (['valor', 'desconto', 'valor_pago'] as $campo) {
-                if (isset($data[$campo])) {
-                    $data[$campo] = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $data[$campo]);
-                }
-            }
-    
-            $data['ativo'] = 1;
-    
-            if ($request->has('baixado') && $request->baixado) {
-                $data['situacao'] = 'pago';
-                $data['data_pagamento'] = $data['data_pagamento'] ?? now()->format('Y-m-d');
-                if (!$data['valor_pago']) {
-                    $data['valor_pago'] = $data['valor'] - ($data['desconto'] ?? 0);
-                }
-            }
-    
-            unset($data['baixado'], $data['produtos']); // Removendo produtos dos dados principais
-    
-            DB::transaction(function () use ($data, $request) {
-                $movimentacao = MovimentacaoFinanceira::create($data);
-    
-                // Associar produtos se fornecidos
-                if ($request->has('produtos') && is_array($request->produtos)) {
-                    foreach ($request->produtos as $produto) {
-                        $valorUnitario = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $produto['valor_unitario']);
-                        $movimentacao->produtos()->attach($produto['id'], [
-                            'quantidade' => $produto['quantidade'],
-                            'valor_unitario' => $valorUnitario
-                        ]);
-                    }
-                }
-            });
-    
-           return redirect()->route('financeiro.index')->with(['type' => 'success', 'message' => 'Movimentação criada com sucesso!']);
-                            
-        } catch(Exception $e){
-            dd($e->getMessage());
-            return redirect()->route('financeiro.index')->with(['type' => 'error', 'message' => 'Erro ao criar movimentação: ' . $e->getMessage()]);
         }
+
+        $data['ativo'] = true;
+
+        unset($data['produtos']);
+
+        DB::transaction(function () use ($data, $request) {
+            $movimentacao = MovimentacaoFinanceira::create($data);
+
+            if ($request->has('produtos') && is_array($request->produtos)) {
+                foreach ($request->produtos as $produto) {
+                    $valorUnitario = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $produto['valor_unitario']);
+                    $movimentacao->produtos()->attach($produto['id'], [
+                        'quantidade' => $produto['quantidade'],
+                        'valor_unitario' => $valorUnitario
+                    ]);
+                }
+            }
+        });
+
+        return redirect()->route('financeiro.index')
+                        ->with('success', 'Movimentação cadastrada com sucesso!');
     }
 
     public function update(Request $request, MovimentacaoFinanceira $movimentacao)
     {
         try{
-
             $request->validate([
-                'tipo' => 'required|in:entrada,saida',
-                'descricao' => 'required|string|max:255',
-                'valor' => 'required|numeric|min:0.01',
-                'data' => 'required|date',
-                'cliente_id' => 'nullable|exists:clientes,id',
-                'situacao' => 'required|in:em_aberto,cancelado,pago',
-                'data_vencimento' => 'nullable|date',
-                'forma_pagamento_id' => 'nullable|exists:formas_pagamento,id',
-                'data_pagamento' => 'nullable|date',
-                'desconto' => 'nullable|numeric|min:0',
-                'valor_pago' => 'nullable|numeric|min:0',
                 'categoria_financeira_id' => 'nullable|exists:categorias_financeiras,id',
-                'agendamento_id' => 'nullable|exists:agendamentos,id', // Validação para agendamento
                 'observacoes' => 'nullable|string',
-                'ativo' => 'boolean',
-                'baixado' => 'boolean',
-                'produtos' => 'nullable|array', // Validação para produtos
-                'produtos.*.id' => 'required|exists:produtos,id',
-                'produtos.*.quantidade' => 'required|numeric|min:1',
-                'produtos.*.valor_unitario' => 'required|numeric|min:0'
             ]);
     
-            $data = $request->all();
-            
-            foreach (['valor', 'desconto', 'valor_pago'] as $campo) {
-                if (isset($data[$campo])) {
-                    $data[$campo] = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $data[$campo]);
-                }
-            }
+            $data = $request->only(['categoria_financeira_id', 'observacoes']);
+            $data['ativo'] = true;
     
-            $data['ativo'] = $request->has('ativo') ? 1 : 0;
+            $movimentacao->update($data);
     
-            if ($request->has('baixado') && $request->baixado && $movimentacao->situacao == 'em_aberto') {
-                $data['situacao'] = 'pago';
-                $data['data_pagamento'] = $data['data_pagamento'] ?? now()->format('Y-m-d');
-                if (!$data['valor_pago']) {
-                    $data['valor_pago'] = $data['valor'] - ($data['desconto'] ?? 0);
-                }
-            }
-    
-            unset($data['baixado'], $data['produtos']); // Removendo produtos dos dados principais
-    
-            DB::transaction(function () use ($data, $request, $movimentacao) {
-                $movimentacao->update($data);
-    
-                // Remover produtos existentes e adicionar novos
-                $movimentacao->produtos()->detach();
-                
-                if ($request->has('produtos') && is_array($request->produtos)) {
-                    foreach ($request->produtos as $produto) {
-                        $valorUnitario = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $produto['valor_unitario']);
-                        $movimentacao->produtos()->attach($produto['id'], [
-                            'quantidade' => $produto['quantidade'],
-                            'valor_unitario' => $valorUnitario
-                        ]);
-                    }
-                }
-            });
+            return redirect()->route('financeiro.index')
+                                        ->with(['type' => 'success', 'message' => 'Movimentação atualizada com sucesso!' ]);
 
-            return redirect()->route('financeiro.index')->with(['type' => 'success', 'message' => 'Movimentação atualizada com sucesso!']);
         } catch(Exception $e){
-            return redirect()->route('financeiro.index')->with(['type' => 'error', 'message' => 'Erro ao atualizar movimentação: ' . $e->getMessage()]);
+            return redirect()->route('financeiro.index')
+                                        ->with(['type' => 'error', 'message' => 'Erro ao atualizar movimentação: ' . $e->getMessage() ]);
         }
-
-        
     }
 
     public function destroy(MovimentacaoFinanceira $movimentacao)
     {
+
         try{
             $movimentacao->delete();
-            return redirect()->route('financeiro.index')->with(['type' => 'success', 'message' => 'Movimentação excluída com sucesso!']);
+    
+            return redirect()->route('financeiro.index')
+                            ->with(['type' => 'success', 'message' => 'Movimentação excluída com sucesso!' ]);
         } catch(Exception $e){
-            return redirect()->route('financeiro.index')->with(['type' => 'error', 'message' => 'Erro ao excluir movimentação: ' . $e->getMessage()]);
+            return redirect()->route('financeiro.index')
+                                        ->with(['type' => 'error', 'message' => 'Erro ao excluir movimentação: ' . $e->getMessage() ]);
         }
-
-        
     }
 
     public function show(MovimentacaoFinanceira $movimentacao)
     {
         $movimentacao->load(['cliente', 'categoriaFinanceira', 'formaPagamento', 'agendamento', 'produtos']);
         return response()->json($movimentacao);
+    }
+
+    public function baixar(Request $request, MovimentacaoFinanceira $financeiro)
+    {
+        $movimentacao = $financeiro;
+        $request->validate([
+            'forma_pagamento_id' => 'required|exists:formas_pagamento,id',
+            'data_pagamento' => 'required|date',
+            'desconto' => 'nullable|numeric|min:0',
+            'valor_pago' => 'required|numeric|min:0',
+        ]);
+
+        $data = $request->all();
+        
+        foreach (['desconto', 'valor_pago'] as $campo) {
+            if (isset($data[$campo])) {
+                $data[$campo] = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $data[$campo]);
+            }
+        }
+
+        $movimentacao->update([
+            'situacao' => 'pago',
+            'forma_pagamento_id' => $data['forma_pagamento_id'],
+            'data_pagamento' => $data['data_pagamento'],
+            'desconto' => $data['desconto'] ?? 0,
+            'valor_pago' => $data['valor_pago'],
+        ]);
+
+        return redirect()->route('financeiro.index')
+                        ->with('success', 'Movimentação baixada com sucesso!');
+    }
+
+    public function cancelar(MovimentacaoFinanceira $financeiro)
+    {
+        try{
+            $movimentacao = $financeiro;
+            $movimentacao->update([
+                'situacao' => 'cancelado',
+                'data_pagamento' => null,
+                'forma_pagamento_id' => null,
+                'data_pagamento' => null,
+                'valor_pago' => null,
+            ]);
+    
+            return redirect()->route('financeiro.index') ->with(['type' => 'success', 'message' => 'Movimentação cancelada com sucesso!']);
+
+        } catch(Exception $e){
+            return redirect()->route('financeiro.index') ->with(['type' => 'success', 'message' => 'Erro ao cancelar movimentação: ' . $e->getMessage()]);
+        }
+                       
     }
 }

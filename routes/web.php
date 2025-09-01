@@ -40,6 +40,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/admin/categorias-financeiras', App\Http\Controllers\CategoriaFinanceiraController::class)->parameters(['categorias-financeiras' => 'categoriaFinanceira']); 
     Route::resource('/admin/formas-pagamento', App\Http\Controllers\FormaPagamentoController::class)->parameters(['formas-pagamento' => 'formaPagamento']); 
     Route::resource('/admin/financeiro', App\Http\Controllers\MovimentacaoFinanceiraController::class)->parameters(['financeiro' => 'movimentacao']); 
+    Route::put('/admin/financeiro/{financeiro}/cancelar', [App\Http\Controllers\MovimentacaoFinanceiraController::class,'cancelar']); 
+    Route::put('/admin/financeiro/{financeiro}/baixar', [App\Http\Controllers\MovimentacaoFinanceiraController::class, 'baixar']); 
 
 
     Route::post('/agendamentos/{id}/associar', [App\Http\Controllers\AgendamentoController::class, 'associarSlot']);
