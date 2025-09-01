@@ -77,7 +77,7 @@
                                 <strong>{{ $configuracao->chave }}</strong>
                             </td>
                             <td>
-                                <span class="badge bg-info">{{ $configuracao->valor }}</span>
+                                <span class="badge bg-info">{{ Str::limit($configuracao->valor, 30) ?: 'Sem descrição'  }}</span>
                             </td>
                             <td>{{ $configuracao->descricao ?? '-' }}</td>
                             <td>{{ $configuracao->updated_at->format('d/m/Y H:i') }}</td>

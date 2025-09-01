@@ -21,7 +21,7 @@ class CategoriaFinanceiraController extends Controller
         }
 
         if ($request->filled('status')) {
-            $query->where('ativo', $request->status === 'ativo');
+            $query->where('ativo', $request->status);
         }
 
         $categorias = $query->orderBy('nome')->paginate($request->get('per_page', 10));

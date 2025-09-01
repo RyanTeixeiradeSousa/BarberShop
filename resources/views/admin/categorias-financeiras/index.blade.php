@@ -258,7 +258,21 @@
 
 @section('content')
 <div class="container-fluid">
-    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2 class="mb-0" style="color: #1f2937;">
+                <i class="fas fa-box me-2" style="color: #60a5fa;"></i>
+                Categorias Financeiras
+            </h2>
+            <p class="mb-0" style="color: #6b7280;">Gerencie suas categorias financeiras da barbearia</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createCategoriaFinanceiraModal">
+                <i class="fas fa-plus me-1"></i>
+                Nova Categoria
+            </button>
+        </div>
+    </div>
     <!-- Statistics Cards -->
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
@@ -321,10 +335,10 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <form method="GET" action="{{ route('categorias-financeiras.index') }}" class="row g-3" id="filterForm">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <input type="text" class="form-control" name="busca" value="{{ request('busca') }}" placeholder="Buscar categorias..." style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <select class="form-select" name="status" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
                                 <option value="">Todos os status</option>
                                 <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Ativo</option>
@@ -335,6 +349,11 @@
                             <button type="submit" class="btn btn-outline-primary w-100" style="border-color: #60a5fa; color: #60a5fa;">
                                 <i class="fas fa-search"></i>
                             </button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ route('categorias-financeiras.index') }}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-times"></i>
+                            </a>
                         </div>
                         @if(request('per_page'))
                             <input type="hidden" name="per_page" value="{{ request('per_page') }}">
@@ -631,24 +650,28 @@
 @push('scripts')
 <script>
     // Auto-submit dos filtros
-    document.querySelector('input[name="busca"]').addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(() => {
-            document.getElementById('filterForm').submit();
-        }, 500);
-    });
+    // document.querySelector('input[name="busca"]').addEventListener('input', function() {
+    //     clearTimeout(this.searchTimeout);
+    //     this.searchTimeout = setTimeout(() => {
+    //         document.getElementById('filterForm').submit();
+    //     }, 500);
+    // });
 
-    document.querySelector('select[name="status"]').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
+    // document.querySelector('select[name="status"]').addEventListener('change', function() {
+    //     document.getElementById('filterForm').submit();
+    // });
 
     // Seletor de itens por página
-    document.getElementById('perPage').addEventListener('change', function() {
-        const url = new URL(window.location);
-        url.searchParams.set('per_page', this.value);
-        url.searchParams.delete('page');
-        window.location.href = url.toString();
-    });
+    const perPageEl = document.getElementById('perPage');
+
+    if (perPageEl) {
+        perPageEl.addEventListener('change', function() {
+            const url = new URL(window.location);
+            url.searchParams.set('per_page', this.value);
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        });
+    }
 
     // Função para visualizar categoria
     function viewCategoriaFinanceira(button) {

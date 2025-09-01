@@ -47,7 +47,7 @@ class ClienteController extends Controller
                 'nome' => 'required|string|max:255',
                 'cpf' => 'required|string|size:14|unique:clientes',
                 'email' => 'email|unique:clientes',
-                'data_nascimento' => 'nullable|date|before:today',
+                'data_nascimento' => 'nullable',
                 'sexo' => 'required|in:M,F',
                 'telefone1' => 'nullable|string|max:15',
                 'telefone2' => 'nullable|string|max:15',

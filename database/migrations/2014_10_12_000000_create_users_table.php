@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -22,6 +23,16 @@ return new class extends Migration
             $table->boolean('redefinir_senha_login')->default(0);
             $table->timestamps();
         });
+
+        DB::table('users')->insert([
+            'nome' => 'Master',
+            'email' => 'masterbarbershop@gmail.com',
+            'ativo' => 1,
+            'senha' => env('PASSWORD_MASTERUSER') ?? Str::random(15),
+            'master' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**

@@ -15,6 +15,40 @@ return new class extends Migration
             $table->boolean('ativo')->default(true);
             $table->timestamps();
         });
+
+        DB::table('formas_pagamento')->insert([
+            'nome' => 'PIX',
+            'descricao' => '',
+            'ativo' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('formas_pagamento')->insert([
+            'nome' => 'DINHEIRO',
+            'descricao' => '',
+            'ativo' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('formas_pagamento')->insert([
+            'nome' => 'CARTÃO DE CRÉDITO',
+            'descricao' => '',
+            'ativo' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('formas_pagamento')->insert([
+            'nome' => 'CARTÃO DE DÉBITO',
+            'descricao' => '',
+            'ativo' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        
     }
 
     public function down()

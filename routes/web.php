@@ -12,9 +12,13 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/', [App\Http\Controllers\SiteController::class, 'index'])->name('site.home');
+
+Route::get('/agendamento', [App\Http\Controllers\SiteController::class, 'agendamento'])->name('site.agendamento');
+Route::post('/agendamento', [App\Http\Controllers\SiteController::class, 'salvarAgendamento'])->name('site.agendamento.salvar');
+
+// Admin
 Route::get('/admin/login', [App\Http\Controllers\AuthController::class, 'index'])->name('login');
-
-
 Route::post('/entrar', [ App\Http\Controllers\AuthController::class, 'entrar'])->name('login.entrar');
 
 Route::middleware(['auth'])->group(function () {
@@ -38,6 +42,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/admin/financeiro', App\Http\Controllers\MovimentacaoFinanceiraController::class)->parameters(['financeiro' => 'movimentacao']); 
 
 
+    Route::post('/agendamentos/{id}/associar', [App\Http\Controllers\AgendamentoController::class, 'associarSlot']);
+    Route::post('/agendamentos/gerar-lote', [App\Http\Controllers\AgendamentoController::class, 'gerarEmLote'])->name('agendamentos.gerar-lote');
 
+    Route::post('/admin/agendamentos/{agendamento}/cancelar', [App\Http\Controllers\AgendamentoController::class, 'cancelarAtendimento'])->name('agendamentos.cancelar-atendimento');
+    Route::post('/admin/agendamentos/{agendamento}/mudar-status', [App\Http\Controllers\AgendamentoController::class, 'mudarStatus'])->name('agendamentos.mudar-status');
+    Route::post('/admin/agendamentos/{agendamento}/iniciar', [App\Http\Controllers\AgendamentoController::class, 'iniciarAtendimento'])->name('agendamentos.iniciar-atendimento');
+    Route::post('/admin/agendamentos/{agendamento}/finalizar', [App\Http\Controllers\AgendamentoController::class, 'finalizarAtendimento'])->name('agendamentos.finalizar-atendimento');
     
 });

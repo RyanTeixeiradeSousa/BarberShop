@@ -79,36 +79,36 @@ class Agendamento extends Model
         return $this->status === 'disponivel' && is_null($this->cliente_id);
     }
 
-    public function associarClienteServicos($clienteId, $servicos, $observacoes = null)
-    {
-        $valorTotal = 0;
+    // public function associarClienteServicos($clienteId, $servicos, $observacoes = null)
+    // {
+    //     $valorTotal = 0;
         
-        // Associar cliente
-        $this->cliente_id = $clienteId;
-        $this->observacoes = $observacoes;
-        $this->status = 'agendado';
+    //     // Associar cliente
+    //     $this->cliente_id = $clienteId;
+    //     $this->observacoes = $observacoes;
+    //     $this->status = 'agendado';
         
-        // Associar serviços
-        $servicosData = [];
-        foreach ($servicos as $servico) {
-            $produto = Produto::find($servico['produto_id']);
-            if ($produto) {
-                $quantidade = $servico['quantidade'] ?? 1;
-                $valorUnitario = $produto->preco;
-                $servicosData[$servico['produto_id']] = [
-                    'quantidade' => $quantidade,
-                    'valor_unitario' => $valorUnitario
-                ];
-                $valorTotal += $quantidade * $valorUnitario;
-            }
-        }
+    //     // Associar serviços
+    //     $servicosData = [];
+    //     foreach ($servicos as $servico) {
+    //         $produto = Produto::find($servico['produto_id']);
+    //         if ($produto) {
+    //             $quantidade = $servico['quantidade'] ?? 1;
+    //             $valorUnitario = $produto->preco;
+    //             $servicosData[$servico['produto_id']] = [
+    //                 'quantidade' => $quantidade,
+    //                 'valor_unitario' => $valorUnitario
+    //             ];
+    //             $valorTotal += $quantidade * $valorUnitario;
+    //         }
+    //     }
         
-        $this->valor_total = $valorTotal;
-        $this->save();
+    //     $this->valor_total = $valorTotal;
+    //     $this->save();
         
-        // Sincronizar produtos
-        $this->produtos()->sync($servicosData);
-    }
+    //     // Sincronizar produtos
+    //     $this->produtos()->sync($servicosData);
+    // }
 
     public function calcularValorTotal()
     {

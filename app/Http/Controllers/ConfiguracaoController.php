@@ -37,12 +37,13 @@ class ConfiguracaoController extends Controller
             $request->validate([
                 'chave' => 'required|string|max:255|unique:configuracoes,chave,' . $configuracao->id,
                 'valor' => 'required|string',
-                'descricao' => 'nullable|string|max:500'
+                'descricao' => 'nullable|string'
             ]);
     
             $configuracao->update($request->all());
             return redirect()->route('configuracoes.index')->with(['type' => 'success', 'message' => 'Configuração atualizada com sucesso!']);
         } catch( \Exception $e) {
+            dd($e->getMessage());
             return redirect()->route('configuracoes.index')->with(['type' => 'error', 'message' => 'Erro ao atualizar configuração: ' . $e->getMessage()]);
         }   
 

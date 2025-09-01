@@ -96,20 +96,20 @@
                     <div class="col-md-10">
                         <form method="GET" action="{{ route('financeiro.index') }}" class="row g-3" id="filterForm">
                             <div class="col-md-3">
-                                <input type="text" class="form-control" name="busca" value="{{ request('busca') }}" placeholder="Buscar movimentações..." style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                                <input type="text" class="form-control" name="busca" value="{{ request('busca') }}" placeholder="Buscar movimentações..." style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;" id="busca">
                             </div>
                             <div class="col-md-2">
-                                <select class="form-select" name="tipo" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                                <select class="form-select" name="tipo" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;" id="tipo">
                                     <option value="">Todos os tipos</option>
                                     <option value="entrada" {{ request('tipo') == 'entrada' ? 'selected' : '' }}>Entrada</option>
                                     <option value="saida" {{ request('tipo') == 'saida' ? 'selected' : '' }}>Saída</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <input type="date" class="form-control" name="data_inicio" value="{{ request('data_inicio') }}" placeholder="Data início" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                                <input type="date" class="form-control" name="data_inicio" value="{{ request('data_inicio') }}" placeholder="Data início" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;" id="data_inicio">
                             </div>
                             <div class="col-md-2">
-                                <input type="date" class="form-control" name="data_fim" value="{{ request('data_fim') }}" placeholder="Data fim" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                                <input type="date" class="form-control" name="data_fim" value="{{ request('data_fim') }}" placeholder="Data fim" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;" id="data_fim">
                             </div>
                             <div class="col-md-1">
                                 <button type="submit" class="btn btn-outline-primary w-100" style="border-color: #60a5fa; color: #60a5fa;">
@@ -306,13 +306,15 @@
 
                      <!-- CHANGE> Adicionando seção de produtos -->
                     <div class="mb-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="text-primary mb-0">Produtos/Serviços</h6>
-                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="adicionarProduto()">
+                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 rounded" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #0ea5e9;">
+                            <h6 class="text-primary mb-0 fw-bold">
+                                <i class="fas fa-box me-2"></i>Produtos/Serviços Associados
+                            </h6>
+                            <button type="button" class="btn btn-primary btn-sm shadow-sm" onclick="adicionarProduto()">
                                 <i class="fas fa-plus me-1"></i>Adicionar Produto
                             </button>
                         </div>
-                        <div id="produtos-container">
+                        <div id="produtos-container" class="produtos-highlight">
                              <!-- Produtos serão adicionados aqui via JavaScript -->
                         </div>
                     </div>
@@ -376,7 +378,7 @@
                         <label for="observacoes" class="form-label">Observações</label>
                         <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
                     </div>
-                    <div class="form-check">
+                    <div class="form-check d-none">
                         <input class="form-check-input" type="checkbox" id="ativo" name="ativo" value="1" checked>
                         <label class="form-check-label" for="ativo">
                             Ativo
@@ -432,7 +434,7 @@
                             <select class="form-select" id="edit_tipo" name="tipo" required>
                                 <option value="">Selecione...</option>
                                 <option value="entrada">Entrada</option>
-                                <option value="saida">Saída</option>
+                                {{-- <option value="saida">Saída</option> --}}
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
@@ -578,7 +580,6 @@
 @push('styles')
 <style>
     body {
-        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
         font-family: 'Inter', sans-serif;
     }
 
@@ -806,6 +807,50 @@
         font-size: 0.9rem;
     }
 
+    /* Adicionando estilos para destacar produtos */
+    .produtos-highlight .produto-item {
+        background: linear-gradient(135deg, #fefefe 0%, #f8fafc 100%);
+        border: 2px solid #60a5fa !important;
+        border-radius: 12px !important;
+        padding: 1.5rem !important;
+        margin-bottom: 1rem !important;
+        box-shadow: 0 4px 20px rgba(96, 165, 250, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .produtos-highlight .produto-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(96, 165, 250, 0.25);
+        border-color: #3b82f6 !important;
+    }
+
+    .produtos-highlight .form-label {
+        font-weight: 600;
+        color: #1e40af;
+        margin-bottom: 0.5rem;
+    }
+
+    .produtos-highlight .form-select,
+    .produtos-highlight .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .produtos-highlight .form-select:focus,
+    .produtos-highlight .form-control:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    }
+
+    .produto-header {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #3b82f6;
+    }
+
     @media (max-width: 768px) {
         .pagination-controls {
             flex-direction: column;
@@ -832,35 +877,8 @@
 
 @push('scripts')
 <script>
-    // Auto-submit dos filtros
-    document.querySelector('input[name="busca"]').addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(() => {
-            document.getElementById('filterForm').submit();
-        }, 500);
-    });
+    let produtoIndex = 1;
 
-    document.querySelector('select[name="tipo"]').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
-
-    document.querySelector('input[name="data_inicio"]').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
-
-    document.querySelector('input[name="data_fim"]').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
-
-    // Seletor de itens por página
-    document.getElementById('perPage').addEventListener('change', function() {
-        const url = new URL(window.location);
-        url.searchParams.set('per_page', this.value);
-        url.searchParams.delete('page');
-        window.location.href = url.toString();
-    });
-
-    // Máscara monetária
     function aplicarMascaraMonetaria(elemento) {
         if (!elemento) return;
         elemento.addEventListener('input', function(e) {
@@ -873,64 +891,45 @@
     }
 
     // Aplicar máscara nos campos de valor
-    aplicarMascaraMonetaria(document.getElementById('valor'));
-    aplicarMascaraMonetaria(document.getElementById('edit_valor'));
-    aplicarMascaraMonetaria(document.getElementById('desconto'));
-    aplicarMascaraMonetaria(document.getElementById('edit_desconto'));
-    aplicarMascaraMonetaria(document.getElementById('valor_pago'));
-    aplicarMascaraMonetaria(document.getElementById('edit_valor_pago'));
+    document.addEventListener('DOMContentLoaded', function() {
+        aplicarMascaraMonetaria(document.getElementById('valor'));
+        aplicarMascaraMonetaria(document.getElementById('edit_valor'));
+        aplicarMascaraMonetaria(document.getElementById('desconto'));
+        aplicarMascaraMonetaria(document.getElementById('edit_desconto'));
+        aplicarMascaraMonetaria(document.getElementById('valor_pago'));
+        aplicarMascaraMonetaria(document.getElementById('edit_valor_pago'));
 
-    const baixadoCheckbox = document.getElementById('baixado');
-    const camposPagamento = document.getElementById('camposPagamento');
-    const situacaoSelect = document.getElementById('situacao');
+        const baixadoCheckbox = document.getElementById('baixado');
+        const camposPagamento = document.getElementById('camposPagamento');
+        const situacaoSelect = document.getElementById('situacao');
 
-    baixadoCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            camposPagamento.style.display = 'block';
-            situacaoSelect.value = 'pago';
-            situacaoSelect.disabled = true;
-            // Definir data de pagamento como hoje
-            document.getElementById('data_pagamento').valueAsDate = new Date();
-        } else {
-            camposPagamento.style.display = 'none';
-            situacaoSelect.disabled = false;
+        if (baixadoCheckbox && camposPagamento && situacaoSelect) {
+            baixadoCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    camposPagamento.style.display = 'block';
+                    situacaoSelect.value = 'pago';
+                    
+                    // Tornar campos obrigatórios
+                    document.getElementById('forma_pagamento_id').required = true;
+                    document.getElementById('data_pagamento').required = true;
+                    document.getElementById('valor_pago').required = true;
+                } else {
+                    camposPagamento.style.display = 'none';
+                    situacaoSelect.value = 'em_aberto';
+                    
+                    // Remover obrigatoriedade
+                    document.getElementById('forma_pagamento_id').required = false;
+                    document.getElementById('data_pagamento').required = false;
+                    document.getElementById('valor_pago').required = false;
+                }
+            });
         }
     });
-
-    const editBaixadoCheckbox = document.getElementById('edit_baixado');
-    const editCamposPagamento = document.getElementById('edit_camposPagamento');
-    const editSituacaoSelect = document.getElementById('edit_situacao');
-
-    editBaixadoCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            editSituacaoSelect.value = 'pago';
-            editSituacaoSelect.disabled = true;
-            // Definir data de pagamento como hoje se não tiver
-            if (!document.getElementById('edit_data_pagamento').value) {
-                document.getElementById('edit_data_pagamento').valueAsDate = new Date();
-            }
-        } else {
-            editSituacaoSelect.disabled = false;
-        }
-    });
-
-    // Controlar visibilidade do checkbox baixado baseado na situação
-    editSituacaoSelect.addEventListener('change', function() {
-        const baixadoContainer = document.getElementById('edit_baixado_container');
-        if (this.value === 'em_aberto') {
-            baixadoContainer.style.display = 'block';
-        } else {
-            baixadoContainer.style.display = 'none';
-            editBaixadoCheckbox.checked = false;
-        }
-    });
-
-    // Definir data atual como padrão
-    document.getElementById('data').valueAsDate = new Date();
 
     function visualizarMovimentacao(id) {
-        // Buscar dados da movimentação na tabela
         const linha = document.querySelector(`button[onclick="visualizarMovimentacao(${id})"]`).closest('tr');
+        if (!linha) return;
+        
         const colunas = linha.querySelectorAll('td');
         
         const data = colunas[0].textContent;
@@ -969,62 +968,71 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <strong>Valor:</strong><br>
-                    ${colunas[6].innerHTML}
+                    <span class="text-muted">${valor}</span>
                 </div>
             </div>
         `;
         
         document.getElementById('visualizarMovimentacaoContent').innerHTML = content;
+        const modal = new bootstrap.Modal(document.getElementById('visualizarMovimentacaoModal'));
+        modal.show();
     }
 
     function editarMovimentacao(id) {
-        // Buscar dados da movimentação via AJAX ou usar dados da tabela
-        fetch(`/financeiro/${id}`)
-            .then(response => response.json())
-            .then(data => {
-                // Preencher todos os campos do formulário
-                document.getElementById('edit_data').value = data.data;
-                document.getElementById('edit_tipo').value = data.tipo;
-                document.getElementById('edit_descricao').value = data.descricao;
-                document.getElementById('edit_cliente_id').value = data.cliente_id || '';
-                document.getElementById('edit_categoria_financeira_id').value = data.categoria_financeira_id || '';
-                document.getElementById('edit_valor').value = `R$ ${parseFloat(data.valor).toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}`;
-                document.getElementById('edit_situacao').value = data.situacao;
-                document.getElementById('edit_data_vencimento').value = data.data_vencimento || '';
-                document.getElementById('edit_forma_pagamento_id').value = data.forma_pagamento_id || '';
-                document.getElementById('edit_data_pagamento').value = data.data_pagamento || '';
-                document.getElementById('edit_desconto').value = data.desconto ? `R$ ${parseFloat(data.desconto).toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}` : 'R$ 0,00';
-                document.getElementById('edit_valor_pago').value = data.valor_pago ? `R$ ${parseFloat(data.valor_pago).toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}` : '';
-                document.getElementById('edit_observacoes').value = data.observacoes || '';
-                document.getElementById('edit_ativo').checked = data.ativo;
-
-                // Controlar visibilidade do checkbox baixado
-                const baixadoContainer = document.getElementById('edit_baixado_container');
-                if (data.situacao === 'em_aberto') {
-                    baixadoContainer.style.display = 'block';
-                } else {
-                    baixadoContainer.style.display = 'none';
+        fetch(`financeiro/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar dados da movimentação');
                 }
-
-                // Definir action do formulário
-                document.getElementById('editarMovimentacaoForm').action = `/financeiro/${id}`;
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('editarMovimentacaoForm').action = `financeiro/${id}`;
+                
+                // Preencher campos básicos
+                const editTipo = document.getElementById('edit_tipo');
+                const editDescricao = document.getElementById('edit_descricao');
+                const editValor = document.getElementById('edit_valor');
+                const editData = document.getElementById('edit_data');
+                const editClienteId = document.getElementById('edit_cliente_id');
+                const editCategoriaId = document.getElementById('edit_categoria_financeira_id');
+                const editSituacao = document.getElementById('edit_situacao');
+                const editObservacoes = document.getElementById('edit_observacoes');
+                
+                if (editTipo) editTipo.value = data.tipo || '';
+                if (editDescricao) editDescricao.value = data.descricao || '';
+                if (editValor) editValor.value = data.valor ? `R$ ${parseFloat(data.valor).toFixed(2).replace('.', ',')}` : '';
+                if (editData) editData.value = data.data || '';
+                if (editClienteId) editClienteId.value = data.cliente_id || '';
+                if (editCategoriaId) editCategoriaId.value = data.categoria_financeira_id || '';
+                if (editSituacao) editSituacao.value = data.situacao || '';
+                if (editObservacoes) editObservacoes.value = data.observacoes || '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('editarMovimentacaoModal'));
+                modal.show();
             })
             .catch(error => {
-                console.error('Erro ao carregar dados da movimentação:', error);
+                console.error('Erro:', error);
+                alert('Erro ao carregar dados da movimentação');
             });
     }
 
-    function confirmarExclusao(id, descricao) {
-        document.getElementById('movimentacaoNomeExcluir').textContent = descricao;
-        document.getElementById('excluirMovimentacaoForm').action = `/financeiro/${id}`;
+    function confirmarExclusao(id, nome) {
+        document.getElementById('movimentacaoNomeExcluir').textContent = nome;
+        document.getElementById('excluirMovimentacaoForm').action = `financeiro/${id}`;
+        const modal = new bootstrap.Modal(document.getElementById('excluirMovimentacaoModal'));
+        modal.show();
     }
-
-    let produtoIndex = 0;
 
     function adicionarProduto() {
         const container = document.getElementById('produtos-container');
         const produtoHtml = `
-            <div class="produto-item border rounded p-3 mb-3" data-index="${produtoIndex}">
+            <div class="produto-item" data-index="${produtoIndex}">
+                <div class="produto-header">
+                    <h6 class="mb-0 text-primary">
+                        <i class="fas fa-tag me-2"></i>Produto/Serviço #${produtoIndex + 1}
+                    </h6>
+                </div>
                 <div class="row align-items-end">
                     <div class="col-md-5">
                         <label class="form-label">Produto/Serviço</label>
@@ -1044,8 +1052,8 @@
                         <input type="text" class="form-control valor-monetario" name="produtos[${produtoIndex}][valor_unitario]" required>
                     </div>
                     <div class="col-md-2">
-                        <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removerProduto(${produtoIndex})">
-                            <i class="fas fa-trash"></i> Remover
+                        <button type="button" class="btn btn-outline-danger btn-sm w-100 shadow-sm" onclick="removerProduto(${produtoIndex})">
+                            <i class="fas fa-trash me-1"></i> Remover
                         </button>
                     </div>
                 </div>
@@ -1067,12 +1075,77 @@
         }
     }
 
-    // Aplicar máscara monetária em campos dinâmicos
     document.addEventListener('input', function(e) {
         if (e.target.classList.contains('valor-monetario')) {
             aplicarMascaraMonetaria(e.target);
         }
     });
+
+    // Função para limpar filtros
+    function limparFiltros() {
+        document.getElementById('busca').value = '';
+        document.getElementById('tipo').value = '';
+        document.getElementById('situacao').value = '';
+        document.getElementById('data_inicio').value = '';
+        document.getElementById('data_fim').value = '';
+        document.getElementById('filtrosForm').submit();
+    }
+
+    // Auto-submit dos filtros
+    const buscaInput = document.querySelector('input[name="busca"]');
+    const tipoSelect = document.querySelector('select[name="tipo"]');
+    const situacaoSelect = document.querySelector('select[name="situacao"]');
+    const dataInicioInput = document.querySelector('input[name="data_inicio"]');
+    const dataFimInput = document.querySelector('input[name="data_fim"]');
+    
+    if (buscaInput) {
+        buscaInput.addEventListener('input', function() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                const form = document.getElementById('filterForm') || document.getElementById('filtrosForm');
+                if (form) form.submit();
+            }, 500);
+        });
+    }
+
+    if (tipoSelect) {
+        tipoSelect.addEventListener('change', function() {
+            const form = document.getElementById('filterForm') || document.getElementById('filtrosForm');
+            if (form) form.submit();
+        });
+    }
+
+    if (situacaoSelect) {
+        situacaoSelect.addEventListener('change', function() {
+            const form = document.getElementById('filterForm') || document.getElementById('filtrosForm');
+            if (form) form.submit();
+        });
+    }
+
+    if (dataInicioInput) {
+        dataInicioInput.addEventListener('change', function() {
+            const form = document.getElementById('filterForm') || document.getElementById('filtrosForm');
+            if (form) form.submit();
+        });
+    }
+
+    if (dataFimInput) {
+        dataFimInput.addEventListener('change', function() {
+            const form = document.getElementById('filterForm') || document.getElementById('filtrosForm');
+            if (form) form.submit();
+        });
+    }
+
+    // Seletor de itens por página
+    const perPageSelect = document.getElementById('perPage');
+    if (perPageSelect) {
+        perPageSelect.addEventListener('change', function() {
+            const url = new URL(window.location);
+            url.searchParams.set('per_page', this.value);
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        });
+    }
 </script>
 @endpush
 @endsection

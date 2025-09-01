@@ -107,7 +107,6 @@
         </div>
     </div>
 
-    <!-- Card de Filtros -->
     <div class="card-custom mb-4">
         <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid rgba(59, 130, 246, 0.2); cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse">
             <h6 class="m-0 font-weight-bold" style="color: #1f2937;">
@@ -160,11 +159,9 @@
         </div>
     </div>
 
-    <!-- Card dos Agendamentos -->
     <div class="card-custom">
         <div class="card-body">
             @if(isset($agendamentos) && $agendamentos->count() > 0)
-                <!-- Informações da Paginação -->
                 <div class="card-custom mb-4">
                     <div class="card-body">
                         <div class="pagination-controls">
@@ -186,11 +183,11 @@
                     </div>
                 </div>
 
-                <!-- Cards de Agendamentos -->
                 <div class="row">
                     @foreach($agendamentos as $agendamento)
                     <div class="col-xl-4 col-lg-6 mb-4">
-                        <div class="card-agendamento" onclick="viewAgendamento({{ $agendamento->id }})" data-bs-toggle="modal" data-bs-target="#viewModal"
+                        <!-- Removendo onclick e data-bs-toggle do card para não abrir modal ao clicar -->
+                        <div class="card-agendamento"
                              data-id="{{ $agendamento->id }}"
                              data-cliente-id="{{ $agendamento->cliente_id }}"
                              data-data="{{ $agendamento->data_agendamento->format('Y-m-d') }}"
@@ -250,23 +247,47 @@
                                 </div>
                             </div>
                             <div class="card-actions">
-                                @if($agendamento->isSlotDisponivel())
-                                    <button type="button" class="btn btn-outline-success btn-sm" 
-                                            onclick="event.stopPropagation(); associarSlot({{ $agendamento->id }})"
-                                            data-bs-toggle="modal" data-bs-target="#associarModal">
-                                        <i class="fas fa-user-plus"></i> Associar
-                                    </button>
-                                @endif
-                                <button type="button" class="btn btn-outline-primary btn-sm" 
-                                        onclick="event.stopPropagation(); editAgendamento({{ $agendamento->id }})"
-                                        data-bs-toggle="modal" data-bs-target="#editModal">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-danger btn-sm" 
-                                        onclick="event.stopPropagation(); deleteAgendamento({{ $agendamento->id }}, '{{ $agendamento->cliente->nome ?? 'Slot' }}')"
-                                        data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <!-- Reorganizando botões para mobile: Iniciar em cima, Visualizar e Excluir embaixo lado a lado -->
+                                <div class="actions-mobile-layout">
+                                    <!-- Botão Iniciar/Finalizar em cima no mobile -->
+                                    <div class="action-top">
+                                        @if($agendamento->status === 'agendado')
+                                            <button type="button" class="btn btn-outline-primary btn-sm w-100" 
+                                                    onclick="iniciarAtendimento({{ $agendamento->id }})"
+                                                    title="Iniciar Atendimento">
+                                                <i class="fas fa-play"></i> Iniciar Atendimento
+                                            </button>
+                                        @elseif($agendamento->status === 'em_andamento')
+                                            <button type="button" class="btn btn-outline-success btn-sm w-100" 
+                                                    onclick="finalizarAtendimentoDireto({{ $agendamento->id }})"
+                                                    title="Finalizar Atendimento">
+                                                <i class="fas fa-check"></i> Finalizar Atendimento
+                                            </button>
+                                        @elseif($agendamento->status === 'disponivel')
+                                            <button type="button" class="btn btn-outline-success btn-sm w-100" 
+                                                    onclick="associarSlot({{ $agendamento->id }})"
+                                                    data-bs-toggle="modal" data-bs-target="#associarModal">
+                                                <i class="fas fa-user-plus"></i> Associar Cliente
+                                            </button>
+                                        @endif
+                                    </div>
+                                    
+                                    <!-- Botões Visualizar e Excluir lado a lado embaixo no mobile -->
+                                    <div class="action-bottom">
+                                        <button type="button" class="btn btn-outline-info btn-sm" 
+                                                onclick="viewAgendamento({{ $agendamento->id }})"
+                                                data-bs-toggle="modal" data-bs-target="#viewModal"
+                                                title="Visualizar Detalhes">
+                                            <i class="fas fa-eye"></i> <span class="btn-text">Visualizar</span>
+                                        </button>
+                                        
+                                        <button type="button" class="btn btn-outline-danger btn-sm" 
+                                                onclick="deleteAgendamento({{ $agendamento->id }}, '{{ $agendamento->cliente->nome ?? 'Slot disponível' }}')"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                            <i class="fas fa-trash"></i> <span class="btn-text">Excluir</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -408,132 +429,109 @@
 
 <!-- Modal Visualizar -->
 <div class="modal fade" id="viewModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detalhes do Agendamento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    Detalhes do Agendamento
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <strong>Cliente:</strong>
-                        <p id="view-cliente"></p>
+            <div class="modal-body p-4">
+                 {{-- Melhorando estrutura do modal com cards organizados --}}
+                <div class="row g-4">
+                     {{-- Card Informações do Cliente --}}
+                    <div class="col-lg-6">
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-user text-primary me-2"></i>
+                                <h6 class="mb-0">Informações do Cliente</h6>
+                            </div>
+                            <div class="info-card-body">
+                                <div class="info-item">
+                                    <label>Nome:</label>
+                                    <span id="view-cliente" class="fw-bold"></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Status:</label>
+                                    <span id="view-status"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <strong>Status:</strong>
-                        <p id="view-status"></p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <strong>Data:</strong>
-                        <p id="view-data"></p>
-                    </div>
-                    <div class="col-md-4">
-                        <strong>Horário:</strong>
-                        <p id="view-horario"></p>
-                    </div>
-                    <div class="col-md-4">
-                        <strong>Valor Total:</strong>
-                        <p id="view-valor"></p>
-                    </div>
-                </div>
-                <!-- Seção para mostrar múltiplos serviços -->
-                <div class="row">
-                    <div class="col-12">
-                        <strong>Serviços:</strong>
-                        <div id="view-servicos"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <strong>Observações:</strong>
-                        <p id="view-observacoes"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Modal Editar -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form id="editForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Agendamento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                     {{-- Card Informações do Agendamento --}}
+                    <div class="col-lg-6">
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-calendar-check text-success me-2"></i>
+                                <h6 class="mb-0">Detalhes do Agendamento</h6>
+                            </div>
+                            <div class="info-card-body">
+                                <div class="info-item">
+                                    <label>Data:</label>
+                                    <span id="view-data" class="fw-bold"></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Horário:</label>
+                                    <span id="view-horario" class="fw-bold"></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Valor Total:</label>
+                                    <span id="view-valor" class="fw-bold text-success"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="edit-cliente_id" class="form-label">Cliente *</label>
-                                <select class="form-select" id="edit-cliente_id" name="cliente_id" required>
-                                    <option value="">Selecione um cliente</option>
-                                    @foreach($clientes as $cliente)
-                                    <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
-                                    @endforeach
-                                </select>
+
+                 {{-- Card Serviços Associados --}}
+                <div class="row g-4 mt-2">
+                    <div class="col-12">
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-cut text-warning me-2"></i>
+                                <h6 class="mb-0">Serviços Associados</h6>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="edit-status" class="form-label">Status *</label>
-                                <select class="form-select" id="edit-status" name="status" required>
-                                    <option value="disponivel">Disponível</option>
-                                    <option value="agendado">Agendado</option>
-                                    <option value="confirmado">Confirmado</option>
-                                    <option value="em_andamento">Em Andamento</option>
-                                    <option value="concluido">Concluído</option>
-                                    <option value="cancelado">Cancelado</option>
-                                </select>
+                            <div class="info-card-body">
+                                <div id="view-servicos" class="services-grid"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="edit-data_agendamento" class="form-label">Data *</label>
-                                <input type="date" class="form-control" id="edit-data_agendamento" name="data_agendamento" required>
+                </div>
+
+                 {{-- Card Observações --}}
+                <div class="row g-4 mt-2">
+                    <div class="col-12">
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-sticky-note text-info me-2"></i>
+                                <h6 class="mb-0">Observações</h6>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="edit-hora_inicio" class="form-label">Horário *</label>
-                                <input type="time" class="form-control" id="edit-hora_inicio" name="hora_inicio" required>
+                            <div class="info-card-body">
+                                <p id="view-observacoes" class="mb-0 text-muted"></p>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Seção para editar múltiplos serviços -->
-                    <div class="mb-3">
-                        <label class="form-label">Serviços *</label>
-                        <div id="edit-servicos-container">
-                            <!-- Serviços serão carregados via JavaScript -->
-                        </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm" id="edit-add-servico">
-                            <i class="fas fa-plus me-1"></i> Adicionar Serviço
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <div class="d-flex gap-2 w-100 justify-content-between">
+                    <div>
+                         {{-- Removendo botões de ação do modal pois agora estão nos cards --}}
+                         {{-- Botão Cancelar Atendimento - só aparece se status for "agendado" --}}
+                        <button type="button" class="btn btn-outline-warning" id="btn-cancelar-atendimento" style="display: none;" onclick="cancelarAtendimento()">
+                            <i class="fas fa-times me-1"></i> Cancelar Atendimento
                         </button>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="edit-observacoes" class="form-label">Observações</label>
-                        <textarea class="form-control" id="edit-observacoes" name="observacoes" rows="3"></textarea>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i> Fechar
+                        </button>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary-custom">Atualizar</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -572,7 +570,7 @@
 <div class="modal fade" id="gerarLoteModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form action="" method="POST">
+            <form action="{{ route('agendamentos.gerar-lote') }}" method="POST">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Gerar Agendamentos em Lote</h5>
@@ -595,9 +593,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="hora_inicio_lote" class="form-label">Hora Início *</label>
-                        <input type="time" class="form-control" id="hora_inicio_lote" name="hora_inicio" required>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="hora_inicio_lote" class="form-label">Hora Início *</label>
+                                <input type="time" class="form-control" id="hora_inicio_lote" name="hora_inicio" required>
+                            </div>
+                        </div>
+                        <!-- CHANGE> Adicionando campo hora fim no processo de gerar lote -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="hora_fim_lote" class="form-label">Hora Fim *</label>
+                                <input type="time" class="form-control" id="hora_fim_lote" name="hora_fim" required>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Dias da Semana *</label>
@@ -660,6 +669,68 @@
     </div>
 </div>
 
+<!-- Modal Finalizar Atendimento -->
+<div class="modal fade" id="finalizarModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="finalizarForm" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Finalizar Atendimento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="forma_pagamento_id" class="form-label">Forma de Pagamento *</label>
+                                <select class="form-select" id="forma_pagamento_id" name="forma_pagamento_id" required>
+                                    <option value="">Selecione uma forma de pagamento</option>
+                                    @foreach($formasPagamento ?? [] as $forma)
+                                    <option value="{{ $forma->id }}">{{ $forma->nome }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="desconto" class="form-label">Desconto</label>
+                                <input type="text" class="form-control money-mask" id="desconto" name="desconto" value="0,00">
+                                 <!-- CHANGE> Campo oculto para enviar valor decimal -->
+                                <input type="hidden" id="desconto_decimal" name="desconto_decimal">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="valor_pago" class="form-label">Valor Pago *</label>
+                                <input type="text" class="form-control money-mask" id="valor_pago" name="valor_pago" required>
+                                 <!-- CHANGE> Campo oculto para enviar valor decimal -->
+                                <input type="hidden" id="valor_pago_decimal" name="valor_pago_decimal">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Valor Total dos Serviços</label>
+                                <div class="form-control-plaintext fw-bold text-success" id="valor-total-servicos">R$ 0,00</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        O valor pago foi preenchido automaticamente com a soma dos serviços. Você pode ajustar se necessário.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Finalizar Atendimento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @push('styles')
 <style>
     
@@ -684,7 +755,6 @@
 
     /* Aplicando estilos CSS no padrão da tela de clientes */
     body {
-        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
         font-family: 'Inter', sans-serif;
     }
 
@@ -697,11 +767,11 @@
         border: 2px solid rgba(59, 130, 246, 0.2);
         border-radius: 12px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        transition: all 0.15s ease;
+        /* transition: all 0.05s ease; */
     }
 
     .card-custom:hover {
-        transform: translateY(-2px);
+        /* transform: translateY(-2px); */
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
         border-color: rgba(59, 130, 246, 0.5);
     }
@@ -844,7 +914,7 @@
         align-items: center;
         justify-content: center;
         color: white;
-        margin-right: 1rem;
+        font-weight: 700;
         font-size: 1.1rem;
     }
 
@@ -867,13 +937,13 @@
         border-radius: 15px;
         overflow: hidden;
         transition: all 0.3s ease;
-        cursor: pointer;
+        /* Removendo cursor pointer para não indicar que é clicável */
         box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1);
         backdrop-filter: blur(10px);
     }
 
     .card-agendamento:hover {
-        transform: translateY(-5px);
+        /* transform: translateY(-5px); */
         box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
         border-color: rgba(59, 130, 246, 0.4);
     }
@@ -904,9 +974,62 @@
     .card-actions {
         padding: 0.75rem 1rem;
         background: rgba(248, 250, 252, 0.5);
+    }
+
+    /* Adicionando estilos para layout mobile dos botões */
+    .actions-mobile-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .action-top {
+        display: flex;
+        justify-content: center;
+    }
+
+    .action-bottom {
         display: flex;
         gap: 0.5rem;
-        justify-content: flex-end;
+        justify-content: space-between;
+    }
+
+    .action-bottom .btn {
+        flex: 1;
+    }
+
+    /* Desktop: layout horizontal tradicional */
+    @media (min-width: 769px) {
+        .actions-mobile-layout {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .action-top {
+            order: 2;
+        }
+        
+        .action-bottom {
+            order: 1;
+            flex: 0 0 auto;
+            justify-content: flex-start;
+        }
+        
+        .action-bottom .btn {
+            flex: 0 0 auto;
+        }
+    }
+
+    /* Mobile: esconder texto dos botões para economizar espaço */
+    @media (max-width: 768px) {
+        .btn-text {
+            display: none;
+        }
+        
+        .action-bottom .btn {
+            min-width: 45px;
+        }
     }
 
     .pagination-wrapper {
@@ -1016,22 +1139,148 @@
             font-size: 0.875rem;
         }
     }
+
+    /* Adicionando estilos para o modal melhorado */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    }
+
+    .info-card {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .info-card-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: center;
+    }
+
+    .info-card-header h6 {
+        color: #1f2937;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .info-card-body {
+        padding: 1.25rem;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .info-item label {
+        color: #6b7280;
+        font-weight: 500;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .info-item span {
+        color: #1f2937;
+        font-size: 0.95rem;
+    }
+
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+
+    .service-card {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 10px;
+        padding: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .service-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15);
+        border-color: rgba(59, 130, 246, 0.4);
+    }
+
+    .service-card h6 {
+        color: #1f2937;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .service-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+    }
+
+    .service-quantity {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .service-price {
+        color: #059669;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .services-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .info-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+        }
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-    // Auto-submit dos filtros
-    document.querySelector('input[name="busca"]').addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(() => {
-            document.getElementById('filterForm').submit();
-        }, 500);
-    });
+    let agendamentoAtual = null;
 
-    document.querySelector('select[name="status"]').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
+    // Auto-submit dos filtros
+    // document.querySelector('input[name="busca"]').addEventListener('input', function() {
+    //     clearTimeout(this.searchTimeout);
+    //     this.searchTimeout = setTimeout(() => {
+    //         document.getElementById('filterForm').submit();
+    //     }, 500);
+    // });
+
+    // document.querySelector('select[name="status"]').addEventListener('change', function() {
+    //     document.getElementById('filterForm').submit();
+    // });
 
     // Seletor de itens por página
     document.getElementById('perPage').addEventListener('change', function() {
@@ -1041,59 +1290,288 @@
         window.location.href = url.toString();
     });
 
-    // Funções dos agendamentos
-    function viewAgendamento(id) {
-        // Implementar visualização do agendamento
-        console.log('Visualizar agendamento:', id);
+    function iniciarAtendimento(id) {
+        if (confirm('Deseja iniciar este atendimento?')) {
+            fetch(`/admin/agendamentos/${id}/iniciar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Atendimento iniciado com sucesso!');
+                    location.reload();
+                } else {
+                    alert('Erro ao iniciar atendimento: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao iniciar atendimento');
+            });
+        }
     }
 
-    function editAgendamento(id) {
-        // Implementar edição do agendamento
-        console.log('Editar agendamento:', id);
+    function finalizarAtendimentoDireto(id) {
+        // Buscar dados do agendamento primeiro
+        fetch(`/admin/agendamentos/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                agendamentoAtual = data;
+                abrirModalFinalizacao();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao carregar dados do agendamento');
+            });
     }
+
+    function viewAgendamento(id) {
+            fetch(`/admin/agendamentos/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    agendamentoAtual = data;
+                    
+                    const elements = {
+                        'view-cliente': data.cliente ? data.cliente.nome : 'Slot Livre',
+                        'view-status': `<span class="badge bg-${data.status_color}">${data.status_label}</span>`,
+                        'view-data': new Date(data.data_agendamento).toLocaleDateString('pt-BR'),
+                        'view-horario': `${data.hora_inicio} - ${data.hora_fim}`,
+                        'view-valor': data.valor_total ? `R$ ${parseFloat(data.valor_total).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : 'N/A',
+                        'view-observacoes': data.observacoes || 'Nenhuma observação registrada'
+                    };
+                    
+                    Object.entries(elements).forEach(([id, content]) => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            if (id === 'view-status') {
+                                element.innerHTML = content;
+                            } else {
+                                element.textContent = content;
+                            }
+                        }
+                    });
+                    
+                    const servicosContainer = document.getElementById('view-servicos');
+                    if (data.produtos && data.produtos.length > 0) {
+                        const servicosHtml = data.produtos.map(produto => `
+                            <div class="service-card">
+                                <h6>${produto.nome}</h6>
+                                <div class="service-details">
+                                    <span class="service-quantity">Qtd: ${produto.pivot.quantidade}</span>
+                                    <span class="service-price">R$ ${parseFloat(produto.pivot.valor_unitario).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                                </div>
+                            </div>
+                        `).join('');
+                        servicosContainer.innerHTML = servicosHtml;
+                    } else {
+                        servicosContainer.innerHTML = '<div class="text-center text-muted py-3"><i class="fas fa-info-circle me-2"></i>Nenhum serviço associado a este agendamento</div>';
+                    }
+                    
+                    // Configurar botões baseado no status
+                    const btnCancelar = document.getElementById('btn-cancelar-atendimento');
+                    if (btnCancelar) {
+                        btnCancelar.style.display = data.status === 'agendado' ? 'inline-block' : 'none';
+                    }
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('viewModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar agendamento:', error);
+                    alert('Erro ao carregar dados do agendamento');
+                });
+        }
+
+    function configurarBotoesStatus(status) {
+        const btnCancelar = document.getElementById('btn-cancelar-atendimento');
+        const btnMudarStatus = document.getElementById('btn-mudar-status');
+        const btnStatusText = document.getElementById('btn-status-text');
+        
+        // Resetar visibilidade
+        btnCancelar.style.display = 'none';
+        btnMudarStatus.style.display = 'none';
+        
+        if (status === 'agendado') {
+            btnCancelar.style.display = 'inline-block';
+            btnMudarStatus.style.display = 'inline-block';
+            btnStatusText.textContent = 'Iniciar Atendimento';
+            btnMudarStatus.className = 'btn btn-success';
+            btnMudarStatus.innerHTML = '<i class="fas fa-play me-1"></i> <span id="btn-status-text">Iniciar Atendimento</span>';
+        } else if (status === 'em_andamento') {
+            btnMudarStatus.style.display = 'inline-block';
+            btnStatusText.textContent = 'Finalizar Atendimento';
+            btnMudarStatus.className = 'btn btn-primary';
+            btnMudarStatus.innerHTML = '<i class="fas fa-check me-1"></i> <span id="btn-status-text">Finalizar Atendimento</span>';
+        }
+    }
+
+    function cancelarAtendimento() {
+        if (!agendamentoAtual) return;
+        
+        if (confirm('Tem certeza que deseja cancelar este atendimento? O cliente e serviços serão desassociados.')) {
+            fetch(`/admin/agendamentos/${agendamentoAtual.id}/cancelar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Atendimento cancelado com sucesso!');
+                    location.reload();
+                } else {
+                    alert('Erro ao cancelar atendimento: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao cancelar atendimento');
+            });
+        }
+    }
+
+    function mudarStatus() {
+        if (!agendamentoAtual) return;
+        
+        if (agendamentoAtual.status === 'agendado') {
+            // Mudar para "em andamento"
+            fetch(`/admin/agendamentos/${agendamentoAtual.id}/iniciar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Atendimento iniciado!');
+                    location.reload();
+                } else {
+                    alert('Erro ao iniciar atendimento: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao iniciar atendimento');
+            });
+        } else if (agendamentoAtual.status === 'em_andamento') {
+            // Abrir modal de finalização
+            abrirModalFinalizacao();
+        }
+    }
+
+    function abrirModalFinalizacao() {
+        if (!agendamentoAtual) return;
+        
+        // Calcular valor total dos serviços
+        let valorTotal = 0;
+        if (agendamentoAtual.produtos) {
+            agendamentoAtual.produtos.forEach(produto => {
+                valorTotal += parseFloat(produto.pivot.valor_unitario) * parseInt(produto.pivot.quantidade);
+            });
+        }
+        
+        // Preencher campos
+        document.getElementById('valor-total-servicos').textContent = `R$ ${valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+        document.getElementById('valor_pago').value = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+        document.getElementById('desconto').value = '0,00';
+        
+        document.getElementById('valor_pago_decimal').value = valorTotal.toFixed(2);
+        document.getElementById('desconto_decimal').value = '0.00';
+        
+        // Configurar action do form
+        document.getElementById('finalizarForm').action = `/admin/agendamentos/${agendamentoAtual.id}/finalizar`;
+        
+        // Fechar modal de visualização e abrir modal de finalização
+        const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewModal'));
+        if (viewModal) viewModal.hide();
+        
+        const finalizarModal = new bootstrap.Modal(document.getElementById('finalizarModal'));
+        finalizarModal.show();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        function setupMoneyMask() {
+            document.querySelectorAll('.money-mask').forEach(function(element) {
+                element.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    const decimalValue = (value / 100).toFixed(2);
+                    value = decimalValue.replace(".", ",");
+                    value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+                    e.target.value = value;
+                    
+                    const fieldName = e.target.name;
+                    const decimalField = document.getElementById(fieldName + '_decimal');
+                    if (decimalField) {
+                        decimalField.value = decimalValue;
+                    }
+                });
+            });
+        }
+        
+        setupMoneyMask();
+        
+        const finalizarForm = document.getElementById('finalizarForm');
+        if (finalizarForm) {
+            finalizarForm.addEventListener('submit', function(e) {
+                // Garantir que os valores decimais estão atualizados
+                const valorPago = document.getElementById('valor_pago').value;
+                const desconto = document.getElementById('desconto').value;
+                
+                document.getElementById('valor_pago_decimal').value = valorPago.replace(/\./g, '').replace(',', '.');
+                document.getElementById('desconto_decimal').value = desconto.replace(/\./g, '').replace(',', '.');
+            });
+        }
+
+    });
 
     function deleteAgendamento(id, nome) {
-        // Implementar exclusão do agendamento
-        console.log('Excluir agendamento:', id, nome);
+        document.getElementById('deleteForm').action = `/admin/agendamentos/${id}`;
+        document.getElementById('delete-agendamento-name').textContent = nome;
     }
     
     let servicoIndex = 1;
     
-    // Adicionar serviço no modal de associar
-    document.getElementById('add-servico').addEventListener('click', function() {
+    document.getElementById('add-servico')?.addEventListener('click', function() {
         const container = document.getElementById('servicos-container');
-        const servicoHtml = `
-            <div class="servico-item border rounded p-3 mb-3">
-                <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">Serviço</label>
-                        <select class="form-select servico-select" name="servicos[${servicoIndex}][produto_id]" required>
-                            <option value="">Selecione um serviço</option>
-                            @foreach($produtos as $produto)
-                            <option value="{{ $produto->id }}" data-preco="{{ $produto->preco }}">
-                                {{ $produto->nome }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Quantidade</label>
-                        <input type="number" class="form-control quantidade-input" name="servicos[${servicoIndex}][quantidade]" value="1" min="1" required>
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="button" class="btn btn-outline-danger btn-sm remove-servico">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
+        const servicoDiv = document.createElement('div');
+        servicoDiv.className = 'servico-item border rounded p-3 mb-3';
+        servicoDiv.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Serviço</label>
+                    <select class="form-select servico-select" name="servicos[${servicoIndex}][produto_id]" required>
+                        <option value="">Selecione um serviço</option>
+                        @foreach($produtos as $produto)
+                        <option value="{{ $produto->id }}" data-preco="{{ $produto->preco }}">
+                            {{ $produto->nome }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Quantidade</label>
+                    <input type="number" class="form-control quantidade-input" name="servicos[${servicoIndex}][quantidade]" value="1" min="1" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-servico">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
             </div>
         `;
-        container.insertAdjacentHTML('beforeend', servicoHtml);
+        container.appendChild(servicoDiv);
         servicoIndex++;
         updateRemoveButtons();
     });
     
-    // Remover serviço
     document.addEventListener('click', function(e) {
         if (e.target.closest('.remove-servico')) {
             e.target.closest('.servico-item').remove();
@@ -1103,12 +1581,11 @@
     
     function updateRemoveButtons() {
         const items = document.querySelectorAll('.servico-item');
-        items.forEach((item, index) => {
+        const showRemove = items.length > 1;
+        items.forEach(item => {
             const removeBtn = item.querySelector('.remove-servico');
-            if (items.length > 1) {
-                removeBtn.style.display = 'block';
-            } else {
-                removeBtn.style.display = 'none';
+            if (removeBtn) {
+                removeBtn.style.display = showRemove ? 'block' : 'none';
             }
         });
     }
@@ -1116,6 +1593,107 @@
     function associarSlot(id) {
         document.getElementById('associarForm').action = `/agendamentos/${id}/associar`;
     }
+    
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Função para limpar backdrop dos modais
+        function clearModalBackdrop() {
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }
+
+        // Event listeners para todos os modais
+        const modals = ['createModal', 'associarModal', 'viewModal', 'finalizarModal', 'excluirModal', 'gerarLoteModal'];
+        
+        modals.forEach(modalId => {
+            const modalElement = document.getElementById(modalId);
+            if (modalElement) {
+                modalElement.addEventListener('hidden.bs.modal', function() {
+                    clearModalBackdrop();
+                });
+            }
+        });
+
+        window.viewAgendamento = function(id) {
+            clearModalBackdrop(); // Limpar qualquer backdrop residual
+            
+            fetch(`/admin/agendamentos/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    agendamentoAtual = data;
+                    
+                    const elements = {
+                        'view-cliente': data.cliente ? data.cliente.nome : 'Slot Livre',
+                        'view-status': `<span class="badge bg-${data.status_color}">${data.status_label}</span>`,
+                        'view-data': new Date(data.data_agendamento).toLocaleDateString('pt-BR'),
+                        'view-horario': `${new Date(data.hora_inicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - ${new Date(data.hora_fim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
+                        'view-valor': data.valor_total ? `R$ ${parseFloat(data.valor_total).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : 'N/A',
+                        'view-observacoes': data.observacoes || 'Nenhuma observação registrada'
+                    };
+                    
+                    Object.entries(elements).forEach(([id, content]) => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            if (id === 'view-status') {
+                                element.innerHTML = content;
+                            } else {
+                                element.textContent = content;
+                            }
+                        }
+                    });
+                    
+                    const servicosContainer = document.getElementById('view-servicos');
+                    if (data.produtos && data.produtos.length > 0) {
+                        const servicosHtml = data.produtos.map(produto => `
+                            <div class="service-card">
+                                <h6>${produto.nome}</h6>
+                                <div class="service-details">
+                                    <span class="service-quantity">Qtd: ${produto.pivot.quantidade}</span>
+                                    <span class="service-price">R$ ${parseFloat(produto.pivot.valor_unitario).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                                </div>
+                            </div>
+                        `).join('');
+                        servicosContainer.innerHTML = servicosHtml;
+                    } else {
+                        servicosContainer.innerHTML = '<div class="text-center text-muted py-3"><i class="fas fa-info-circle me-2"></i>Nenhum serviço associado a este agendamento</div>';
+                    }
+                    
+                    // Configurar botões baseado no status
+                    const btnCancelar = document.getElementById('btn-cancelar-atendimento');
+                    if (btnCancelar) {
+                        btnCancelar.style.display = data.status === 'agendado' ? 'inline-block' : 'none';
+                    }
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('viewModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar agendamento:', error);
+                    alert('Erro ao carregar dados do agendamento');
+                });
+        }
+
+        window.finalizarAtendimento = function() {
+            const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewModal'));
+            if (viewModal) {
+                viewModal.hide();
+                // Aguardar o modal fechar completamente antes de abrir o próximo
+                setTimeout(() => {
+                    clearModalBackdrop();
+                    const finalizarModal = new bootstrap.Modal(document.getElementById('finalizarModal'));
+                    finalizarModal.show();
+                }, 300);
+            } else {
+                clearModalBackdrop();
+                const finalizarModal = new bootstrap.Modal(document.getElementById('finalizarModal'));
+                finalizarModal.show();
+            }
+        }
+
+    });
     
 </script>
 @endpush
