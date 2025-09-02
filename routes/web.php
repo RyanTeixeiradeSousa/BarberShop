@@ -29,9 +29,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/logout', [ App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
 
-    Route::get('/dashboard', function(){
-        return view('admin.dashboard');
-    })->name('admin.dashboard'); 
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard'); 
 
     Route::resource('/admin/clientes', App\Http\Controllers\ClienteController::class); 
     Route::resource('/admin/categorias', App\Http\Controllers\CategoriaController::class);  
@@ -57,5 +55,5 @@ Route::middleware(['auth'])->group(function () {
     
     // Usuários
     Route::resource('/admin/users', App\Http\Controllers\UserController::class);
-    Route::get('/admin/perfil', [App\Http\Controllers\UserController::class, 'perfilIndex']);
+    Route::get('/admin/perfil', [App\Http\Controllers\UserController::class, 'perfilIndex'])->name('perfilindex');
 });

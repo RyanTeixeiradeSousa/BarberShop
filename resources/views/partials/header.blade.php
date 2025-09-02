@@ -11,7 +11,7 @@
             
             <!-- Logo adaptado para barbearia -->
             <div class="header-logo">
-                <a href="#" class="logo-link">
+                <a href="{{route('dashboard')}}" class="logo-link">
                     <i class="fas fa-cut me-2"></i>
                     <span class="logo-text">BarberShop Pro</span>
                 </a>
@@ -71,7 +71,7 @@
                 <div class="user-avatar" style="background: linear-gradient(45deg, #3b82f6, #60a5fa) !important;">{{$iniciais}}</div>
                 <div class="user-info">
                     <h6>{{ $primeiroUltimo }}</h6>
-                    <a style="font-size: 12px;" class="perfil-link" href="{{route('categorias.index')}}">Meu perfil</a>
+                    <a style="font-size: 12px;" class="perfil-link" href="{{route('perfilindex')}}">Meu perfil</a>
                 </div>
             </div>
         </div>

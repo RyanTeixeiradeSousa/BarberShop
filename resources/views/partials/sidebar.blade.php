@@ -24,7 +24,7 @@
     <nav class="sidebar-nav">
         <!-- Dashboard -->
         <div class="nav-item">
-            <a href="{{route('admin.dashboard')}}" class="nav-link" title="Dashboard">
+            <a href="{{route('dashboard')}}" class="nav-link" title="Dashboard">
                 <i class="fas fa-home"></i>
                 <span class="nav-text">Dashboard</span>
             </a>
@@ -67,13 +67,13 @@
             <div class="nav-submenu" id="services-menu">
                 <div class="nav-item">
                     <a href="{{route('categorias.index')}}" class="nav-link " title="Categorias">
-                        <i class="fas fa-scissors"></i>
+                        <i class="fas fa-layer-group"></i>
                         <span class="nav-text">Categorias</span>
                     </a>
                 </div>
                 <div class="nav-item">
                     <a href="{{route('produtos.index')}}" class="nav-link " title="Gerenciar Produtos/Serviços">
-                        <i class="fas fa-user-tie"></i>
+                        <i class="fas fa-cart-shopping"></i>
                         <span class="nav-text">Gerenciar Produtos/Serviços</span>
                     </a>
                 </div>
@@ -90,7 +90,7 @@
         <div class="nav-category">
             <button class="nav-category-toggle" data-target="financial-menu" title="Financeiro">
                 <div class="nav-category-header">
-                    <i class="fas fa-credit-card me-2"></i>
+                    <i class="fa-solid fa-hand-holding-dollar me-2"></i>
                     <span class="nav-text ml-2">Financeiro</span>
                 </div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
@@ -98,19 +98,19 @@
             <div class="nav-submenu" id="financial-menu">
                 <div class="nav-item">
                     <a href="{{route('categorias-financeiras.index')}}" class="nav-link " title="Categorias">
-                        <i class="fas fa-money-bill-wave"></i>
+                        <i class="fas fa-tags"></i>
                         <span class="nav-text">Categorias</span>
                     </a>
                 </div>
                 <div class="nav-item">
                     <a href="{{route('formas-pagamento.index')}}" class="nav-link " title="Formas de Pagamento">
-                        <i class="fas fa-money-bill-wave"></i>
+                        <i class="fas fa-wallet"></i>
                         <span class="nav-text">Formas de Pagamento</span>
                     </a>
                 </div>
                 <div class="nav-item">
                     <a href="{{route('financeiro.index')}}" class="nav-link " title="Movimentações Financeiras">
-                        <i class="fas fa-money-bill-wave"></i>
+                        <i class="fas fa-arrows-rotate"></i>
                         <span class="nav-text">Movimentações Financeiras</span>
                     </a>
                 </div>
@@ -123,6 +123,31 @@
                 <i class="fas fa-calendar-alt"></i>
                 <span class="nav-text">Agendamentos</span>
                 <span class="nav-badge-primary">5</span>
+            </a>
+        </div>
+
+        <div class="nav-category">
+            <button class="nav-category-toggle" data-target="security-menu" title="Segurança">
+                <div class="nav-category-header">
+                    <i class="fas fa-shield me-2"></i>
+                    <span class="nav-text ml-2">Segurança</span>
+                </div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </button>
+            <div class="nav-submenu" id="security-menu">
+                <div class="nav-item">
+                    <a href="{{route('users.index')}}" class="nav-link " title="Usuários">
+                        <i class="fas fa-user-shield"></i>
+                        <span class="nav-text">Usuários</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <a href="{{route('perfilindex')}}" class="nav-link" title="Configurações">
+                <i class="fas fa-address-card"></i>
+                <span class="nav-text">Meu perfil</span>
             </a>
         </div>
 
