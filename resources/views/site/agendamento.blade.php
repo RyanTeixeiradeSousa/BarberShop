@@ -667,10 +667,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let clientData = {};
     let currentStep = 1;
 
-    // Inicializar calendário
     initCalendar();
     
-    // Inicializar horários da data atual
     const today = new Date();
     selectedDate = today.toISOString().split('T')[0];
     updateTimeSlots(today);
@@ -908,7 +906,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateStepStatus();
     }
     
-    // Event listeners para seleção de serviços
     document.querySelectorAll('.service-card').forEach(card => {
         card.addEventListener('click', function() {
             const serviceId = this.dataset.serviceId;
@@ -1036,11 +1033,11 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('servicos[]', serviceId);
         });
 
-        fetch('/agendamento', {
+        fetch('/finalizar-agendamento', {
             method: 'POST',
             body: formData,
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         })
         .then(response => response.json())
@@ -1101,6 +1098,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('telefone').addEventListener('input', function(e) {
         applyPhoneMask(e.target);
+    });
+
+    const formClient = document.getElementById('clientForm');
+
+    // adiciona evento em todos os inputs do form
+    formClient.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function () {
+            updateStepStatus()
+        });
     });
 });
 </script>
