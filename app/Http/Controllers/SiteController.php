@@ -19,7 +19,11 @@ class SiteController extends Controller
             ->where('tipo', 'servico')
             ->get();
 
-        return view('site.index', compact('configuracoes', 'servicos'));
+        $produtos = Produto::where('ativo', true)
+            ->where('site', true)
+            ->where('tipo', 'produto')
+            ->get();
+        return view('site.index', compact('configuracoes', 'servicos', 'produtos'));
     }
 
     public function agendamento()
@@ -30,10 +34,7 @@ class SiteController extends Controller
             ->where('tipo', 'servico')
             ->get();
 
-        // Gerar horários disponíveis para os próximos 30 dias
-        $horariosDisponiveis = $this->gerarHorariosDisponiveis();
-
-        return view('site.agendamento', compact('configuracoes', 'servicos', 'horariosDisponiveis'));
+        return view('site.agendamento', compact('configuracoes', 'servicos'));
     }
 
     public function salvarAgendamento(Request $request)
@@ -45,7 +46,10 @@ class SiteController extends Controller
             'data_agendamento' => 'required|date',
             'hora_inicio' => 'required',
             'servicos' => 'required|array|min:1',
-            'servicos.*' => 'exists:produtos,id'
+            'servicos.*' => 'exists:produtos,id',
+            'produtos_sugeridos' => 'nullable|array',
+            'produtos_sugeridos.*' => 'exists:produtos,id',
+            'criar_movimento_financeiro' => 'nullable|boolean'
         ]);
 
         // Criar ou encontrar cliente
@@ -79,72 +83,69 @@ class SiteController extends Controller
         ]);
 
         // Associar serviços
+        $valorTotal = 0;
         foreach ($request->servicos as $servicoId) {
             $servico = $servicos->find($servicoId);
             $agendamento->produtos()->attach($servicoId, [
                 'quantidade' => 1,
                 'valor_unitario' => $servico->preco
             ]);
+            $valorTotal += $servico->preco;
         }
+
+        if ($request->criar_movimento_financeiro) {
+            \App\Models\MovimentacaoFinanceira::create([
+                'agendamento_id' => $agendamento->id,
+                'tipo' => 'entrada',
+                'categoria_id' => 1, // Categoria padrão de serviços
+                'descricao' => 'Agendamento - ' . $cliente->nome,
+                'valor' => $valorTotal,
+                'data_vencimento' => $request->data_agendamento,
+                'situacao' => 'em_aberto',
+                'ativo' => true
+            ]);
+        }
+
+        $produtosSugeridos = \App\Models\Produto::where('ativo', true)
+            ->where('site', true)
+            ->where('tipo', 'produto')
+            ->take(6)
+            ->get();
 
         return response()->json([
             'success' => true,
             'message' => 'Agendamento realizado com sucesso!',
-            'agendamento_id' => $agendamento->id
+            'agendamento_id' => $agendamento->id,
+            'produtos_sugeridos' => $produtosSugeridos
+        ]);
+    }
+
+    public function getSlotsDisponiveis(Request $request)
+    {
+        $data = $request->get('data');
+        
+        if (!$data) {
+            return response()->json(['horarios' => []]);
+        }
+
+        $slotsDisponiveis = Agendamento::where('data_agendamento', $data)
+            ->where('status', 'disponivel')
+            ->where('ativo', true)
+            ->orderBy('hora_inicio')
+            ->get(['hora_inicio', 'id']);
+
+        return response()->json([
+            'horarios' => $slotsDisponiveis->map(function($slot) {
+                return [
+                    'id' => $slot->id,
+                    'hora' => \Carbon\Carbon::parse($slot->hora_inicio)->format('H:i')
+                ];
+            })
         ]);
     }
 
     private function getConfiguracoes()
     {
         return Configuracao::pluck('valor', 'chave')->toArray();
-    }
-
-    private function gerarHorariosDisponiveis()
-    {
-        $horarios = [];
-        $hoje = Carbon::now();
-
-        for ($i = 0; $i < 30; $i++) {
-            $data = $hoje->copy()->addDays($i);
-            
-            // Pular domingos
-            if ($data->dayOfWeek === 0) continue;
-
-            $horariosData = [];
-            $horaInicio = $data->dayOfWeek === 6 ? 8 : 8; // Sábado inicia às 8h
-            $horaFim = $data->dayOfWeek === 6 ? 16 : 18; // Sábado até 16h
-
-            for ($hora = $horaInicio; $hora < $horaFim; $hora++) {
-                for ($minuto = 0; $minuto < 60; $minuto += 30) {
-                    $horario = sprintf('%02d:%02d', $hora, $minuto);
-                    
-                    // Verificar se horário já passou (para hoje)
-                    if ($i === 0 && $data->copy()->setTimeFromTimeString($horario)->isPast()) {
-                        continue;
-                    }
-
-                    // Verificar se horário está disponível
-                    $ocupado = Agendamento::where('data_agendamento', $data->format('Y-m-d'))
-                        ->where('hora_inicio', $horario)
-                        ->where('status', '!=', 'cancelado')
-                        ->exists();
-
-                    if (!$ocupado) {
-                        $horariosData[] = $horario;
-                    }
-                }
-            }
-
-            if (!empty($horariosData)) {
-                $horarios[$data->format('Y-m-d')] = [
-                    'data' => $data->format('Y-m-d'),
-                    'data_formatada' => $data->format('d/m/Y'),
-                    'dia_semana' => $data->locale('pt_BR')->dayName,
-                    'horarios' => $horariosData
-                ];
-            }
-        }
-
-        return $horarios;
     }
 }

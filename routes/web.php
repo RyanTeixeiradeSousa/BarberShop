@@ -19,6 +19,7 @@ Route::get('/site', function(){
 
 Route::get('/agendamento', [App\Http\Controllers\SiteController::class, 'agendamento'])->name('site.agendamento');
 Route::post('/agendamento', [App\Http\Controllers\SiteController::class, 'salvarAgendamento'])->name('site.agendamento.salvar');
+Route::get('/api/slots-disponiveis', [App\Http\Controllers\SiteController::class, 'getSlotsDisponiveis'])->name('api.slots-disponiveis');
 
 // Admin
 Route::get('/admin/login', [App\Http\Controllers\AuthController::class, 'index'])->name('login');

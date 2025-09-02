@@ -47,7 +47,6 @@
         }
 
         .header.scrolled {
-            background: rgba(26,26,26,0.95);
             backdrop-filter: blur(20px);
         }
 
@@ -288,6 +287,7 @@
                 <a href="{{ route('site.home') }}" class="nav-link">Início</a>
                 <a href="#sobre" class="nav-link">Sobre</a>
                 <a href="#servicos" class="nav-link">Serviços</a>
+                <a href="#produtos" class="nav-link">Produtos</a>
                 <a href="{{ route('site.agendamento') }}" class="nav-link">Agendamento</a>
                 <a href="#contato" class="nav-link">Contato</a>
             </nav>

@@ -643,11 +643,23 @@
             font-size: 0.75rem;
         }
     }
+
+    .loading, .no-slots, .error {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+        font-style: italic;
+    }
+
+    .error {
+        color: #dc3545;
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     let currentDate = new Date();
     let selectedDate = null;
     let selectedTime = null;
@@ -658,8 +670,10 @@
     // Inicializar calendário
     initCalendar();
     
-    // Inicializar horários
-    initTimeSlots();
+    // Inicializar horários da data atual
+    const today = new Date();
+    selectedDate = today.toISOString().split('T')[0];
+    updateTimeSlots(today);
 
     function initCalendar() {
         const calendarGrid = document.querySelector('.calendar-grid');
@@ -829,7 +843,7 @@
         
         // Selecionar nova data
         button.classList.add('selected');
-        selectedDate = date;
+        selectedDate = date.toISOString().split('T')[0];
         
         setTimeout(() => {
             const timeSection = document.querySelector('#step1 .time-slots').parentElement;
@@ -847,50 +861,37 @@
     
     function initTimeSlots() {
         const timeSlotsContainer = document.querySelector('.time-slots');
-        const timeSlots = [
-            '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
-            '11:00', '11:30', '14:00', '14:30', '15:00', '15:30',
-            '16:00', '16:30', '17:00', '17:30', '18:00'
-        ];
-        
-        timeSlotsContainer.innerHTML = '';
-        
-        timeSlots.forEach(time => {
-            const timeButton = document.createElement('button');
-            timeButton.className = 'time-slot';
-            timeButton.textContent = time;
-            timeButton.addEventListener('click', () => selectTime(time, timeButton));
-            timeSlotsContainer.appendChild(timeButton);
-        });
+        timeSlotsContainer.innerHTML = '<div class="loading">Carregando horários...</div>';
     }
-    
+
     function updateTimeSlots(date) {
-        const timeSlots = document.querySelectorAll('.time-slot');
-        const now = new Date();
-        const isToday = date.toDateString() === now.toDateString();
+        const timeSlotsContainer = document.querySelector('.time-slots');
+        const dateString = date.toISOString().split('T')[0];
         
-        timeSlots.forEach(slot => {
-            slot.classList.remove('unavailable', 'selected');
-            slot.disabled = false;
-            
-            if (isToday) {
-                const slotTime = slot.textContent;
-                const [hours, minutes] = slotTime.split(':');
-                const slotDate = new Date(date);
-                slotDate.setHours(parseInt(hours), parseInt(minutes));
+        timeSlotsContainer.innerHTML = '<div class="loading">Carregando horários...</div>';
+        
+        fetch(`/api/slots-disponiveis?data=${dateString}`)
+            .then(response => response.json())
+            .then(data => {
+                timeSlotsContainer.innerHTML = '';
                 
-                if (slotDate <= now) {
-                    slot.classList.add('unavailable');
-                    slot.disabled = true;
+                if (data.horarios && data.horarios.length > 0) {
+                    data.horarios.forEach(slot => {
+                        const timeButton = document.createElement('button');
+                        timeButton.className = 'time-slot';
+                        timeButton.textContent = slot.hora;
+                        timeButton.dataset.slotId = slot.id;
+                        timeButton.addEventListener('click', () => selectTime(slot.hora, timeButton));
+                        timeSlotsContainer.appendChild(timeButton);
+                    });
+                } else {
+                    timeSlotsContainer.innerHTML = '<p class="no-slots">Nenhum horário disponível para esta data</p>';
                 }
-            }
-            
-            // Simular alguns horários ocupados
-            if (Math.random() < 0.2) {
-                slot.classList.add('unavailable');
-                slot.disabled = true;
-            }
-        });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar horários:', error);
+                timeSlotsContainer.innerHTML = '<p class="error">Erro ao carregar horários</p>';
+            });
     }
     
     function selectTime(time, button) {
@@ -952,7 +953,7 @@
             updateStepDisplay();
             
             if (currentStep === 4) {
-                updateSummary();
+                finalizarAgendamento();
             }
         }
     }
@@ -1013,53 +1014,95 @@
         clientData = Object.fromEntries(formData.entries());
     }
     
-    function updateSummary() {
-        const summaryContainer = document.querySelector('.summary-details');
-        const total = selectedServices.reduce((sum, service) => sum + service.price, 0);
+    function finalizarAgendamento() {
+        const nome = document.getElementById('nome').value.trim();
+        const telefone = document.getElementById('telefone').value.trim();
         
-        summaryContainer.innerHTML = `
-            <div class="summary-item">
-                <span class="summary-label">Data:</span>
-                <span class="summary-value">${selectedDate.toLocaleDateString('pt-BR')}</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Horário:</span>
-                <span class="summary-value">${selectedTime}</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Cliente:</span>
-                <span class="summary-value">${clientData.nome}</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Telefone:</span>
-                <span class="summary-value">${clientData.telefone}</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Serviços:</span>
-                <span class="summary-value">${selectedServices.map(s => s.name).join(', ')}</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Total:</span>
-                <span class="summary-value">R$ ${total.toFixed(2).replace('.', ',')}</span>
-            </div>
-        `;
+        if (!nome || !telefone || !selectedDate || !selectedTime || selectedServices.length === 0) {
+            alert('Por favor, preencha todos os campos obrigatórios e selecione data, horário e serviços.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('nome', nome);
+        formData.append('telefone', telefone);
+        formData.append('email', document.getElementById('email').value);
+        formData.append('data_agendamento', selectedDate);
+        formData.append('hora_inicio', selectedTime);
+        formData.append('observacoes', document.getElementById('observacoes').value);
+        formData.append('criar_movimento_financeiro', document.getElementById('criarMovimentoFinanceiro').checked);
+        
+        selectedServices.forEach(serviceId => {
+            formData.append('servicos[]', serviceId);
+        });
+
+        fetch('/agendamento', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.produtos_sugeridos && data.produtos_sugeridos.length > 0) {
+                    mostrarProdutosSugeridos(data.produtos_sugeridos);
+                    goToStep(4);
+                } else {
+                    alert('Agendamento realizado com sucesso!');
+                    window.location.href = '/';
+                }
+            } else {
+                alert('Erro ao realizar agendamento. Tente novamente.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao realizar agendamento. Tente novamente.');
+        });
     }
-    
-    // Submissão do agendamento
-    document.querySelector('#confirmBooking').addEventListener('click', function() {
-        const bookingData = {
-            date: selectedDate.toISOString().split('T')[0],
-            time: selectedTime,
-            services: selectedServices,
-            client: clientData
-        };
+
+    function mostrarProdutosSugeridos(produtos) {
+        const container = document.getElementById('produtosSugeridos');
+        container.innerHTML = '';
         
-        // Aqui você enviaria os dados para o servidor
-        console.log('Dados do agendamento:', bookingData);
+        produtos.forEach(produto => {
+            const produtoCard = document.createElement('div');
+            produtoCard.className = 'service-card';
+            produtoCard.innerHTML = `
+                <div class="service-header">
+                    <div class="service-icon"><i class="fas fa-shopping-bag"></i></div>
+                </div>
+                <div class="service-title">${produto.nome}</div>
+                <div class="service-description">${produto.descricao || 'Produto de qualidade'}</div>
+                <div class="service-price">R$ ${parseFloat(produto.preco).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+            `;
+            container.appendChild(produtoCard);
+        });
+    }
+
+    function goToStep(step) {
+        currentStep = step;
+        updateStepDisplay();
+    }
+
+    function applyPhoneMask(input) {
+        let value = input.value.replace(/\D/g, '');
         
-        // Simular sucesso
-        alert('Agendamento realizado com sucesso! Você receberá uma confirmação por WhatsApp.');
+        if (value.length <= 10) {
+            value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+        } else {
+            value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        }
+        
+        input.value = value;
+    }
+
+    document.getElementById('telefone').addEventListener('input', function(e) {
+        applyPhoneMask(e.target);
     });
+});
 </script>
 @endpush
 
@@ -1237,29 +1280,34 @@
             </div>
         </div>
         
-        <!-- Step 4: Confirmação -->
+        <!-- Step 4: Produtos Sugeridos -->
         <div class="step-content" id="step4">
-            <div class="summary-card">
-                <h3 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">
-                    <i class="fas fa-check-circle"></i> Confirme seu Agendamento
-                </h3>
-                
-                <div class="summary-details">
-                    <!-- Preenchido via JavaScript -->
-                </div>
-                
-                <div style="text-align: center; margin-top: 2rem;">
-                    <button id="confirmBooking" class="btn-nav btn-next" style="font-size: 1.1rem; padding: 1rem 3rem;">
-                        <i class="fas fa-calendar-check"></i> Confirmar Agendamento
-                    </button>
-                </div>
+            <h3 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">
+                <i class="fas fa-shopping-bag"></i> Produtos Recomendados
+            </h3>
+            
+            <p style="text-align: center; margin-bottom: 2rem; color: #666;">
+                Que tal levar alguns produtos para cuidar do seu visual em casa?
+            </p>
+            
+            <div class="produtos-grid" id="produtosSugeridos">
+                <!-- Produtos serão carregados via JavaScript -->
+            </div>
+            
+            <div class="pagamento-opcao" style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="criarMovimentoFinanceiro" name="criar_movimento_financeiro">
+                    <span>Gerar cobrança para pagamento no dia do atendimento</span>
+                </label>
             </div>
             
             <div class="navigation-buttons">
                 <button class="btn-nav btn-prev">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
-                <div></div>
+                <button class="btn-nav btn-next">
+                    Finalizar Agendamento <i class="fas fa-check"></i>
+                </button>
             </div>
         </div>
     </div>
