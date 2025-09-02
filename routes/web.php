@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/', [App\Http\Controllers\SiteController::class, 'index'])->name('site.home');
+Route::get('/site', function(){
+    return view('site');
+});
 
 Route::get('/agendamento', [App\Http\Controllers\SiteController::class, 'agendamento'])->name('site.agendamento');
 Route::post('/agendamento', [App\Http\Controllers\SiteController::class, 'salvarAgendamento'])->name('site.agendamento.salvar');
