@@ -15,7 +15,9 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = "users";
-    protected $fillable = ['id', 'nome', 'email', 'senha', 'ativo'];
+    protected $fillable = ['id', 'nome', 'email', 'senha', 'ativo', 'master',
+    'last_acess',
+    'redefinir_senha_login',];
     
     public function authenticateBd($password) {
         return $this->authenticateBd_Password($this->email, $password);
@@ -38,5 +40,40 @@ class User extends Authenticatable
                     'authenticated' => true ]; 
              } 
         } 
+    }
+
+    protected $hidden = [
+        'senha'
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'senha' => 'hashed',
+            'ativo' => 'boolean',
+            'master' => 'boolean',
+            'redefinir_senha_login' => 'boolean',
+            'last_acess' => 'datetime',
+        ];
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->senha;
+    }
+
+    public function isMaster()
+    {
+        return $this->master;
+    }
+
+    public function isAtivo()
+    {
+        return $this->ativo;
+    }
+
+    public function needsPasswordReset()
+    {
+        return $this->redefinir_senha_login;
     }
 }

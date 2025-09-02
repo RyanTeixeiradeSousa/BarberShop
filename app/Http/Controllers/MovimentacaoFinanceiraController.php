@@ -89,22 +89,22 @@ class MovimentacaoFinanceiraController extends Controller
             $validator = Validator::make($request->all(), [
                 'tipo' => 'required|in:entrada,saida',
                 'descricao' => 'required|string|max:255',
-                'valor' => 'required|numeric|min:0.01',
+                'valor' => 'required',
                 'data' => 'required|date',
                 'cliente_id' => 'nullable|exists:clientes,id',
                 'situacao' => 'required|in:em_aberto,cancelado,pago',
                 'data_vencimento' => 'nullable|date',
                 'forma_pagamento_id' => 'nullable|exists:formas_pagamento,id',
                 'data_pagamento' => 'nullable|date',
-                'desconto' => 'nullable|numeric|min:0',
-                'valor_pago' => 'nullable|numeric|min:0',
+                'desconto' => 'nullable',
+                'valor_pago' => 'nullable',
                 'categoria_financeira_id' => 'nullable|exists:categorias_financeiras,id',
                 'agendamento_id' => 'nullable|exists:agendamentos,id',
                 'observacoes' => 'nullable|string',
                 'produtos' => 'nullable|array',
                 'produtos.*.id' => 'required|exists:produtos,id',
                 'produtos.*.quantidade' => 'required|numeric|min:1',
-                'produtos.*.valor_unitario' => 'required|numeric|min:0',
+                'produtos.*.valor_unitario' => 'required',
             ]);
         
             if ($validator->fails()) {
@@ -195,8 +195,8 @@ class MovimentacaoFinanceiraController extends Controller
             $request->validate([
                 'forma_pagamento_id' => 'required|exists:formas_pagamento,id',
                 'data_pagamento' => 'required|date',
-                'desconto' => 'nullable|numeric|min:0',
-                'valor_pago' => 'required|numeric|min:0',
+                'desconto' => 'nullable',
+                'valor_pago' => 'required',
             ]);
     
             $data = $request->all();

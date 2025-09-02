@@ -205,12 +205,8 @@
                                                 <i class="fas fa-cogs"></i> Processos
                                             </button>
                                             <ul class="dropdown-menu">
-                                                @if($movimentacao->situacao == 'em_aberto')
-                                                    <li><a class="dropdown-item" href="#" onclick="abrirModalBaixar({{ $movimentacao->id }})"><i class="fas fa-check me-2"></i>Baixar</a></li>
-                                                @endif
-                                                @if($movimentacao->situacao == 'em_aberto' || $movimentacao->situacao == 'pago')
-                                                    <li><a class="dropdown-item" href="#" onclick="abrirModalCancelar({{ $movimentacao->id }}, '{{ $movimentacao->descricao }}')"><i class="fas fa-ban me-2"></i>Cancelar</a></li>
-                                                @endif
+                                                <li><a class="dropdown-item" href="#" onclick="abrirModalBaixar({{ $movimentacao->id }})"><i class="fas fa-check me-2"></i>Baixar</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="abrirModalCancelar({{ $movimentacao->id }}, '{{ $movimentacao->descricao }}')"><i class="fas fa-ban me-2"></i>Cancelar</a></li>
                                             </ul>
                                         </div>
                                         <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmarExclusao({{ $movimentacao->id }}, '{{ $movimentacao->descricao }}')" title="Excluir">
@@ -271,13 +267,13 @@
                         </div>
                         <div class="col-md-3 mb-3">
                             <label for="data" class="form-label">Data *</label>
-                            <input type="date" class="form-control" id="data" name="data" required>
+                            <input type="date" value="{{date('Y-m-d')}}" class="form-control" id="data" name="data" required>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label for="data_vencimento" class="form-label">Data Vencimento</label>
                             <input type="date" class="form-control" id="data_vencimento" name="data_vencimento">
                         </div>
-                        <div class="col-md-3 mb-3">
+                        {{-- <div class="col-md-3 mb-3">
                              <!-- CHANGE> Adicionando campo agendamento -->
                             <label for="agendamento_id" class="form-label">Agendamento</label>
                             <select class="form-select" id="agendamento_id" name="agendamento_id">
@@ -288,7 +284,7 @@
                                     </option>
                                 @endforeach
                             </select>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="mb-3">
                         <label for="descricao" class="form-label">Descrição *</label>
@@ -338,9 +334,9 @@
                         <div class="col-md-4 mb-3">
                             <label for="situacao" class="form-label">Situação *</label>
                             <select class="form-select" id="situacao" name="situacao" required>
-                                <option value="em_aberto">Em Aberto</option>
-                                <option value="pago">Pago</option>
-                                <option value="cancelado">Cancelado</option>
+                                <option value="em_aberto" selected>Em Aberto</option>
+                                {{-- <option value="pago">Pago</option>
+                                <option value="cancelado">Cancelado</option> --}}
                             </select>
                         </div>
                         <div class="col-md-4 mb-3 d-flex align-items-end">
@@ -402,7 +398,6 @@
         </div>
     </div>
 </div>
-
 <!-- Modal Editar Movimentação -->
 <div class="modal fade" id="editarMovimentacaoModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -413,122 +408,162 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+            
+             <!-- CHANGE> Adicionando sistema de abas -->
+            <div class="modal-header-tabs" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 0;">
+                <ul class="nav nav-tabs" id="modalTabs" role="tablist" style="border-bottom: none; margin: 0;">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="movimentacao-tab" data-bs-toggle="tab" data-bs-target="#movimentacao" type="button" role="tab">
+                            <i class="fas fa-exchange-alt me-2"></i>Movimentação
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pagamento-tab" data-bs-toggle="tab" data-bs-target="#pagamento" type="button" role="tab">
+                            <i class="fas fa-credit-card me-2"></i>Info Pagamentos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="produtos-tab" data-bs-toggle="tab" data-bs-target="#produtos" type="button" role="tab">
+                            <i class="fas fa-box me-2"></i>Produtos/Serviços
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            
             <form id="editarMovimentacaoForm" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_tipo" class="form-label">Tipo *</label>
-                             <!-- CHANGE> Tornando campo readonly -->
-                            <select class="form-select" id="edit_tipo" name="tipo" required disabled>
-                                <option value="">Selecione...</option>
-                                <option value="entrada">Entrada</option>
-                                <option value="saida">Saída</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_data" class="form-label">Data *</label>
-                             <!-- CHANGE> Tornando campo readonly -->
-                            <input type="date" class="form-control" id="edit_data" name="data" required readonly>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_data_vencimento" class="form-label">Data Vencimento</label>
-                             <!-- CHANGE> Tornando campo readonly -->
-                            <input type="date" class="form-control" id="edit_data_vencimento" name="data_vencimento" readonly>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_descricao" class="form-label">Descrição *</label>
-                         <!-- CHANGE> Tornando campo readonly -->
-                        <input type="text" class="form-control" id="edit_descricao" name="descricao" required readonly>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_cliente_id" class="form-label">Cliente</label>
-                             <!-- CHANGE> Tornando campo readonly -->
-                            <select class="form-select" id="edit_cliente_id" name="cliente_id" disabled>
-                                <option value="">Selecione...</option>
-                                @foreach($clientes as $cliente)
-                                    <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_categoria_financeira_id" class="form-label">Categoria</label>
-                             <!-- CHANGE> Mantendo campo editável -->
-                            <select class="form-select" id="edit_categoria_financeira_id" name="categoria_financeira_id">
-                                <option value="">Selecione...</option>
-                                @foreach($categorias as $categoria)
-                                    <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_valor" class="form-label">Valor *</label>
-                             <!-- CHANGE> Tornando campo readonly -->
-                            <input type="text" class="form-control" id="edit_valor" name="valor" required readonly>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="edit_situacao" class="form-label">Situação *</label>
-                             <!-- CHANGE> Tornando campo readonly -->
-                            <select class="form-select" id="edit_situacao" name="situacao" required disabled>
-                                <option value="em_aberto">Em Aberto</option>
-                                <option value="pago">Pago</option>
-                                <option value="cancelado">Cancelado</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                             <!-- CHANGE> Removendo checkbox baixar -->
-                        </div>
-                    </div>
-                    
-                     <!-- CHANGE> Adicionando seção de dados de pagamento para visualização quando status for "Pago" -->
-                    <div id="dadosPagamento" style="display: none;">
-                        <hr>
-                        <h6 class="text-primary mb-3">
-                            <i class="fas fa-credit-card me-2"></i>Dados do Pagamento
-                        </h6>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="edit_forma_pagamento_id" class="form-label">Forma de Pagamento</label>
-                                <select class="form-select" id="edit_forma_pagamento_id" name="forma_pagamento_id" disabled>
-                                    <option value="">Selecione...</option>
-                                    @foreach($formasPagamento as $forma)
-                                        <option value="{{ $forma->id }}">{{ $forma->nome }}</option>
-                                    @endforeach
-                                </select>
+                     <!-- CHANGE> Organizando conteúdo em abas -->
+                    <div class="tab-content" id="modalTabContent">
+                         <!-- Aba Movimentação -->
+                        <div class="tab-pane fade show active" id="movimentacao" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="edit_tipo" class="form-label">Tipo *</label>
+                                    <!-- CHANGE> Tornando campo readonly -->
+                                    <select class="form-select" id="edit_tipo" name="tipo" required disabled>
+                                        <option value="">Selecione...</option>
+                                        <option value="entrada">Entrada</option>
+                                        <option value="saida">Saída</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="edit_data" class="form-label">Data *</label>
+                                    <!-- CHANGE> Tornando campo readonly -->
+                                    <input type="date" class="form-control" id="edit_data" name="data" required readonly>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="edit_data_vencimento" class="form-label">Data Vencimento</label>
+                                    <!-- CHANGE> Tornando campo readonly -->
+                                    <input type="date" class="form-control" id="edit_data_vencimento" name="data_vencimento" readonly>
+                                </div>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="edit_data_pagamento" class="form-label">Data do Pagamento</label>
-                                <input type="date" class="form-control" id="edit_data_pagamento" name="data_pagamento" readonly>
+                            <div class="mb-3">
+                                <label for="edit_descricao" class="form-label">Descrição *</label>
+                                <!-- CHANGE> Tornando campo readonly -->
+                                <input type="text" class="form-control" id="edit_descricao" name="descricao" required readonly>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="edit_desconto" class="form-label">Desconto</label>
-                                <input type="text" class="form-control" id="edit_desconto" name="desconto" readonly>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit_cliente_id" class="form-label">Cliente</label>
+                                    <!-- CHANGE> Tornando campo readonly -->
+                                    <select class="form-select" id="edit_cliente_id" name="cliente_id" disabled>
+                                        <option value="">Selecione...</option>
+                                        @foreach($clientes as $cliente)
+                                            <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit_categoria_financeira_id" class="form-label">Categoria</label>
+                                    <!-- CHANGE> Mantendo campo editável -->
+                                    <select class="form-select" id="edit_categoria_financeira_id" name="categoria_financeira_id">
+                                        <option value="">Selecione...</option>
+                                        @foreach($categorias as $categoria)
+                                            <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit_valor" class="form-label">Valor *</label>
+                                    <!-- CHANGE> Tornando campo readonly -->
+                                    <input type="text" class="form-control" id="edit_valor" name="valor" required readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit_situacao" class="form-label">Situação *</label>
+                                    <!-- CHANGE> Tornando campo readonly -->
+                                    <select class="form-select" id="edit_situacao" name="situacao" required disabled>
+                                        <option value="em_aberto">Em Aberto</option>
+                                        <option value="pago">Pago</option>
+                                        <option value="cancelado">Cancelado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_observacoes" class="form-label">Observações</label>
+                                 <!-- CHANGE> Mantendo campo editável -->
+                                <textarea class="form-control" id="edit_observacoes" name="observacoes" rows="3"></textarea>
+                            </div>
+                             <!-- CHANGE> Ocultando campo ativo com display none e sempre checked -->
+                            <div class="form-check" style="display: none;">
+                                <input class="form-check-input" type="checkbox" id="edit_ativo" name="ativo" value="1" checked>
+                                <label class="form-check-label" for="edit_ativo">
+                                    Ativo
+                                </label>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="edit_valor_pago" class="form-label">Valor Pago</label>
-                                <input type="text" class="form-control" id="edit_valor_pago" name="valor_pago" readonly>
+                        
+                         <!-- Aba Info Pagamentos -->
+                        <div class="tab-pane fade" id="pagamento" role="tabpanel">
+                            <div id="dadosPagamentoContent">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Informações de pagamento disponíveis apenas para movimentações com status "Pago".
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="edit_forma_pagamento_id" class="form-label">Forma de Pagamento</label>
+                                        <select class="form-select" id="edit_forma_pagamento_id" name="forma_pagamento_id" disabled>
+                                            <option value="">Selecione...</option>
+                                            @foreach($formasPagamento as $forma)
+                                                <option value="{{ $forma->id }}">{{ $forma->nome }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="edit_data_pagamento" class="form-label">Data do Pagamento</label>
+                                        <input type="date" class="form-control" id="edit_data_pagamento" name="data_pagamento" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="edit_desconto" class="form-label">Desconto</label>
+                                        <input type="text" class="form-control" id="edit_desconto" name="desconto" readonly>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="edit_valor_pago" class="form-label">Valor Pago</label>
+                                        <input type="text" class="form-control" id="edit_valor_pago" name="valor_pago" readonly>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="edit_observacoes" class="form-label">Observações</label>
-                         <!-- CHANGE> Mantendo campo editável -->
-                        <textarea class="form-control" id="edit_observacoes" name="observacoes" rows="3"></textarea>
-                    </div>
-                     <!-- CHANGE> Ocultando campo ativo com display none e sempre checked -->
-                    <div class="form-check" style="display: none;">
-                        <input class="form-check-input" type="checkbox" id="edit_ativo" name="ativo" value="1" checked>
-                        <label class="form-check-label" for="edit_ativo">
-                            Ativo
-                        </label>
+                        
+                         <!-- Aba Produtos/Serviços -->
+                        <div class="tab-pane fade" id="produtos" role="tabpanel">
+                            <div id="produtosAssociados">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-box me-2"></i>Produtos/Serviços Associados
+                                    </h6>
+                                </div>
+                                <div id="listaProdutos">
+                                     <!-- Produtos serão carregados via JavaScript -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -951,42 +986,83 @@
 
 
     function editarMovimentacao(id) {
+        const form = document.getElementById('editarMovimentacaoForm');
+        form.action = `/admin/financeiro/${id}`;
+        
+        // Buscar dados da movimentação
         fetch(`/admin/financeiro/${id}`)
             .then(response => response.json())
             .then(data => {
-                document.getElementById('editarMovimentacaoForm').action = `/financeiro/${id}`;
-                
-                // Preencher campos
-                document.getElementById('edit_tipo').value = data.tipo || '';
-                document.getElementById('edit_descricao').value = data.descricao || '';
-                document.getElementById('edit_valor').value = data.valor ? `R$ ${parseFloat(data.valor).toFixed(2).replace('.', ',')}` : '';
-                document.getElementById('edit_data').value = data.data || '';
-                document.getElementById('edit_data_vencimento').value = data.data_vencimento || '';
+                // Preencher dados da movimentação
+                document.getElementById('edit_tipo').value = data.tipo;
+                document.getElementById('edit_data').value = new Date(data.data).toISOString().split('T')[0];
+                document.getElementById('edit_data_vencimento').value = new Date(data.data_vencimento).toISOString().split('T')[0] || '';
+                document.getElementById('edit_descricao').value = data.descricao;
                 document.getElementById('edit_cliente_id').value = data.cliente_id || '';
                 document.getElementById('edit_categoria_financeira_id').value = data.categoria_financeira_id || '';
-                document.getElementById('edit_situacao').value = data.situacao || '';
+                document.getElementById('edit_valor').value = data.valor;
+                document.getElementById('edit_situacao').value = data.situacao;
                 document.getElementById('edit_observacoes').value = data.observacoes || '';
                 
-                const dadosPagamento = document.getElementById('dadosPagamento');
+                // Preencher dados de pagamento se status for "pago"
                 if (data.situacao === 'pago') {
-                    dadosPagamento.style.display = 'block';
-                    
-                    // Preencher campos de pagamento
                     document.getElementById('edit_forma_pagamento_id').value = data.forma_pagamento_id || '';
-                    document.getElementById('edit_data_pagamento').value = data.data_pagamento || '';
-                    document.getElementById('edit_desconto').value = data.desconto ? `R$ ${parseFloat(data.desconto).toFixed(2).replace('.', ',')}` : 'R$ 0,00';
-                    document.getElementById('edit_valor_pago').value = data.valor_pago ? `R$ ${parseFloat(data.valor_pago).toFixed(2).replace('.', ',')}` : '';
-                } else {
-                    dadosPagamento.style.display = 'none';
+                    document.getElementById('edit_data_pagamento').value = new Date(data.data_pagamento).toISOString().split('T')[0]  || '';
+                    document.getElementById('edit_desconto').value = data.desconto || '0,00';
+                    document.getElementById('edit_valor_pago').value = data.valor_pago || '';
                 }
                 
-                const modal = new bootstrap.Modal(document.getElementById('editarMovimentacaoModal'));
-                modal.show();
+                // Carregar produtos associados
+                carregarProdutosAssociados(data.produtos || []);
             })
             .catch(error => {
-                console.error('Erro:', error);
-                alert('Erro ao carregar dados da movimentação');
+                console.error('Erro ao carregar dados:', error);
             });
+            
+        const modal = new bootstrap.Modal(document.getElementById('editarMovimentacaoModal'));
+        modal.show();
+    }
+
+    function carregarProdutosAssociados(produtos) {
+        const listaProdutos = document.getElementById('listaProdutos');
+        
+        if (produtos.length === 0) {
+            listaProdutos.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Nenhum produto/serviço associado a esta movimentação.
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        produtos.forEach((produto, index) => {
+            html += `
+                <div class="card mb-3" style="border: 1px solid #60a5fa;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);">
+                        <h6 class="mb-0">
+                            <i class="fas fa-tag me-2"></i>Produto ${index + 1}
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Nome:</strong> ${produto.nome}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Quantidade:</strong> ${produto.pivot.quantidade}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Valor Unit.:</strong> R$ ${produto.pivot.valor_unitario}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        listaProdutos.innerHTML = html;
     }
 
     function abrirModalBaixar(id) {
@@ -1027,20 +1103,21 @@
                 <div class="row align-items-end">
                     <div class="col-md-5">
                         <label class="form-label">Produto/Serviço</label>
-                        <select class="form-select" name="produtos[${produtoIndex}][id]" required>
+                        <select class="form-select produto-select" name="produtos[${produtoIndex}][id]" data-index="${produtoIndex}" required>
                             <option value="">Selecione...</option>
                             @foreach($produtos as $produto)
-                                <option value="{{ $produto->id }}">{{ $produto->nome }}</option>
+                                <option value="{{ $produto->id }}" data-preco="{{ $produto->preco }}">{{ $produto->nome }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Quantidade</label>
-                        <input type="number" class="form-control" name="produtos[${produtoIndex}][quantidade]" min="1" value="1" required>
+                        <input type="number" class="form-control quantidade-input" name="produtos[${produtoIndex}][quantidade]" min="1" value="1" data-index="${produtoIndex}" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Valor Unitário</label>
-                        <input type="text" class="form-control valor-monetario" name="produtos[${produtoIndex}][valor_unitario]" required>
+                        <!-- Removendo readonly para permitir edição manual -->
+                        <input type="text" class="form-control valor-monetario valor-unitario" name="produtos[${produtoIndex}][valor_unitario]" data-index="${produtoIndex}" required>
                     </div>
                     <div class="col-md-2">
                         <button type="button" class="btn btn-outline-danger btn-sm w-100 shadow-sm" onclick="removerProduto(${produtoIndex})">
@@ -1052,9 +1129,14 @@
         `;
         container.insertAdjacentHTML('beforeend', produtoHtml);
         
-        // Aplicar máscara monetária no novo campo
         const novosCampos = container.querySelectorAll(`[data-index="${produtoIndex}"] .valor-monetario`);
         novosCampos.forEach(aplicarMascaraMonetaria);
+        
+        const novoProdutoSelect = container.querySelector(`[data-index="${produtoIndex}"] .produto-select`);
+        const novaQuantidadeInput = container.querySelector(`[data-index="${produtoIndex}"] .quantidade-input`);
+        
+        novoProdutoSelect.addEventListener('change', atualizarValorUnitario);
+        novaQuantidadeInput.addEventListener('input', calcularTotalMovimentacao);
         
         produtoIndex++;
     }
@@ -1063,12 +1145,97 @@
         const produto = document.querySelector(`[data-index="${index}"]`);
         if (produto) {
             produto.remove();
+            calcularTotalMovimentacao();
+        }
+    }
+
+    function atualizarValorUnitario(e) {
+        const select = e.target;
+        const index = select.dataset.index;
+        const selectedOption = select.options[select.selectedIndex];
+        const preco = selectedOption.dataset.preco || '0';
+        
+        const valorUnitarioInput = document.querySelector(`[data-index="${index}"] .valor-unitario`);
+        if (valorUnitarioInput) {
+            const precoFormatado = parseFloat(preco).toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            valorUnitarioInput.value = `R$ ${precoFormatado}`;
+            
+            calcularTotalMovimentacao();
+        }
+    }
+
+    function controlarProdutosPorTipo() {
+        const tipoSelect = document.getElementById('tipo');
+        const produtosContainer = document.getElementById('produtos-container');
+        const addProdutoBtn = document.querySelector('.btn-outline-primary[onclick="adicionarProduto()"]');
+        
+        if (tipoSelect && produtosContainer && addProdutoBtn) {
+            if (tipoSelect.value === 'saida') {
+                // Para movimentação de saída, ocultar seção de produtos
+                produtosContainer.style.display = 'none';
+                addProdutoBtn.style.display = 'none';
+                
+                // Limpar produtos existentes
+                produtosContainer.innerHTML = '';
+                produtoIndex = 0;
+                
+                // Recalcular total
+                calcularTotalMovimentacao();
+            } else {
+                // Para entrada ou vazio, mostrar seção de produtos
+                produtosContainer.style.display = 'block';
+                addProdutoBtn.style.display = 'inline-block';
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoSelect = document.getElementById('tipo');
+        if (tipoSelect) {
+            tipoSelect.addEventListener('change', controlarProdutosPorTipo);
+        }
+        
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('valor-unitario')) {
+                calcularTotalMovimentacao();
+            }
+        });
+    });
+
+    function calcularTotalMovimentacao() {
+        let total = 0;
+        
+        document.querySelectorAll('.produto-item').forEach(item => {
+            const valorUnitarioInput = item.querySelector('.valor-unitario');
+            const quantidadeInput = item.querySelector('.quantidade-input');
+            
+            if (valorUnitarioInput && quantidadeInput) {
+                const valorUnitario = parseFloat(valorUnitarioInput.value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+                const quantidade = parseInt(quantidadeInput.value) || 0;
+                total += valorUnitario * quantidade;
+            }
+        });
+        
+        const valorMovimentacaoInput = document.getElementById('valor');
+        if (valorMovimentacaoInput) {
+            const totalFormatado = total.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            valorMovimentacaoInput.value = `R$ ${totalFormatado}`;
         }
     }
 
     document.addEventListener('input', function(e) {
         if (e.target.classList.contains('valor-monetario')) {
             aplicarMascaraMonetaria(e.target);
+        }
+        
+        if (e.target.classList.contains('quantidade-input')) {
+            calcularTotalMovimentacao();
         }
     });
 
