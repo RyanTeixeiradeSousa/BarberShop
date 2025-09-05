@@ -8,6 +8,7 @@ use App\Models\Agendamento;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class SiteController extends Controller
 {
@@ -37,88 +38,119 @@ class SiteController extends Controller
         return view('site.agendamento', compact('configuracoes', 'servicos'));
     }
 
-    public function salvarAgendamento(Request $request)
-    {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'telefone' => 'required|string|max:20',
-            'email' => 'nullable|email',
-            'data_agendamento' => 'required|date',
-            'hora_inicio' => 'required',
-            'servicos' => 'required|array|min:1',
-            'servicos.*' => 'exists:produtos,id',
-            'produtos_sugeridos' => 'nullable|array',
-            'produtos_sugeridos.*' => 'exists:produtos,id',
-            'criar_movimento_financeiro' => 'nullable|boolean'
-        ]);
+    // public function finalizarAgendamento(Request $request)
+    // {
+    //     dd($request);
+    //     $request->validate([
+    //         'slot_id' => 'required|exists:agendamentos,id',
+    //         'nome' => 'required|string|max:255',
+    //         'telefone' => 'required|string|max:20',
+    //         'email' => 'nullable|email',
+    //         'servicos' => 'required|array|min:1',
+    //         'servicos.*' => 'exists:produtos,id',
+    //         'observacoes' => 'nullable|string|max:500',
+    //         'produtos_sugeridos' => 'nullable|array',
+    //         'produtos_sugeridos.*' => 'exists:produtos,id',
+    //     ]);
 
-        // Criar ou encontrar cliente
-        $cliente = Cliente::firstOrCreate(
-            ['telefone' => $request->telefone],
-            [
-                'nome' => $request->nome,
-                'email' => $request->email,
-                'sexo' => 'masculino',
-                'ativo' => true
-            ]
-        );
+    //     try {
+    //         // Buscar ou criar cliente pelo telefone
+    //         $telefone = preg_replace('/\D/', '', $request->telefone); // Remove caracteres não numéricos
+            
+    //         $cliente = Cliente::where('telefone', $telefone)
+    //             ->orWhere('telefone', $request->telefone)
+    //             ->first();
 
-        // Calcular duração total dos serviços
-        $servicos = Produto::whereIn('id', $request->servicos)->get();
-        $duracaoTotal = $servicos->sum('duracao') ?: 60; // fallback para 60 minutos
+    //         if (!$cliente) {
+    //             $cliente = Cliente::create([
+    //                 'nome' => $request->nome,
+    //                 'telefone' => $telefone,
+    //                 'email' => $request->email,
+    //                 'sexo' => 'masculino', // Padrão
+    //                 'ativo' => true
+    //             ]);
+    //         } else {
+    //             // Atualizar dados se necessário
+    //             $cliente->update([
+    //                 'nome' => $request->nome,
+    //                 'email' => $request->email ?: $cliente->email
+    //             ]);
+    //         }
 
-        $horaFim = Carbon::parse($request->data_agendamento . ' ' . $request->hora_inicio)
-            ->addMinutes($duracaoTotal)
-            ->format('H:i');
+    //         // Buscar o slot disponível
+    //         $agendamento = Agendamento::where('id', $request->slot_id)
+    //             ->where('status', 'disponivel')
+    //             ->where('ativo', true)
+    //             ->first();
 
-        // Criar agendamento
-        $agendamento = Agendamento::create([
-            'cliente_id' => $cliente->id,
-            'data_agendamento' => $request->data_agendamento,
-            'hora_inicio' => $request->hora_inicio,
-            'hora_fim' => $horaFim,
-            'status' => 'agendado',
-            'observacoes' => $request->observacoes,
-            'ativo' => true
-        ]);
+    //         if (!$agendamento) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Horário não está mais disponível.'
+    //             ], 400);
+    //         }
 
-        // Associar serviços
-        $valorTotal = 0;
-        foreach ($request->servicos as $servicoId) {
-            $servico = $servicos->find($servicoId);
-            $agendamento->produtos()->attach($servicoId, [
-                'quantidade' => 1,
-                'valor_unitario' => $servico->preco
-            ]);
-            $valorTotal += $servico->preco;
-        }
+    //         // Associar cliente ao agendamento
+    //         $agendamento->update([
+    //             'cliente_id' => $cliente->id,
+    //             'status' => 'agendado',
+    //             'observacoes' => $request->observacoes
+    //         ]);
 
-        if ($request->criar_movimento_financeiro) {
-            \App\Models\MovimentacaoFinanceira::create([
-                'agendamento_id' => $agendamento->id,
-                'tipo' => 'entrada',
-                'categoria_id' => 1, // Categoria padrão de serviços
-                'descricao' => 'Agendamento - ' . $cliente->nome,
-                'valor' => $valorTotal,
-                'data_vencimento' => $request->data_agendamento,
-                'situacao' => 'em_aberto',
-                'ativo' => true
-            ]);
-        }
+    //         // Associar serviços selecionados
+    //         $servicos = Produto::whereIn('id', $request->servicos)->get();
+    //         $valorTotal = 0;
 
-        $produtosSugeridos = \App\Models\Produto::where('ativo', true)
-            ->where('site', true)
-            ->where('tipo', 'produto')
-            ->take(6)
-            ->get();
+    //         foreach ($servicos as $servico) {
+    //             $agendamento->produtos()->attach($servico->id, [
+    //                 'quantidade' => 1,
+    //                 'valor_unitario' => $servico->preco
+    //             ]);
+    //             $valorTotal += $servico->preco;
+    //         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Agendamento realizado com sucesso!',
-            'agendamento_id' => $agendamento->id,
-            'produtos_sugeridos' => $produtosSugeridos
-        ]);
-    }
+    //         // Criar movimento financeiro se solicitado
+    //         if ($request->criar_movimento_financeiro && $valorTotal > 0) {
+    //             \App\Models\MovimentacaoFinanceira::create([
+    //                 'agendamento_id' => $agendamento->id,
+    //                 'tipo' => 'entrada',
+    //                 'categoria_id' => 1, // Categoria padrão
+    //                 'descricao' => 'Agendamento - ' . $cliente->nome,
+    //                 'valor' => $valorTotal,
+    //                 'data_vencimento' => $agendamento->data_agendamento,
+    //                 'situacao' => 'em_aberto',
+    //                 'ativo' => true
+    //             ]);
+    //         }
+
+    //         // Buscar produtos sugeridos
+    //         $produtosSugeridos = Produto::where('ativo', true)
+    //             ->where('site', true)
+    //             ->where('tipo', 'produto')
+    //             ->take(6)
+    //             ->get();
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Agendamento realizado com sucesso!',
+    //             'agendamento' => [
+    //                 'id' => $agendamento->id,
+    //                 'data' => $agendamento->data_agendamento,
+    //                 'hora' => $agendamento->hora_inicio,
+    //                 'cliente' => $cliente->nome,
+    //                 'servicos' => $servicos->pluck('nome')->toArray()
+    //             ],
+    //             'produtos_sugeridos' => $produtosSugeridos,
+    //             'valor_total' => $valorTotal
+    //         ]);
+
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Erro ao processar agendamento: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
 
     public function getSlotsDisponiveis(Request $request)
     {
@@ -147,5 +179,159 @@ class SiteController extends Controller
     private function getConfiguracoes()
     {
         return Configuracao::pluck('valor', 'chave')->toArray();
+    }
+
+    public function criarAgendamento(Request $request)
+    {
+       
+        $validator = Validator::make($request->all(), [
+            'slot_id' => 'required|exists:agendamentos,id',
+            'nome' => 'required|string|max:255',
+            'telefone' => 'required|string|max:20',
+            'email' => 'nullable|email',
+            'servicos' => 'required|array|min:1',
+            'servicos.*' => 'exists:produtos,id',
+            'observacoes' => 'nullable|string|max:500'
+        ]);
+        
+        if ($validator->fails()) {
+            // Retorna erros em JSON
+           dd($validator->errors());
+        }
+        try {
+            
+            // Buscar ou criar cliente pelo telefone
+            $telefone = preg_replace('/\D/', '', $request->telefone);
+            
+            $cliente = Cliente::where('telefone1', $telefone)
+                ->orWhere('telefone1', $request->telefone)
+                ->first();
+
+            if (!$cliente) {
+                $cliente = Cliente::create([
+                    'nome' => $request->nome,
+                    'telefone' => $telefone,
+                    'email' => $request->email,
+                    'sexo' => 'M',
+                    'ativo' => true
+                ]);
+            } else {
+                $cliente->update([
+                    'nome' => $request->nome,
+                    'email' => $request->email ?: $cliente->email
+                ]);
+            }
+
+            // Buscar o slot disponível
+            $agendamento = Agendamento::where('id', $request->slot_id)
+                ->where('status', 'disponivel')
+                ->where('ativo', true)
+                ->first();
+
+            if (!$agendamento) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Horário não está mais disponível.'
+                ], 400);
+            }
+
+            // Associar cliente ao agendamento
+            $agendamento->update([
+                'cliente_id' => $cliente->id,
+                'status' => 'agendado',
+                'observacoes' => $request->observacoes
+            ]);
+
+            // Associar serviços selecionados
+            $servicos = Produto::whereIn('id', $request->servicos)->get();
+            $valorTotal = 0;
+
+            foreach ($servicos as $servico) {
+                $agendamento->produtos()->attach($servico->id, [
+                    'quantidade' => 1,
+                    'valor_unitario' => $servico->preco
+                ]);
+                $valorTotal += $servico->preco;
+            }
+
+            // Buscar produtos sugeridos
+            $produtosSugeridos = Produto::where('ativo', true)
+                ->where('site', true)
+                ->where('tipo', 'produto')
+                ->take(6)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Agendamento realizado com sucesso!',
+                'agendamento' => [
+                    'id' => $agendamento->id,
+                    'data' => $agendamento->data_agendamento,
+                    'hora' => $agendamento->hora_inicio,
+                    'cliente' => $cliente->nome,
+                    'servicos' => $servicos->pluck('nome')->toArray()
+                ],
+                'produtos_sugeridos' => $produtosSugeridos,
+                'valor_total' => $valorTotal
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao processar agendamento: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function adicionarProdutos(Request $request)
+    {
+        $request->validate([
+            'agendamento_id' => 'required|exists:agendamentos,id',
+            'produtos' => 'required|array|min:1',
+            'produtos.*' => 'exists:produtos,id'
+        ]);
+
+        try {
+            $agendamento = Agendamento::findOrFail($request->agendamento_id);
+            $produtos = Produto::whereIn('id', $request->produtos)->get();
+            
+            $valorProdutos = 0;
+            
+            // Associar produtos ao agendamento
+            foreach ($produtos as $produto) {
+                $agendamento->produtos()->attach($produto->id, [
+                    'quantidade' => 1,
+                    'valor_unitario' => $produto->preco
+                ]);
+                $valorProdutos += $produto->preco;
+            }
+
+            // // Criar movimentação financeira para os produtos
+            // if ($valorProdutos > 0) {
+            //     \App\Models\MovimentacaoFinanceira::create([
+            //         'agendamento_id' => $agendamento->id,
+            //         'tipo' => 'entrada',
+            //         'categoria_id' => 2, // Categoria de produtos
+            //         'descricao' => 'Produtos - ' . $agendamento->cliente->nome,
+            //         'valor' => $valorProdutos,
+            //         'data_vencimento' => $agendamento->data_agendamento,
+            //         'data' => now()->format('Y-m-d H:i'),
+            //         'situacao' => 'em_aberto',
+            //         'ativo' => true
+            //     ]);
+            // }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Produtos adicionados com sucesso!',
+                'valor_produtos' => $valorProdutos
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao adicionar produtos: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

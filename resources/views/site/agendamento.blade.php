@@ -654,18 +654,156 @@
     .error {
         color: #dc3545;
     }
+
+    /* Adicionando estilos para interface swipe com imagens */
+    .services-container, .produtos-container {
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .services-swiper, .produtos-swiper {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        padding: 1rem 0;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .services-swiper::-webkit-scrollbar, .produtos-swiper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .service-card, .produto-card {
+        min-width: 280px;
+        flex-shrink: 0;
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service-image, .produto-image {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--secondary-color);
+    }
+
+    .service-card.selected, .produto-card.selected {
+        border-color: var(--secondary-color);
+        background: linear-gradient(135deg, #fff 0%, #f0f9ff 100%);
+        transform: scale(1.02);
+    }
+
+    .selection-counter {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--secondary-color);
+        color: white;
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        font-weight: bold;
+        box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+        z-index: 1000;
+        display: none;
+        animation: bounce 0.3s ease;
+    }
+
+    .selection-counter.show {
+        display: block;
+    }
+
+    @keyframes bounce {
+        0%, 20%, 60%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        80% { transform: translateY(-5px); }
+    }
+
+    .swipe-indicator {
+        text-align: center;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
+     function adicionarProdutos() {
+        const produtosSelecionados = [];
+        document.querySelectorAll('.produto-card.selected').forEach(card => {
+            const produtoId = card.dataset.produtoId;
+            if (produtoId) {
+                produtosSelecionados.push(produtoId);
+            }
+        });
+
+       
+        if (produtosSelecionados.length === 0) {
+            // Se não selecionou produtos, apenas redireciona
+            alert('Agendamento finalizado com sucesso!');
+            window.location.href = '/';
+            return;
+        }
+
+        if (produtosSelecionados.length > 0 && !document.getElementById('criarMovimentoFinanceiro').checked) {
+            alert('Existem produtos selecionados. Para solicita-los marque confirmando a geração da cobrança para pagamento no dia do atendimento.');
+            return
+        }
+        
+        const formData = new FormData();
+        formData.append('agendamento_id', window.agendamentoId);
+        
+        produtosSelecionados.forEach(produtoId => {
+            formData.append('produtos[]', produtoId);
+        });
+
+        fetch('/api/adicionar-produtos', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Agendamento finalizado com produtos adicionados!');
+                window.location.href = '/';
+            } else {
+                alert('Erro ao adicionar produtos: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao adicionar produtos. Agendamento já foi criado.');
+            window.location.href = '/';
+        });
+    }
 document.addEventListener('DOMContentLoaded', function() {
     let currentDate = new Date();
     let selectedDate = null;
     let selectedTime = null;
-    let selectedServices = [];
     let clientData = {};
     let currentStep = 1;
+    let selectedSlotId = null;
 
     initCalendar();
     
@@ -879,7 +1017,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         timeButton.className = 'time-slot';
                         timeButton.textContent = slot.hora;
                         timeButton.dataset.slotId = slot.id;
-                        timeButton.addEventListener('click', () => selectTime(slot.hora, timeButton));
+                        timeButton.addEventListener('click', () => selectTime(slot.hora, slot.id, timeButton));
                         timeSlotsContainer.appendChild(timeButton);
                     });
                 } else {
@@ -892,7 +1030,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
     
-    function selectTime(time, button) {
+    function selectTime(time, slotId, button) {
         if (button.disabled) return;
         
         // Remover seleção anterior
@@ -903,22 +1041,46 @@ document.addEventListener('DOMContentLoaded', function() {
         // Selecionar novo horário
         button.classList.add('selected');
         selectedTime = time;
+        selectedSlotId = slotId;
         updateStepStatus();
     }
     
-    document.querySelectorAll('.service-card').forEach(card => {
-        card.addEventListener('click', function() {
-            const serviceId = this.dataset.serviceId;
-            const serviceName = this.querySelector('.service-title').textContent;
-            const servicePrice = parseFloat(this.dataset.price);
+    let selectedServices = [];
+    let selectedProducts = [];
+
+    function updateServiceCounter() {
+        const counter = document.getElementById('serviceCounter');
+        if (selectedServices.length > 0) {
+            counter.textContent = `${selectedServices.length} serviço${selectedServices.length > 1 ? 's' : ''} selecionado${selectedServices.length > 1 ? 's' : ''}`;
+            counter.classList.add('show');
+        } else {
+            counter.classList.remove('show');
+        }
+    }
+
+    function updateProductCounter() {
+        const counter = document.getElementById('productCounter');
+        if (selectedProducts.length > 0) {
+            counter.textContent = `${selectedProducts.length} produto${selectedProducts.length > 1 ? 's' : ''} selecionado${selectedProducts.length > 1 ? 's' : ''}`;
+            counter.classList.add('show');
+        } else {
+            counter.classList.remove('show');
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.service-card')) {
+            const card = e.target.closest('.service-card');
+            const serviceId = card.dataset.serviceId;
+            const serviceName = card.querySelector('.service-title').textContent;
+            const servicePrice = card.dataset.price;
             
-            if (this.classList.contains('selected')) {
-                // Remover serviço
-                this.classList.remove('selected');
-                selectedServices = selectedServices.filter(s => s.id !== serviceId);
+            card.classList.toggle('selected');
+            
+            const existingIndex = selectedServices.findIndex(s => s.id === serviceId);
+            if (existingIndex > -1) {
+                selectedServices.splice(existingIndex, 1);
             } else {
-                // Adicionar serviço
-                this.classList.add('selected');
                 selectedServices.push({
                     id: serviceId,
                     name: serviceName,
@@ -926,8 +1088,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
             
+            updateServiceCounter();
             updateStepStatus();
-        });
+        }
+        
+        if (e.target.closest('.produto-card')) {
+            const card = e.target.closest('.produto-card');
+            const productId = card.dataset.produtoId;
+            const productName = card.querySelector('.service-title').textContent;
+            const productPrice = card.dataset.price;
+            
+            card.classList.toggle('selected');
+            
+            const existingIndex = selectedProducts.findIndex(p => p.id === productId);
+            if (existingIndex > -1) {
+                selectedProducts.splice(existingIndex, 1);
+            } else {
+                selectedProducts.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice
+                });
+            }
+            
+            updateProductCounter();
+        }
     });
     
     // Navegação entre steps
@@ -942,16 +1127,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function nextStep() {
         if (currentStep < 4 && canProceed()) {
             if (currentStep === 3) {
-                // Coletar dados do formulário
+                // Coletar dados do formulário e criar agendamento
                 collectClientData();
+                criarAgendamento();
+                return; // Não avança automaticamente
             }
             
             currentStep++;
             updateStepDisplay();
-            
-            if (currentStep === 4) {
-                finalizarAgendamento();
-            }
         }
     }
     
@@ -1011,7 +1194,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clientData = Object.fromEntries(formData.entries());
     }
     
-    function finalizarAgendamento() {
+    function criarAgendamento() {
         const nome = document.getElementById('nome').value.trim();
         const telefone = document.getElementById('telefone').value.trim();
         
@@ -1021,19 +1204,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const formData = new FormData();
+        formData.append('slot_id', selectedSlotId);
         formData.append('nome', nome);
         formData.append('telefone', telefone);
         formData.append('email', document.getElementById('email').value);
-        formData.append('data_agendamento', selectedDate);
-        formData.append('hora_inicio', selectedTime);
         formData.append('observacoes', document.getElementById('observacoes').value);
-        formData.append('criar_movimento_financeiro', document.getElementById('criarMovimentoFinanceiro').checked);
         
-        selectedServices.forEach(serviceId => {
-            formData.append('servicos[]', serviceId);
+        selectedServices.forEach(service => {
+            formData.append('servicos[]', service.id);
         });
 
-        fetch('/finalizar-agendamento', {
+        fetch('/api/criar-agendamento', {
             method: 'POST',
             body: formData,
             headers: {
@@ -1043,15 +1224,19 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Armazenar ID do agendamento para usar na etapa de produtos
+                window.agendamentoId = data.agendamento.id;
+                
                 if (data.produtos_sugeridos && data.produtos_sugeridos.length > 0) {
                     mostrarProdutosSugeridos(data.produtos_sugeridos);
-                    goToStep(4);
+                    currentStep = 4;
+                    updateStepDisplay();
                 } else {
                     alert('Agendamento realizado com sucesso!');
                     window.location.href = '/';
                 }
             } else {
-                alert('Erro ao realizar agendamento. Tente novamente.');
+                alert('Erro ao realizar agendamento: ' + data.message);
             }
         })
         .catch(error => {
@@ -1060,28 +1245,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+   
+
     function mostrarProdutosSugeridos(produtos) {
         const container = document.getElementById('produtosSugeridos');
         container.innerHTML = '';
         
         produtos.forEach(produto => {
             const produtoCard = document.createElement('div');
-            produtoCard.className = 'service-card';
+            produtoCard.className = 'produto-card';
+            produtoCard.dataset.produtoId = produto.id;
+            produtoCard.dataset.price = produto.preco;
+            
+            const imageSrc = produto.imagem ? `${produto.imagem}` : '';
+            
             produtoCard.innerHTML = `
-                <div class="service-header">
-                    <div class="service-icon"><i class="fas fa-shopping-bag"></i></div>
+                <div class="produto-image">
+                    ${imageSrc ? `<img src="${imageSrc}" alt="${produto.nome}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">` : '<i class="fas fa-shopping-bag"></i>'}
                 </div>
                 <div class="service-title">${produto.nome}</div>
                 <div class="service-description">${produto.descricao || 'Produto de qualidade'}</div>
                 <div class="service-price">R$ ${parseFloat(produto.preco).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
             `;
+            
             container.appendChild(produtoCard);
         });
-    }
-
-    function goToStep(step) {
-        currentStep = step;
-        updateStepDisplay();
     }
 
     function applyPhoneMask(input) {
@@ -1102,10 +1290,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const formClient = document.getElementById('clientForm');
 
-    // adiciona evento em todos os inputs do form
     formClient.querySelectorAll('input').forEach(input => {
         input.addEventListener('input', function () {
-            updateStepStatus()
+            updateStepStatus();
         });
     });
 });
@@ -1165,76 +1352,79 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <!-- Step 2: Serviços -->
         <div class="step-content" id="step2">
-            <h3 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">
+            <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">
                 <i class="fas fa-cut"></i> Escolha os Serviços
             </h3>
             
-            <div class="services-grid">
-                @forelse($servicos as $servico)
-                    <div class="service-card" data-service-id="{{ $servico->id }}" data-price="{{ $servico->preco }}">
-                        <div class="service-header">
-                            <div class="service-icon">
-                                @switch($servico->nome)
-                                    @case('Corte de Cabelo')
-                                    @case('Corte Masculino')
-                                        <i class="fas fa-cut"></i>
-                                        @break
-                                    @case('Barba')
-                                    @case('Aparar Barba')
-                                        <i class="fas fa-user-tie"></i>
-                                        @break
-                                    @case('Bigode')
-                                        <i class="fas fa-mustache"></i>
-                                        @break
-                                    @default
-                                        <i class="fas fa-scissors"></i>
-                                @endswitch
+            <!-- Adicionando indicador de swipe e container para scroll horizontal -->
+            <div class="swipe-indicator">
+                <i class="fas fa-hand-point-right"></i> Deslize para ver mais serviços
+            </div>
+            
+            <div class="services-container">
+                <div class="services-swiper">
+                    @forelse($servicos as $servico)
+                        <div class="service-card" data-service-id="{{ $servico->id }}" data-price="{{ $servico->preco }}">
+                            <div class="service-image">
+                                @if($servico->imagem)
+                                    <img src="{{ $servico->imagem }}" alt="{{ $servico->nome }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                                @else
+                                    @switch($servico->nome)
+                                        @case('Corte de Cabelo')
+                                        @case('Corte Masculino')
+                                            <i class="fas fa-cut"></i>
+                                            @break
+                                        @case('Barba')
+                                        @case('Aparar Barba')
+                                            <i class="fas fa-user-tie"></i>
+                                            @break
+                                        @case('Bigode')
+                                            <i class="fas fa-mustache"></i>
+                                            @break
+                                        @default
+                                            <i class="fas fa-scissors"></i>
+                                    @endswitch
+                                @endif
                             </div>
-                            <div class="service-checkbox"></div>
+                            
+                            <div class="service-title">{{ $servico->nome }}</div>
+                            <div class="service-description">
+                                {{ $servico->descricao ?: 'Serviço profissional de alta qualidade' }}
+                            </div>
+                            <div class="service-price">R$ {{ number_format($servico->preco, 2, ',', '.') }}</div>
+                            <div class="service-duration">Duração: {{ $configuracoes['duracao_servico'] ?? 30 }} min</div>
+                        </div>
+                    @empty
+                        <!-- Serviços padrão caso não haja cadastrados -->
+                        <div class="service-card" data-service-id="1" data-price="25.00">
+                            <div class="service-image"><i class="fas fa-cut"></i></div>
+                            <div class="service-title">Corte Masculino</div>
+                            <div class="service-description">Corte profissional personalizado</div>
+                            <div class="service-price">R$ 25,00</div>
+                            <div class="service-duration">Duração: 30 min</div>
                         </div>
                         
-                        <div class="service-title">{{ $servico->nome }}</div>
-                        <div class="service-description">
-                            {{ $servico->descricao ?: 'Serviço profissional de alta qualidade' }}
+                        <div class="service-card" data-service-id="2" data-price="15.00">
+                            <div class="service-image"><i class="fas fa-user-tie"></i></div>
+                            <div class="service-title">Barba</div>
+                            <div class="service-description">Aparar e modelar barba</div>
+                            <div class="service-price">R$ 15,00</div>
+                            <div class="service-duration">Duração: 20 min</div>
                         </div>
-                        <div class="service-price">R$ {{ number_format($servico->preco, 2, ',', '.') }}</div>
-                        <div class="service-duration">Duração: {{ $configuracoes['duracao_servico'] ?? 30 }} min</div>
-                    </div>
-                @empty
-                    <div class="service-card" data-service-id="1" data-price="25.00">
-                        <div class="service-header">
-                            <div class="service-icon"><i class="fas fa-cut"></i></div>
-                            <div class="service-checkbox"></div>
+                        
+                        <div class="service-card" data-service-id="3" data-price="35.00">
+                            <div class="service-image"><i class="fas fa-scissors"></i></div>
+                            <div class="service-title">Corte + Barba</div>
+                            <div class="service-description">Pacote completo</div>
+                            <div class="service-price">R$ 35,00</div>
+                            <div class="service-duration">Duração: 45 min</div>
                         </div>
-                        <div class="service-title">Corte Masculino</div>
-                        <div class="service-description">Corte profissional personalizado</div>
-                        <div class="service-price">R$ 25,00</div>
-                        <div class="service-duration">Duração: 30 min</div>
-                    </div>
-                    
-                    <div class="service-card" data-service-id="2" data-price="15.00">
-                        <div class="service-header">
-                            <div class="service-icon"><i class="fas fa-user-tie"></i></div>
-                            <div class="service-checkbox"></div>
-                        </div>
-                        <div class="service-title">Barba</div>
-                        <div class="service-description">Aparar e modelar barba</div>
-                        <div class="service-price">R$ 15,00</div>
-                        <div class="service-duration">Duração: 20 min</div>
-                    </div>
-                    
-                    <div class="service-card" data-service-id="3" data-price="35.00">
-                        <div class="service-header">
-                            <div class="service-icon"><i class="fas fa-scissors"></i></div>
-                            <div class="service-checkbox"></div>
-                        </div>
-                        <div class="service-title">Corte + Barba</div>
-                        <div class="service-description">Pacote completo</div>
-                        <div class="service-price">R$ 35,00</div>
-                        <div class="service-duration">Duração: 45 min</div>
-                    </div>
-                @endforelse
+                    @endforelse
+                </div>
             </div>
+            
+            <!-- Adicionando contador de serviços selecionados -->
+            <div class="selection-counter" id="serviceCounter"></div>
             
             <div class="navigation-buttons">
                 <button class="btn-nav btn-prev">
@@ -1288,17 +1478,27 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <!-- Step 4: Produtos Sugeridos -->
         <div class="step-content" id="step4">
-            <h3 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">
+            <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">
                 <i class="fas fa-shopping-bag"></i> Produtos Recomendados
             </h3>
             
-            <p style="text-align: center; margin-bottom: 2rem; color: #666;">
+            <p style="text-align: center; margin-bottom: 1rem; color: #666;">
                 Que tal levar alguns produtos para cuidar do seu visual em casa?
             </p>
             
-            <div class="produtos-grid" id="produtosSugeridos">
-                <!-- Produtos serão carregados via JavaScript -->
+            <!-- Adicionando indicador de swipe e container para produtos -->
+            <div class="swipe-indicator">
+                <i class="fas fa-hand-point-right"></i> Deslize para ver mais produtos
             </div>
+            
+            <div class="produtos-container">
+                <div class="produtos-swiper" id="produtosSugeridos">
+                    <!-- Produtos serão carregados via JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Adicionando contador de produtos selecionados -->
+            <div class="selection-counter" id="productCounter"></div>
             
             <div class="pagamento-opcao" style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
                 <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
@@ -1308,11 +1508,11 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             
             <div class="navigation-buttons">
-                <button class="btn-nav btn-prev">
-                    <i class="fas fa-arrow-left"></i> Voltar
+                <button class="btn-nav" onclick="window.location.href='/'">
+                    <i class="fas fa-home"></i> Voltar ao Início
                 </button>
-                <button class="btn-nav btn-next">
-                    Finalizar Agendamento <i class="fas fa-check"></i>
+                <button class="btn-nav btn-next" onclick="adicionarProdutos()">
+                    Finalizar com Produtos <i class="fas fa-check"></i>
                 </button>
             </div>
         </div>
