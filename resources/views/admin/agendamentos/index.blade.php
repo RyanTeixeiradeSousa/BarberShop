@@ -131,6 +131,7 @@
                                     <option value="em_andamento" {{ request('status') == 'em_andamento' ? 'selected' : '' }}>Em Andamento</option>
                                     <option value="concluido" {{ request('status') == 'concluido' ? 'selected' : '' }}>Concluído</option>
                                     <option value="cancelado" {{ request('status') == 'cancelado' ? 'selected' : '' }}>Cancelado</option>
+                                    <option value="atual" {{ request('status') == 'atual' ? 'selected' : '' }}>Atual</option>
                                 </select>
                             </div>
                             <div class="col-md-2">

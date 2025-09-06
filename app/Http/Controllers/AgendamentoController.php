@@ -18,8 +18,8 @@ class AgendamentoController extends Controller
     {
         $query = Agendamento::with(['cliente', 'produtos']);
 
-        // Filtros
-        if ($request->filled('busca')) {
+        
+        if ($request->filled('busca') && $request->status != 'atual') {
             $busca = $request->busca;
             $query->where(function($q) use ($busca) {
                 $q->whereHas('cliente', function($subQ) use ($busca) {
@@ -30,16 +30,22 @@ class AgendamentoController extends Controller
             });
         }
 
-        if ($request->filled('status')) {
+        if ($request->filled('status') && $request->status != 'atual') {
             $query->where('status', $request->status);
         }
 
-        if ($request->filled('data_inicio')) {
+        if ($request->filled('data_inicio') && $request->status != 'atual') {
             $query->where('data_agendamento', '>=', $request->data_inicio);
         }
 
-        if ($request->filled('data_fim')) {
+        if ($request->filled('data_fim') && $request->status != 'atual') {
             $query->where('data_agendamento', '<=', $request->data_fim);
+        }
+
+        if($request->filled('status') && $request->status == 'atual'){
+            $query->whereDate('data_agendamento', now()->toDateString()) // só hoje
+                ->whereTime('hora_inicio', '<=', now()->toTimeString()) // hora atual depois do inicio
+                ->whereTime('hora_fim', '>=', now()->toTimeString());  // hora atual antes do fim
         }
 
         $agendamentos = $query->orderBy('data_agendamento', 'desc')
