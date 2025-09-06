@@ -26,7 +26,7 @@
         background: linear-gradient(135deg, rgba(21, 128, 61, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%);
         @if(!empty($configuracoes['site_foto_principal']))
             background-image: linear-gradient(135deg, rgba(21, 128, 61, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%), 
-                              url('data:image/jpeg;base64,{{ $configuracoes['site_foto_principal'] }}');
+                              url('{{ $configuracoes['site_foto_principal'] }}');
         @else
             background-image: linear-gradient(135deg, rgba(21, 128, 61, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%), 
                               url('/placeholder.svg?height=1080&width=1920');
@@ -543,9 +543,9 @@
             </div>
             <div class="history-image fade-in">
                 @if(!empty($configuracoes['site_foto_historia']))
-                    <img src="data:image/jpeg;base64,{{ $configuracoes['site_foto_historia'] }}" alt="Nossa História">
+                    <img src="{{ $configuracoes['site_foto_historia'] }}" alt="Nossa História">
                 @elseif(!empty($configuracoes['site_foto_principal']))
-                    <img src="data:image/jpeg;base64,{{ $configuracoes['site_foto_principal'] }}" alt="Nossa História">
+                    <img src="{{ $configuracoes['site_foto_principal'] }}" alt="Nossa História">
                 @else
                     <img src="/placeholder.svg?height=500&width=600" alt="Nossa História">
                 @endif
