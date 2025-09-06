@@ -227,6 +227,7 @@ class AgendamentoController extends Controller
                 'dias.*' => 'in:0,1,2,3,4,5,6', // 0=domingo, 1=segunda, etc.
                 'intervalo_minutos' => 'nullable|integer|min:30|max:480'
             ]);
+            
 
             $duracaoPadrao = Configuracao::get('duracao_servico_padrao', 60);
             $intervalo = $request->intervalo_minutos ?? $duracaoPadrao;
@@ -234,6 +235,11 @@ class AgendamentoController extends Controller
             $dataAtual = Carbon::parse($request->data_inicio);
             $dataFim = Carbon::parse($request->data_fim);
             $slotsGerados = 0;
+
+            if ($dataAtual->diffInYears($dataFim) > 3) {
+                return redirect()->route('agendamentos.index')
+                ->with(['type' => 'error','message' => "Erro ao tentar gerar lote de agendamentos. O intervalo entre as datas não pode ser superior a 3 anos."]);
+            }
 
             while ($dataAtual->lte($dataFim)) {
                 if (in_array($dataAtual->dayOfWeek, $request->dias)) {
