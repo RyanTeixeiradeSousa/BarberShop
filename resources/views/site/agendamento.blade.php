@@ -746,57 +746,57 @@
 
 @push('scripts')
 <script>
-     function adicionarProdutos() {
-        const produtosSelecionados = [];
-        document.querySelectorAll('.produto-card.selected').forEach(card => {
-            const produtoId = card.dataset.produtoId;
-            if (produtoId) {
-                produtosSelecionados.push(produtoId);
-            }
-        });
-
-       
-        if (produtosSelecionados.length === 0) {
-            // Se não selecionou produtos, apenas redireciona
-            alert('Agendamento finalizado com sucesso!');
-            window.location.href = '/';
-            return;
+function adicionarProdutos() {
+    const produtosSelecionados = [];
+    document.querySelectorAll('.produto-card.selected').forEach(card => {
+        const produtoId = card.dataset.produtoId;
+        if (produtoId) {
+            produtosSelecionados.push(produtoId);
         }
+    });
 
-        if (produtosSelecionados.length > 0 && !document.getElementById('criarMovimentoFinanceiro').checked) {
-            alert('Existem produtos selecionados. Para solicita-los marque confirmando a geração da cobrança para pagamento no dia do atendimento.');
-            return
-        }
-        
-        const formData = new FormData();
-        formData.append('agendamento_id', window.agendamentoId);
-        
-        produtosSelecionados.forEach(produtoId => {
-            formData.append('produtos[]', produtoId);
-        });
-
-        fetch('/api/adicionar-produtos', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Agendamento finalizado com produtos adicionados!');
-                window.location.href = '/';
-            } else {
-                alert('Erro ao adicionar produtos: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            alert('Erro ao adicionar produtos. Agendamento já foi criado.');
-            window.location.href = '/';
-        });
+    if (produtosSelecionados.length === 0) {
+        // Se não selecionou produtos, apenas redireciona
+        alert('Agendamento finalizado com sucesso!');
+        window.location.href = '/';
+        return;
     }
+
+    if (produtosSelecionados.length > 0 && !document.getElementById('criarMovimentoFinanceiro').checked) {
+        alert('Existem produtos selecionados. Para solicita-los marque confirmando a geração da cobrança para pagamento no dia do atendimento.');
+        return
+    }
+    
+    const formData = new FormData();
+    formData.append('agendamento_id', window.agendamentoId);
+    
+    produtosSelecionados.forEach(produtoId => {
+        formData.append('produtos[]', produtoId);
+    });
+
+    fetch('/api/adicionar-produtos', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Agendamento finalizado com produtos adicionados!');
+            window.location.href = '/';
+        } else {
+            alert('Erro ao adicionar produtos: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao adicionar produtos. Agendamento já foi criado.');
+        window.location.href = '/';
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     let currentDate = new Date();
     let selectedDate = null;
@@ -1125,8 +1125,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     function nextStep() {
+        
         if (currentStep < 4 && canProceed()) {
-            if (currentStep === 3) {
+            if (currentStep === 2) {
+                // Após selecionar serviços, ir para produtos
+                currentStep = 3;
+                updateStepDisplay();
+                return;
+            }
+            
+            if (currentStep === 4) {
                 // Coletar dados do formulário e criar agendamento
                 collectClientData();
                 criarAgendamento();
@@ -1181,6 +1189,8 @@ document.addEventListener('DOMContentLoaded', function() {
             case 2:
                 return selectedServices.length > 0;
             case 3:
+                return true; // Produtos são opcionais
+            case 4:
                 const form = document.querySelector('#clientForm');
                 return form && form.checkValidity();
             default:
@@ -1214,7 +1224,17 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('servicos[]', service.id);
         });
 
-        fetch('/api/criar-agendamento', {
+        // Adicionar produtos selecionados se houver
+        selectedProducts.forEach(product => {
+            formData.append('produtos[]', product.id);
+        });
+
+        // Verificar se deve criar cobrança
+        const criarCobranca = document.getElementById('criarMovimentoFinanceiro') && 
+                             document.getElementById('criarMovimentoFinanceiro').checked;
+        formData.append('criar_cobranca', criarCobranca ? '1' : '0');
+
+        fetch('/api/finalizar-agendamento-completo', {
             method: 'POST',
             body: formData,
             headers: {
@@ -1224,17 +1244,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Armazenar ID do agendamento para usar na etapa de produtos
-                window.agendamentoId = data.agendamento.id;
-                
-                if (data.produtos_sugeridos && data.produtos_sugeridos.length > 0) {
-                    mostrarProdutosSugeridos(data.produtos_sugeridos);
-                    currentStep = 4;
-                    updateStepDisplay();
-                } else {
-                    alert('Agendamento realizado com sucesso!');
-                    window.location.href = '/';
-                }
+                alert('Agendamento realizado com sucesso!');
+                window.location.href = '/';
             } else {
                 alert('Erro ao realizar agendamento: ' + data.message);
             }
@@ -1242,33 +1253,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Erro:', error);
             alert('Erro ao realizar agendamento. Tente novamente.');
-        });
-    }
-
-   
-
-    function mostrarProdutosSugeridos(produtos) {
-        const container = document.getElementById('produtosSugeridos');
-        container.innerHTML = '';
-        
-        produtos.forEach(produto => {
-            const produtoCard = document.createElement('div');
-            produtoCard.className = 'produto-card';
-            produtoCard.dataset.produtoId = produto.id;
-            produtoCard.dataset.price = produto.preco;
-            
-            const imageSrc = produto.imagem ? `${produto.imagem}` : '';
-            
-            produtoCard.innerHTML = `
-                <div class="produto-image">
-                    ${imageSrc ? `<img src="${imageSrc}" alt="${produto.nome}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">` : '<i class="fas fa-shopping-bag"></i>'}
-                </div>
-                <div class="service-title">${produto.nome}</div>
-                <div class="service-description">${produto.descricao || 'Produto de qualidade'}</div>
-                <div class="service-price">R$ ${parseFloat(produto.preco).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
-            `;
-            
-            container.appendChild(produtoCard);
         });
     }
 
@@ -1296,6 +1280,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Função global para navegação do calendário
+window.changeMonth = function(direction) {
+    // Esta função será definida dentro do DOMContentLoaded
+};
+
+window.changeMonthYear = function() {
+    // Esta função será definida dentro do DOMContentLoaded
+};
 </script>
 @endpush
 
@@ -1318,11 +1311,11 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <div class="step">
             <div class="step-number">3</div>
-            <span>Seus Dados</span>
+            <span>Produtos</span>
         </div>
         <div class="step">
             <div class="step-number">4</div>
-            <span>Confirmação</span>
+            <span>Seus Dados</span>
         </div>
     </div>
     
@@ -1363,37 +1356,40 @@ document.addEventListener('DOMContentLoaded', function() {
             
             <div class="services-container">
                 <div class="services-swiper">
-                    @forelse($servicos as $servico)
-                        <div class="service-card" data-service-id="{{ $servico->id }}" data-price="{{ $servico->preco }}">
-                            <div class="service-image">
-                                @if($servico->imagem)
-                                    <img src="{{ $servico->imagem }}" alt="{{ $servico->nome }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
-                                @else
-                                    @switch($servico->nome)
-                                        @case('Corte de Cabelo')
-                                        @case('Corte Masculino')
-                                            <i class="fas fa-cut"></i>
-                                            @break
-                                        @case('Barba')
-                                        @case('Aparar Barba')
-                                            <i class="fas fa-user-tie"></i>
-                                            @break
-                                        @case('Bigode')
-                                            <i class="fas fa-mustache"></i>
-                                            @break
-                                        @default
-                                            <i class="fas fa-scissors"></i>
-                                    @endswitch
-                                @endif
+                    @forelse($produtos as $produto)
+                        @if($produto->tipo == 'servico')
+
+                            <div class="service-card" data-service-id="{{ $produto->id }}" data-price="{{ $produto->preco }}">
+                                <div class="service-image">
+                                    @if($produto->imagem)
+                                        <img src="{{ $produto->imagem }}" alt="{{ $produto->nome }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                                    @else
+                                        @switch($produto->nome)
+                                            @case('Corte de Cabelo')
+                                            @case('Corte Masculino')
+                                                <i class="fas fa-cut"></i>
+                                                @break
+                                            @case('Barba')
+                                            @case('Aparar Barba')
+                                                <i class="fas fa-user-tie"></i>
+                                                @break
+                                            @case('Bigode')
+                                                <i class="fas fa-mustache"></i>
+                                                @break
+                                            @default
+                                                <i class="fas fa-scissors"></i>
+                                        @endswitch
+                                    @endif
+                                </div>
+                                
+                                <div class="service-title">{{ $produto->nome }}</div>
+                                <div class="service-description">
+                                    {{ $produto->descricao ?: 'Serviço profissional de alta qualidade' }}
+                                </div>
+                                <div class="service-price">R$ {{ number_format($produto->preco, 2, ',', '.') }}</div>
+                                <div class="service-duration">Duração: {{ $configuracoes['duracao_servico'] ?? 30 }} min</div>
                             </div>
-                            
-                            <div class="service-title">{{ $servico->nome }}</div>
-                            <div class="service-description">
-                                {{ $servico->descricao ?: 'Serviço profissional de alta qualidade' }}
-                            </div>
-                            <div class="service-price">R$ {{ number_format($servico->preco, 2, ',', '.') }}</div>
-                            <div class="service-duration">Duração: {{ $configuracoes['duracao_servico'] ?? 30 }} min</div>
-                        </div>
+                        @endif
                     @empty
                         <!-- Serviços padrão caso não haja cadastrados -->
                         <div class="service-card" data-service-id="1" data-price="25.00">
@@ -1436,8 +1432,79 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
         
-        <!-- Step 3: Dados do Cliente -->
+        <!-- Step 3: Produtos Sugeridos -->
         <div class="step-content" id="step3">
+            <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">
+                <i class="fas fa-shopping-bag"></i> Produtos Recomendados
+            </h3>
+            
+            <p style="text-align: center; margin-bottom: 1rem; color: #666;">
+                Que tal levar alguns produtos para cuidar do seu visual em casa?
+            </p>
+            
+            <!-- Adicionando indicador de swipe e container para produtos -->
+            <div class="swipe-indicator">
+                <i class="fas fa-hand-point-right"></i> Deslize para ver mais produtos
+            </div>
+            
+            <div class="produtos-container">
+                <div class="produtos-swiper" id="produtosSugeridos">
+                    @forelse($produtos as $produto)
+                        @if($produto->tipo == 'produto')
+                            <div class="produto-card" data-produto-id="{{ $produto->id }}" data-price="{{ $produto->preco }}">
+                                <div class="produto-image">
+                                    @if($produto->imagem)
+                                        <img src="{{ $produto->imagem }}" alt="{{ $produto->nome }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                                    @else
+                                        <i class="fas fa-shopping-bag"></i>
+                                    @endif
+                                </div>
+                                <div class="service-title">{{ $produto->nome }}</div>
+                                <div class="service-description">{{ $produto->descricao ?: 'Produto de qualidade' }}</div>
+                                <div class="service-price">R$ {{ number_format($produto->preco, 2, ',', '.') }}</div>
+                            </div>
+                        @endif
+                    @empty
+                        <!-- Produtos padrão caso não haja cadastrados -->
+                        <div class="produto-card" data-produto-id="1" data-price="15.00">
+                            <div class="produto-image"><i class="fas fa-shopping-bag"></i></div>
+                            <div class="service-title">Pomada Modeladora</div>
+                            <div class="service-description">Pomada para modelar cabelo</div>
+                            <div class="service-price">R$ 15,00</div>
+                        </div>
+                        
+                        <div class="produto-card" data-produto-id="2" data-price="12.00">
+                            <div class="produto-image"><i class="fas fa-spray-can"></i></div>
+                            <div class="service-title">Spray Fixador</div>
+                            <div class="service-description">Spray para fixar penteado</div>
+                            <div class="service-price">R$ 12,00</div>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+            
+            <!-- Adicionando contador de produtos selecionados -->
+            <div class="selection-counter" id="productCounter"></div>
+            
+            <div class="payment-option">
+                <label>
+                    <input type="checkbox" id="criarMovimentoFinanceiro" name="criar_movimento_financeiro">
+                    <span>Gerar cobrança para pagamento no dia do atendimento</span>
+                </label>
+            </div>
+            
+            <div class="navigation-buttons">
+                <button class="btn-nav btn-prev">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+                <button class="btn-nav btn-next">
+                    Próximo <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 4: Dados do Cliente -->
+        <div class="step-content" id="step4">
             <div class="client-form">
                 <h3 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">
                     <i class="fas fa-user"></i> Seus Dados
@@ -1471,48 +1538,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
                 <button class="btn-nav btn-next" disabled>
-                    Próximo <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Step 4: Produtos Sugeridos -->
-        <div class="step-content" id="step4">
-            <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">
-                <i class="fas fa-shopping-bag"></i> Produtos Recomendados
-            </h3>
-            
-            <p style="text-align: center; margin-bottom: 1rem; color: #666;">
-                Que tal levar alguns produtos para cuidar do seu visual em casa?
-            </p>
-            
-            <!-- Adicionando indicador de swipe e container para produtos -->
-            <div class="swipe-indicator">
-                <i class="fas fa-hand-point-right"></i> Deslize para ver mais produtos
-            </div>
-            
-            <div class="produtos-container">
-                <div class="produtos-swiper" id="produtosSugeridos">
-                    <!-- Produtos serão carregados via JavaScript -->
-                </div>
-            </div>
-            
-            <!-- Adicionando contador de produtos selecionados -->
-            <div class="selection-counter" id="productCounter"></div>
-            
-            <div class="pagamento-opcao" style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                    <input type="checkbox" id="criarMovimentoFinanceiro" name="criar_movimento_financeiro">
-                    <span>Gerar cobrança para pagamento no dia do atendimento</span>
-                </label>
-            </div>
-            
-            <div class="navigation-buttons">
-                <button class="btn-nav" onclick="window.location.href='/'">
-                    <i class="fas fa-home"></i> Voltar ao Início
-                </button>
-                <button class="btn-nav btn-next" onclick="adicionarProdutos()">
-                    Finalizar com Produtos <i class="fas fa-check"></i>
+                    Finalizar Agendamento <i class="fas fa-check"></i>
                 </button>
             </div>
         </div>

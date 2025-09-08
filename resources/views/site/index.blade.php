@@ -25,10 +25,10 @@
         min-height: 100vh;
         background: linear-gradient(135deg, rgba(21, 128, 61, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%);
         @if(!empty($configuracoes['site_foto_principal']))
-            background-image: linear-gradient(135deg, rgba(21, 128, 61, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%), 
+            background-image: linear-gradient(135deg, rgba(218,228,233, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%), 
                               url('{{ $configuracoes['site_foto_principal'] }}');
         @else
-            background-image: linear-gradient(135deg, rgba(21, 128, 61, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%), 
+            background-image: linear-gradient(135deg, rgba(218,228,233, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%), 
                               url('/placeholder.svg?height=1080&width=1920');
         @endif
         background-size: cover;
@@ -74,12 +74,12 @@
     .btn-primary {
         background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
         color: white;
-        box-shadow: 0 10px 25px rgba(21, 128, 61, 0.3);
+        box-shadow: 0 10px 25px rgba(218,228,233, 0.3);
     }
 
     .btn-primary:hover {
         transform: translateY(-3px);
-        box-shadow: 0 20px 40px rgba(21, 128, 61, 0.4);
+        box-shadow: 0 20px 40px rgba(218,228,233, 0.4);
     }
 
     .btn-outline {

@@ -30,12 +30,13 @@ class SiteController extends Controller
     public function agendamento()
     {
         $configuracoes = $this->getConfiguracoes();
-        $servicos = Produto::where('ativo', true)
+
+        $produtos = Produto::where('ativo', true)
             ->where('site', true)
-            ->where('tipo', 'servico')
             ->get();
 
-        return view('site.agendamento', compact('configuracoes', 'servicos'));
+    
+        return view('site.agendamento', compact('configuracoes', 'produtos'));
     }
 
     // public function finalizarAgendamento(Request $request)
@@ -287,50 +288,51 @@ class SiteController extends Controller
     {
         $request->validate([
             'agendamento_id' => 'required|exists:agendamentos,id',
-            'produtos' => 'required|array|min:1',
-            'produtos.*' => 'exists:produtos,id'
+            'produtos' => 'nullable|array',
+            'produtos.*' => 'exists:produtos,id',
+            'criar_cobranca' => 'nullable|boolean'
         ]);
 
         try {
             $agendamento = Agendamento::findOrFail($request->agendamento_id);
-            $produtos = Produto::whereIn('id', $request->produtos)->get();
             
-            $valorProdutos = 0;
-            
-            // Associar produtos ao agendamento
-            foreach ($produtos as $produto) {
-                $agendamento->produtos()->attach($produto->id, [
-                    'quantidade' => 1,
-                    'valor_unitario' => $produto->preco
-                ]);
-                $valorProdutos += $produto->preco;
-            }
+            if (!empty($request->produtos)) {
+                $produtos = Produto::whereIn('id', $request->produtos)->get();
+                $valorProdutos = 0;
+                
+                // Associar produtos ao agendamento
+                foreach ($produtos as $produto) {
+                    $agendamento->produtos()->attach($produto->id, [
+                        'quantidade' => 1,
+                        'valor_unitario' => $produto->preco
+                    ]);
+                    $valorProdutos += $produto->preco;
+                }
 
-            // // Criar movimentação financeira para os produtos
-            // if ($valorProdutos > 0) {
-            //     \App\Models\MovimentacaoFinanceira::create([
-            //         'agendamento_id' => $agendamento->id,
-            //         'tipo' => 'entrada',
-            //         'categoria_id' => 2, // Categoria de produtos
-            //         'descricao' => 'Produtos - ' . $agendamento->cliente->nome,
-            //         'valor' => $valorProdutos,
-            //         'data_vencimento' => $agendamento->data_agendamento,
-            //         'data' => now()->format('Y-m-d H:i'),
-            //         'situacao' => 'em_aberto',
-            //         'ativo' => true
-            //     ]);
-            // }
+                if ($request->criar_cobranca && $valorProdutos > 0) {
+                    \App\Models\MovimentacaoFinanceira::create([
+                        'agendamento_id' => $agendamento->id,
+                        'tipo' => 'entrada',
+                        'categoria_id' => 2, // Categoria de produtos
+                        'descricao' => 'Produtos - ' . $agendamento->cliente->nome,
+                        'valor' => $valorProdutos,
+                        'data_vencimento' => $agendamento->data_agendamento,
+                        'situacao' => 'em_aberto',
+                        'ativo' => true
+                    ]);
+                }
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Produtos adicionados com sucesso!',
-                'valor_produtos' => $valorProdutos
+                'message' => 'Produtos processados com sucesso!',
+                'valor_produtos' => $request->produtos ? $valorProdutos : 0
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao adicionar produtos: ' . $e->getMessage()
+                'message' => 'Erro ao processar produtos: ' . $e->getMessage()
             ], 500);
         }
     }
