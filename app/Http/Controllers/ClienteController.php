@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agendamento;
 use App\Models\Cliente;
+use App\Models\MovimentacaoFinanceira;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -37,7 +39,14 @@ class ClienteController extends Controller
         $total_masculino = Cliente::where('sexo', 'M')->count();
         $total_feminino = Cliente::where('sexo', 'F')->count();
 
-        return view('admin.clientes.index', compact('clientes', 'total', 'total_ativos', 'total_masculino', 'total_feminino'));
+        $stats = [
+            'total' => $total,
+            'ativos' => $total_ativos,
+            'masculino' => $total_masculino,
+            'feminino' => $total_feminino
+        ];
+
+        return view('admin.clientes.index', compact('clientes', 'stats'));
     }
 
     public function store(Request $request)
@@ -45,11 +54,11 @@ class ClienteController extends Controller
         try{
             $rules = [
                 'nome' => 'required|string|max:255',
-                'cpf' => 'required|string|size:14|unique:clientes',
-                'email' => 'email|unique:clientes',
+                'cpf' => 'nullable|string|size:14|unique:clientes',
+                'email' => 'nullable|email|unique:clientes',
                 'data_nascimento' => 'nullable',
                 'sexo' => 'required|in:M,F',
-                'telefone1' => 'nullable|string|max:15',
+                'telefone1' => 'required|string|max:15|unique:clientes',
                 'telefone2' => 'nullable|string|max:15',
                 'endereco' => 'nullable|string'
             ];
@@ -60,7 +69,6 @@ class ClienteController extends Controller
                 'nome.string' => 'O nome deve ser um texto válido.',
                 'nome.max' => 'O nome não pode ter mais que 255 caracteres.',
         
-                'cpf.required' => 'O CPF é obrigatório.',
                 'cpf.string' => 'O CPF deve ser um texto.',
                 'cpf.size' => 'O CPF deve ter exatamente 14 caracteres (com máscara).',
                 'cpf.unique' => 'Este CPF já está cadastrado.',
@@ -79,6 +87,8 @@ class ClienteController extends Controller
                 'telefone1.required' => 'O telefone principal é obrigatório.',
                 'telefone1.string' => 'O telefone deve ser um texto.',
                 'telefone1.max' => 'O telefone não pode ter mais que 15 caracteres.',
+                'telefone1.unique' => 'Este telefone principal já está cadastrado.',
+
         
                 'telefone2.string' => 'O telefone secundário deve ser um texto.',
                 'telefone2.max' => 'O telefone secundário não pode ter mais que 15 caracteres.',
@@ -93,11 +103,8 @@ class ClienteController extends Controller
             // Verifica se falhou
             if ($validator->fails()) {
                 // Para uma aplicação web
-                
-                return redirect()->route('clientes.index')->with(['type' => 'error' , 'message'=> 'Campos inválidos para cadastro de Cliente.', 'errors' => $validator->errors()]);
+                return redirect()->route('clientes.index')->with(['type' => 'error' , 'message'=> 'Campos inválidos para cadastro de Cliente: ' . $validator->errors()->first(), 'errors' => $validator->errors()]);
         
-                // Para uma API JSON, você poderia usar:
-                // return response()->json(['errors' => $validator->errors()], 422);
             }
             Cliente::create($request->all());
     
@@ -121,19 +128,20 @@ class ClienteController extends Controller
             $rules = [
                 'nome' => 'required|string|max:255',
                 'cpf' => [
-                    'required',
+                    'nullable',
                     'string',
                     'size:14',
                     Rule::unique('clientes')->ignore($cliente->id),
                 ],
                 'email' => [
+                    'nullable',
                     'email',
                     Rule::unique('clientes')->ignore($cliente->id),
                 ],
                 
                 'data_nascimento' => 'nullable|date|before:today',
                 'sexo' => 'required|in:M,F',
-                'telefone1' => 'nullable|string|max:15',
+                'telefone1' => 'required|string|max:15',
                 'telefone2' => 'nullable|string|max:15',
                 'endereco' => 'nullable|string'
             ];
@@ -198,6 +206,15 @@ class ClienteController extends Controller
     {
         try{
 
+            if(count(MovimentacaoFinanceira::where('cliente_id', $cliente->id)->get()) > 0 ){
+                return redirect()->route('clientes.index')->with(['type' => 'error' , 'message'=> 'Não foi possível excluir o cliente. Há movimentações financeiras associadas a ele.']);
+
+            }
+
+            if(count(Agendamento::where('cliente_id', $cliente->id)->get()) > 0 ){
+                return redirect()->route('clientes.index')->with(['type' => 'error' , 'message'=> 'Não foi possível excluir o cliente. Há agendamentos associadas a ele.']);
+
+            }
             $cliente->delete();
             return redirect()->route('clientes.index')->with(['type' => 'success' , 'message'=> 'Cliente excluido com sucesso!']);
 
