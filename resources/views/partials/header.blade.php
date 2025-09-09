@@ -32,7 +32,7 @@
             </div>
             
             <!-- Sistema de Notificações -->
-            <div class="notifications-container">
+            <div class="notifications-container  d-none">
                 <button class="header-notifications" id="notificationsBtn">
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge" id="notificationCount">3</span>
@@ -66,10 +66,20 @@
             
             <!-- Perfil adaptado para barbeiro/admin -->
             <div class="user-profile" onclick="logout()">
-                <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'AB', 0, 2)) }}</div>
-                <div class="user-info">
-                    <h6>{{ auth()->user()->name ?? 'Admin Barbeiro' }}</h6>
-                    <p>Administrador</p>
+                @php
+                    $nome = auth()->user()->nome ?? 'AB';
+                    $partes = explode(' ', $nome);
+                    $iniciais = strtoupper(
+                        ($partes[0][0] ?? '') . ($partes[count($partes)-1][0] ?? '')
+                    );
+                    $primeiroUltimo = $partes[0] . (count($partes) > 1 ? ' ' . $partes[count($partes)-1] : '');
+
+                @endphp
+                <div class="user-avatar" style="background: linear-gradient(45deg, #3b82f6, #60a5fa) !important;">{{$iniciais}}</div>
+                    <div class="user-info">
+                        <h6>{{ $primeiroUltimo }}</h6>
+                        <a style="font-size: 12px;" class="perfil-link" href="{{route('perfilindex')}}">Meu perfil</a>
+                    </div>
                 </div>
             </div>
         </div>
