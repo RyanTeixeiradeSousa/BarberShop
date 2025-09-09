@@ -238,7 +238,8 @@
                         <div class="results-info">
                             Mostrando {{ $clientes->firstItem() }} a {{ $clientes->lastItem() }} de {{ $clientes->total() }} resultados
                         </div>
-                        {{ $clientes->links() }}
+                        {{ $clientes->appends(request()->query())->links() }}
+
                     </div>
                 </div>
             @else

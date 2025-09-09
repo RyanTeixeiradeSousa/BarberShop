@@ -741,63 +741,150 @@
         font-size: 0.9rem;
         margin-bottom: 1rem;
     }
+
+    /* Adicionando estilos para botões de navegação lateral dos carrosséis */
+    .carousel-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid var(--primary-color);
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        /* Ocultando botões no mobile e corrigindo posicionamento */
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+
+    @media (min-width: 768px) {
+        .carousel-nav-btn {
+            display: flex;
+        }
+    }
+
+    .carousel-nav-btn:hover {
+        background: var(--primary-color);
+        transform: translateY(-50%) scale(1.1);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+
+    .carousel-nav-btn:hover i {
+        color: white;
+    }
+
+    .carousel-nav-btn.prev {
+        /* Ajustando posicionamento para não ser cortado */
+        left: 10px;
+    }
+
+    .carousel-nav-btn.next {
+        /* Ajustando posicionamento para não ser cortado */
+        right: 10px;
+    }
+
+    .carousel-nav-btn i {
+        color: var(--primary-color);
+        font-size: 18px;
+        transition: color 0.3s ease;
+    }
+
+    /* Adicionando container relativo para os carrosséis */
+    .services-carousel, .products-carousel {
+        position: relative;
+        overflow: visible;
+        padding: 0 60px;
+    }
+
+    @media (max-width: 767px) {
+        .services-carousel, .products-carousel {
+            padding: 0;
+        }
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-function adicionarProdutos() {
-    const produtosSelecionados = [];
-    document.querySelectorAll('.produto-card.selected').forEach(card => {
-        const produtoId = card.dataset.produtoId;
-        if (produtoId) {
-            produtosSelecionados.push(produtoId);
-        }
-    });
+function criarAgendamento() {
+    console.log('[v0] Iniciando criação do agendamento');
 
-    if (produtosSelecionados.length === 0) {
-        // Se não selecionou produtos, apenas redireciona
-        alert('Agendamento finalizado com sucesso!');
-        window.location.href = '/';
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+
+    console.log('[v0] Dados coletados:', { nome, telefone, selectedDate, selectedTime, selectedServices: selectedServices.length });
+
+    if (!nome || !telefone || !selectedDate || !selectedTime || selectedServices.length === 0) {
+        alert('Por favor, preencha todos os campos obrigatórios e selecione data, horário e serviços.');
         return;
     }
 
-    if (produtosSelecionados.length > 0 && !document.getElementById('criarMovimentoFinanceiro').checked) {
-        alert('Existem produtos selecionados. Para solicita-los marque confirmando a geração da cobrança para pagamento no dia do atendimento.');
-        return
-    }
-    
     const formData = new FormData();
-    formData.append('agendamento_id', window.agendamentoId);
-    
-    produtosSelecionados.forEach(produtoId => {
-        formData.append('produtos[]', produtoId);
+    formData.append('slot_id', selectedSlotId);
+    formData.append('nome', nome);
+    formData.append('telefone', telefone);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('observacoes', document.getElementById('observacoes').value);
+
+    selectedServices.forEach(service => {
+        formData.append('servicos[]', service.id);
     });
 
-    fetch('/api/adicionar-produtos', {
+    // Adicionar produtos selecionados se houver
+    selectedProducts.forEach(product => {
+        formData.append('produtos[]', product.id);
+    });
+
+    // Verificar se deve criar cobrança
+    const criarCobranca = document.getElementById('criarMovimentoFinanceiro') && 
+                            document.getElementById('criarMovimentoFinanceiro').checked;
+    formData.append('criar_cobranca', criarCobranca ? '1' : '0');
+
+    console.log('[v0] Enviando dados para API');
+
+    fetch('/api/finalizar-agendamento-completo', {
         method: 'POST',
         body: formData,
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('[v0] Resposta recebida:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('[v0] Dados da resposta:', data);
         if (data.success) {
-            alert('Agendamento finalizado com produtos adicionados!');
+            alert('Agendamento realizado com sucesso!');
             window.location.href = '/';
         } else {
-            alert('Erro ao adicionar produtos: ' + data.message);
+            alert('Erro ao realizar agendamento: ' + data.message);
         }
     })
     .catch(error => {
-        console.error('Erro:', error);
-        alert('Erro ao adicionar produtos. Agendamento já foi criado.');
-        window.location.href = '/';
+        console.error('[v0] Erro na requisição:', error);
+        alert('Erro ao realizar agendamento. Tente novamente.');
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function applyPhoneMask(input) {
+    let value = input.value.replace(/\D/g, '');
+
+    if (value.length <= 10) {
+        value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    } else {
+        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    }
+
+    input.value = value;
+}
+
     let currentDate = new Date();
     let selectedDate = null;
     let selectedTime = null;
@@ -1125,7 +1212,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     function nextStep() {
-        
         if (currentStep < 4 && canProceed()) {
             if (currentStep === 2) {
                 // Após selecionar serviços, ir para produtos
@@ -1146,6 +1232,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // function previousStep() {
+    //     if (currentStep > 1) {
+    //         currentStep--;
+    //         updateStepDisplay();
+    //     }
+    // }
+
     function prevStep() {
         if (currentStep > 1) {
             currentStep--;
@@ -1203,70 +1296,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(form);
         clientData = Object.fromEntries(formData.entries());
     }
-    
-    function criarAgendamento() {
-        const nome = document.getElementById('nome').value.trim();
-        const telefone = document.getElementById('telefone').value.trim();
-        
-        if (!nome || !telefone || !selectedDate || !selectedTime || selectedServices.length === 0) {
-            alert('Por favor, preencha todos os campos obrigatórios e selecione data, horário e serviços.');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('slot_id', selectedSlotId);
-        formData.append('nome', nome);
-        formData.append('telefone', telefone);
-        formData.append('email', document.getElementById('email').value);
-        formData.append('observacoes', document.getElementById('observacoes').value);
-        
-        selectedServices.forEach(service => {
-            formData.append('servicos[]', service.id);
-        });
-
-        // Adicionar produtos selecionados se houver
-        selectedProducts.forEach(product => {
-            formData.append('produtos[]', product.id);
-        });
-
-        // Verificar se deve criar cobrança
-        const criarCobranca = document.getElementById('criarMovimentoFinanceiro') && 
-                             document.getElementById('criarMovimentoFinanceiro').checked;
-        formData.append('criar_cobranca', criarCobranca ? '1' : '0');
-
-        fetch('/api/finalizar-agendamento-completo', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Agendamento realizado com sucesso!');
-                window.location.href = '/';
-            } else {
-                alert('Erro ao realizar agendamento: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            alert('Erro ao realizar agendamento. Tente novamente.');
-        });
-    }
-
-    function applyPhoneMask(input) {
-        let value = input.value.replace(/\D/g, '');
-        
-        if (value.length <= 10) {
-            value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-        } else {
-            value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-        }
-        
-        input.value = value;
-    }
 
     document.getElementById('telefone').addEventListener('input', function(e) {
         applyPhoneMask(e.target);
@@ -1279,7 +1308,35 @@ document.addEventListener('DOMContentLoaded', function() {
             updateStepStatus();
         });
     });
-});
+
+    document.getElementById('searchProducts').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const productCards = document.querySelectorAll('.produto-card');
+        
+        productCards.forEach(card => {
+            const productName = card.getAttribute('data-name') || '';
+            if (productName.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+
+    document.getElementById('searchServices').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const serviceCards = document.querySelectorAll('.servico-card');
+        
+        serviceCards.forEach(card => {
+            const serviceName = card.getAttribute('data-name') || '';
+            if (serviceName.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+
 
 // Função global para navegação do calendário
 window.changeMonth = function(direction) {
@@ -1289,6 +1346,26 @@ window.changeMonth = function(direction) {
 window.changeMonthYear = function() {
     // Esta função será definida dentro do DOMContentLoaded
 };
+
+    function scrollServicesLeft() {
+        const container = document.querySelector('#step2 .services-swiper');
+        container.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+
+    function scrollServicesRight() {
+        const container = document.querySelector('#step2 .services-swiper');
+        container.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+
+    function scrollProductsLeft() {
+        const container = document.querySelector('#step3 .produtos-swiper');
+        container.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+
+    function scrollProductsRight() {
+        const container = document.querySelector('#step3 .produtos-swiper');
+        container.scrollBy({ left: 300, behavior: 'smooth' });
+    }
 </script>
 @endpush
 
@@ -1349,17 +1426,32 @@ window.changeMonthYear = function() {
                 <i class="fas fa-cut"></i> Escolha os Serviços
             </h3>
             
+            <!-- Adicionando barra de pesquisa de serviços -->
+            <div class="search-container" style="margin-bottom: 1rem;">
+                <div style="position: relative; max-width: 400px; margin: 0 auto;">
+                    <input type="text" id="searchServices" placeholder="Buscar serviços..." 
+                           style="width: 100%; padding: 12px 40px 12px 15px; border: 2px solid #ddd; border-radius: 25px; font-size: 16px; outline: none; transition: border-color 0.3s;">
+                    <i class="fas fa-search" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+                </div>
+            </div>
+            
             <!-- Adicionando indicador de swipe e container para scroll horizontal -->
             <div class="swipe-indicator">
                 <i class="fas fa-hand-point-right"></i> Deslize para ver mais serviços
             </div>
             
-            <div class="services-container">
+            <div class="services-container" style="position: relative;">
+                <!-- Melhorando botões de navegação lateral para serviços -->
+                <div class="carousel-nav-btn prev" onclick="scrollServicesLeft()">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="carousel-nav-btn next" onclick="scrollServicesRight()">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
                 <div class="services-swiper">
                     @forelse($produtos as $produto)
                         @if($produto->tipo == 'servico')
-
-                            <div class="service-card" data-service-id="{{ $produto->id }}" data-price="{{ $produto->preco }}">
+                            <div class="service-card servico-card" data-service-id="{{ $produto->id }}" data-price="{{ $produto->preco }}" data-name="{{ strtolower($produto->nome) }}">
                                 <div class="service-image">
                                     @if($produto->imagem)
                                         <img src="{{ $produto->imagem }}" alt="{{ $produto->nome }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
@@ -1392,7 +1484,7 @@ window.changeMonthYear = function() {
                         @endif
                     @empty
                         <!-- Serviços padrão caso não haja cadastrados -->
-                        <div class="service-card" data-service-id="1" data-price="25.00">
+                        <div class="service-card servico-card" data-service-id="1" data-price="25.00" data-name="corte masculino">
                             <div class="service-image"><i class="fas fa-cut"></i></div>
                             <div class="service-title">Corte Masculino</div>
                             <div class="service-description">Corte profissional personalizado</div>
@@ -1400,7 +1492,7 @@ window.changeMonthYear = function() {
                             <div class="service-duration">Duração: 30 min</div>
                         </div>
                         
-                        <div class="service-card" data-service-id="2" data-price="15.00">
+                        <div class="service-card servico-card" data-service-id="2" data-price="15.00" data-name="barba">
                             <div class="service-image"><i class="fas fa-user-tie"></i></div>
                             <div class="service-title">Barba</div>
                             <div class="service-description">Aparar e modelar barba</div>
@@ -1408,7 +1500,7 @@ window.changeMonthYear = function() {
                             <div class="service-duration">Duração: 20 min</div>
                         </div>
                         
-                        <div class="service-card" data-service-id="3" data-price="35.00">
+                        <div class="service-card servico-card" data-service-id="3" data-price="35.00" data-name="corte + barba">
                             <div class="service-image"><i class="fas fa-scissors"></i></div>
                             <div class="service-title">Corte + Barba</div>
                             <div class="service-description">Pacote completo</div>
@@ -1423,7 +1515,7 @@ window.changeMonthYear = function() {
             <div class="selection-counter" id="serviceCounter"></div>
             
             <div class="navigation-buttons">
-                <button class="btn-nav btn-prev">
+                <button class="btn-nav btn-prev" onclick="">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
                 <button class="btn-nav btn-next" disabled>
@@ -1442,16 +1534,32 @@ window.changeMonthYear = function() {
                 Que tal levar alguns produtos para cuidar do seu visual em casa?
             </p>
             
+            <!-- Adicionando barra de pesquisa de produtos -->
+            <div class="search-container" style="margin-bottom: 1rem;">
+                <div style="position: relative; max-width: 400px; margin: 0 auto;">
+                    <input type="text" id="searchProducts" placeholder="Buscar produtos..." 
+                           style="width: 100%; padding: 12px 40px 12px 15px; border: 2px solid #ddd; border-radius: 25px; font-size: 16px; outline: none; transition: border-color 0.3s;">
+                    <i class="fas fa-search" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+                </div>
+            </div>
+            
             <!-- Adicionando indicador de swipe e container para produtos -->
             <div class="swipe-indicator">
                 <i class="fas fa-hand-point-right"></i> Deslize para ver mais produtos
             </div>
             
-            <div class="produtos-container">
+            <div class="produtos-container" style="position: relative;">
+                <!-- Melhorando botões de navegação lateral para produtos -->
+                <div class="carousel-nav-btn prev" onclick="scrollProductsLeft()">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="carousel-nav-btn next" onclick="scrollProductsRight()">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
                 <div class="produtos-swiper" id="produtosSugeridos">
                     @forelse($produtos as $produto)
                         @if($produto->tipo == 'produto')
-                            <div class="produto-card" data-produto-id="{{ $produto->id }}" data-price="{{ $produto->preco }}">
+                            <div class="produto-card" data-produto-id="{{ $produto->id }}" data-price="{{ $produto->preco }}" data-name="{{ strtolower($produto->nome) }}">
                                 <div class="produto-image">
                                     @if($produto->imagem)
                                         <img src="{{ $produto->imagem }}" alt="{{ $produto->nome }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
@@ -1466,14 +1574,14 @@ window.changeMonthYear = function() {
                         @endif
                     @empty
                         <!-- Produtos padrão caso não haja cadastrados -->
-                        <div class="produto-card" data-produto-id="1" data-price="15.00">
+                        <div class="produto-card" data-produto-id="1" data-price="15.00" data-name="pomada modeladora">
                             <div class="produto-image"><i class="fas fa-shopping-bag"></i></div>
                             <div class="service-title">Pomada Modeladora</div>
                             <div class="service-description">Pomada para modelar cabelo</div>
                             <div class="service-price">R$ 15,00</div>
                         </div>
                         
-                        <div class="produto-card" data-produto-id="2" data-price="12.00">
+                        <div class="produto-card" data-produto-id="2" data-price="12.00" data-name="spray fixador">
                             <div class="produto-image"><i class="fas fa-spray-can"></i></div>
                             <div class="service-title">Spray Fixador</div>
                             <div class="service-description">Spray para fixar penteado</div>
@@ -1486,15 +1594,15 @@ window.changeMonthYear = function() {
             <!-- Adicionando contador de produtos selecionados -->
             <div class="selection-counter" id="productCounter"></div>
             
-            <div class="payment-option">
+            <div class="payment-option" style="display: none !important;">
                 <label>
-                    <input type="checkbox" id="criarMovimentoFinanceiro" name="criar_movimento_financeiro">
+                    <input type="checkbox" checked id="criarMovimentoFinanceiro" name="criar_movimento_financeiro">
                     <span>Gerar cobrança para pagamento no dia do atendimento</span>
                 </label>
             </div>
             
             <div class="navigation-buttons">
-                <button class="btn-nav btn-prev">
+                <button class="btn-nav btn-prev" onclick="">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
                 <button class="btn-nav btn-next">
@@ -1534,10 +1642,11 @@ window.changeMonthYear = function() {
             </div>
             
             <div class="navigation-buttons">
-                <button class="btn-nav btn-prev">
+                <button class="btn-nav btn-prev" onclick="">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
-                <button class="btn-nav btn-next" disabled>
+                <!-- Corrigindo botão de finalizar para chamar função correta -->
+                <button class="btn-nav btn-next" onclick="criarAgendamento()">
                     Finalizar Agendamento <i class="fas fa-check"></i>
                 </button>
             </div>

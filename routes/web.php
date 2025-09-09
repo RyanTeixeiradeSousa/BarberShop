@@ -20,9 +20,9 @@ Route::get('/site', function(){
 Route::get('/agendamento', [App\Http\Controllers\SiteController::class, 'agendamento'])->name('site.agendamento');
 Route::get('/api/slots-disponiveis', [App\Http\Controllers\SiteController::class, 'getSlotsDisponiveis'])->name('api.slots-disponiveis');
 
-Route::post('/api/criar-agendamento', [App\Http\Controllers\SiteController::class, 'criarAgendamento'])->name('api.criar-agendamento');
-Route::post('/api/adicionar-produtos', [App\Http\Controllers\SiteController::class, 'adicionarProdutos'])->name('api.adicionar-produtos');
-Route::post('/api/finalizar-agendamento', [App\Http\Controllers\SiteController::class, 'finalizarAgendamento'])->name('api.finalizar-agendamento');
+// Route::post('/api/criar-agendamento', [App\Http\Controllers\SiteController::class, 'criarAgendamento'])->name('api.criar-agendamento');
+// Route::post('/api/adicionar-produtos', [App\Http\Controllers\SiteController::class, 'adicionarProdutos'])->name('api.adicionar-produtos');
+Route::post('/api/finalizar-agendamento-completo', [App\Http\Controllers\SiteController::class, 'finalizarAgendamentoCompleto'])->name('api.finalizar-agendamento-completo');
 // Admin
 Route::get('/admin/login', [App\Http\Controllers\AuthController::class, 'index'])->name('login');
 Route::post('/entrar', [ App\Http\Controllers\AuthController::class, 'entrar'])->name('login.entrar');
