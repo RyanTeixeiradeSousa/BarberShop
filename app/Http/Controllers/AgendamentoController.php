@@ -125,7 +125,7 @@ class AgendamentoController extends Controller
             }
             
             $agendamento->produtos()->sync($servicos);
-            return redirect()->route('agendamentos.index')->with(['type' => 'success', 'message' => 'Cliente associado ao slot.']);
+            return redirect()->to(url()->previous())->with(['type' => 'success', 'message' => 'Cliente associado ao slot.']);
 
         } catch(Exception $e){
             return redirect()->route('agendamentos.index')->with(['type' => 'error', 'message' => 'Erro ao tentar associar cliente a slot.' . $e->getMessage()]);
@@ -444,7 +444,7 @@ class AgendamentoController extends Controller
         }
         $movimentacao->produtos()->sync($produtos);
 
-        return redirect()->route('agendamentos.index')->with([
+        return redirect()->to(url()->previous())->with([
             'type' => 'success',
             'message' => 'Atendimento finalizado com sucesso!'
         ]);

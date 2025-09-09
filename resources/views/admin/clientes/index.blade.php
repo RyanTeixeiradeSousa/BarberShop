@@ -276,8 +276,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="cpf" class="form-label">CPF *</label>
-                            <input type="text" class="form-control" id="cpf" name="cpf" required>
+                            <label for="cpf" class="form-label">CPF </label>
+                            <input type="text" class="form-control" id="cpf" name="cpf">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="email" class="form-label">Email</label>
@@ -300,8 +300,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="telefone1" class="form-label">Telefone 1</label>
-                            <input type="text" class="form-control" id="telefone1" name="telefone1">
+                            <label for="telefone1" class="form-label">Telefone 1 *</label>
+                            <input type="text" class="form-control" id="telefone1" required name="telefone1">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="telefone2" class="form-label">Telefone 2</label>
@@ -370,8 +370,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_cpf" class="form-label">CPF *</label>
-                            <input type="text" class="form-control" id="edit_cpf" name="cpf" required>
+                            <label for="edit_cpf" class="form-label">CPF </label>
+                            <input type="text" class="form-control" id="edit_cpf" name="cpf">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="edit_email" class="form-label">Email</label>
@@ -394,8 +394,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_telefone1" class="form-label">Telefone 1</label>
-                            <input type="text" class="form-control" id="edit_telefone1" name="telefone1">
+                            <label for="edit_telefone1" class="form-label">Telefone 1 *</label>
+                            <input type="text" class="form-control" id="edit_telefone1" required name="telefone1">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="edit_telefone2" class="form-label">Telefone 2</label>
