@@ -23,7 +23,7 @@
 
 .expand-all-btn {
   width: 100%;
-  background: none;
+  background: var(--card-background, #ffffff) !important;
   border: 1px solid #d1d5db;
   padding: 0.5rem;
   border-radius: 6px;
@@ -39,7 +39,7 @@
 }
 
 .expand-all-btn:hover {
-  background: var(--primary-color);
+  background: var(--primary-color) !important;
   color: white;
   border-color: var(--primary-color);
 }
@@ -133,8 +133,10 @@
 .nav-category-header {
   display: flex;
   align-items: center;
-  font-size: 0.91rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .toggle-icon {
@@ -215,7 +217,6 @@
 .sidebar.collapsed .nav-link,
 .sidebar.collapsed .nav-category-toggle {
   position: relative;
-  
 }
 
 .sidebar.collapsed .nav-link:hover::after,
@@ -249,6 +250,31 @@
   z-index: 1000;
 }
 
-.nav-link i{
-    width: 12px !important;
+/* Suporte para modo dark na sidebar */
+[data-theme="dark"] .sidebar-header {
+  background: var(--card-background) !important;
+  border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .sidebar-controls {
+  background: var(--card-background) !important;
+  border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .expand-all-btn {
+  background: var(--card-background) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .nav-category-toggle:hover {
+  background: var(--hover-background) !important;
+}
+
+[data-theme="dark"] .nav-submenu {
+  background: var(--card-background) !important;
+}
+
+[data-theme="dark"] .nav-submenu .nav-link:hover {
+  background: var(--hover-background) !important;
 }

@@ -26,6 +26,9 @@
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
   
   @include('partials.header')
+
+  <!-- Removendo botão duplicado de modo dark -->
+
   @include('partials.sidebar')
 
   <div class="main-content">

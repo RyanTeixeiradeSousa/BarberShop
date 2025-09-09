@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   initializeSidebar()
+  initializeThemeToggle()
 })
 
 function initializeSidebar() {
@@ -92,6 +93,71 @@ function initializeSidebar() {
       if (sidebar) sidebar.classList.remove("mobile-open")
     }
   })
+}
+
+function initializeThemeToggle() {
+  const themeToggle = document.getElementById("darkModeToggle")
+  const body = document.body
+
+  if (!themeToggle) return
+
+  // Verificar tema salvo no localStorage
+  const savedTheme = localStorage.getItem("barbershop-theme") || "light"
+
+  // Aplicar tema inicial
+  if (savedTheme === "dark") {
+    body.setAttribute("data-theme", "dark")
+    themeToggle.checked = true
+  } else {
+    body.removeAttribute("data-theme")
+    themeToggle.checked = false
+  }
+
+  // Toggle do tema com checkbox
+  themeToggle.addEventListener("change", () => {
+    if (themeToggle.checked) {
+      // Mudar para modo escuro
+      body.setAttribute("data-theme", "dark")
+      localStorage.setItem("barbershop-theme", "dark")
+    } else {
+      // Mudar para modo claro
+      body.removeAttribute("data-theme")
+      localStorage.setItem("barbershop-theme", "light")
+    }
+
+    // Animação suave
+    body.style.transition = "all 0.3s ease"
+    setTimeout(() => {
+      body.style.transition = ""
+    }, 300)
+  })
+
+  // Detectar mudanças de preferência do sistema
+  if (window.matchMedia) {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+
+    // Se não há preferência salva, usar preferência do sistema
+    if (!localStorage.getItem("barbershop-theme")) {
+      if (mediaQuery.matches) {
+        body.setAttribute("data-theme", "dark")
+        themeToggle.checked = true
+      }
+    }
+
+    // Escutar mudanças na preferência do sistema
+    mediaQuery.addEventListener("change", (e) => {
+      // Só aplicar se não há preferência manual salva
+      if (!localStorage.getItem("barbershop-theme")) {
+        if (e.matches) {
+          body.setAttribute("data-theme", "dark")
+          themeToggle.checked = true
+        } else {
+          body.removeAttribute("data-theme")
+          themeToggle.checked = false
+        }
+      }
+    })
+  }
 }
 
 function logout() {

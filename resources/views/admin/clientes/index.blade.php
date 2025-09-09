@@ -9,11 +9,11 @@
     <!-- Header da Página -->
     <div class="row mb-4">
         <div class="col-md-6">
-            <h2 class="mb-0" style="color: #1f2937;">
+            <h2 class="mb-0" style="color: var(--text-primary);">
                 <i class="fas fa-users me-2" style="color: #60a5fa;"></i>
                 Clientes
             </h2>
-            <p class="mb-0" style="color: #6b7280;">Gerencie os clientes da barbearia</p>
+            <p class="mb-0" style="color: var(--text-muted);">Gerencie os clientes da barbearia</p>
         </div>
         <div class="col-md-6 text-end">
             <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#criarClienteModal">
@@ -80,9 +80,9 @@
     </div>
 
     <!-- Card de Filtros com collapse e botão limpar -->
-    <div class="card-custom mb-4" style="border-radius: 1px 1px 0 0;">
-        <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 1px 1px 0 0; border-bottom: 1px solid rgba(59, 130, 246, 0.2); cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse">
-            <h6 class="m-0 font-weight-bold" style="color: #1f2937;">
+    <div class="card-custom mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background: var(--card-header-bg); border-bottom: 1px solid rgba(59, 130, 246, 0.2); cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse">
+            <h6 class="m-0 font-weight-bold" style="color: var(--text-primary);">
                 <i class="fas fa-filter me-2" style="color: #60a5fa;"></i>Filtros
             </h6>
             <i class="fas fa-chevron-down" style="color: #60a5fa;"></i>
@@ -93,10 +93,10 @@
                     <div class="col-md-10">
                         <form method="GET" action="{{ route('clientes.index') }}" class="row g-3" id="filterForm">
                             <div class="col-md-5">
-                                <input type="text" class="form-control" name="search" value="{{ request('search') }}" placeholder="Buscar clientes..." style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                                <input type="text" class="form-control" name="search" value="{{ request('search') }}" placeholder="Buscar clientes..." style="background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary);">
                             </div>
                             <div class="col-md-3">
-                                <select class="form-select" name="status" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937;">
+                                <select class="form-select" name="status" style="background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary);">
                                     <option value="">Todos os status</option>
                                     <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Ativo</option>
                                     <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Inativo</option>
@@ -136,7 +136,7 @@
                             </div>
                             
                             <div class="per-page-selector">
-                                <label for="perPage" class="form-label mb-0" style="color: #1f2937;">Itens por página:</label>
+                                <label for="perPage" class="form-label mb-0" style="color: var(--text-primary);">Itens por página:</label>
                                 <select class="form-select form-select-sm" id="perPage">
                                     <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
                                     <option value="15" {{ request('per_page') == 15 || !request('per_page') ? 'selected' : '' }}>15</option>
@@ -153,12 +153,12 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th style="color: #1f2937;">Cliente</th>
-                                <th style="color: #1f2937;">Sexo</th>
-                                <th style="color: #1f2937;">Contato</th>
-                                <th style="color: #1f2937;">Email</th>
-                                <th style="color: #1f2937;">Status</th>
-                                <th width="160" style="color: #1f2937;">Ações</th>
+                                <th style="color: var(--text-primary);">Cliente</th>
+                                <th style="color: var(--text-primary);">Sexo</th>
+                                <th style="color: var(--text-primary);">Contato</th>
+                                <th style="color: var(--text-primary);">Email</th>
+                                <th style="color: var(--text-primary);">Status</th>
+                                <th width="160" style="color: var(--text-primary);">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -238,8 +238,7 @@
                         <div class="results-info">
                             Mostrando {{ $clientes->firstItem() }} a {{ $clientes->lastItem() }} de {{ $clientes->total() }} resultados
                         </div>
-                        {{ $clientes->appends(request()->query())->links() }}
-
+                        {{ $clientes->links() }}
                     </div>
                 </div>
             @else
@@ -256,10 +255,11 @@
     </div>
 </div>
 
+<!-- Modal Criar Cliente -->
 <div class="modal fade" id="criarClienteModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid #60a5fa;">
+            <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
                 <h5 class="modal-title">
                     <i class="fas fa-plus me-2"></i>Novo Cliente
                 </h5>
@@ -276,8 +276,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="cpf" class="form-label">CPF </label>
-                            <input type="text" class="form-control" id="cpf" name="cpf">
+                            <label for="cpf" class="form-label">CPF *</label>
+                            <input type="text" class="form-control" id="cpf" name="cpf" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="email" class="form-label">Email</label>
@@ -300,8 +300,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="telefone1" class="form-label">Telefone 1 *</label>
-                            <input type="text" class="form-control" id="telefone1" required name="telefone1">
+                            <label for="telefone1" class="form-label">Telefone 1</label>
+                            <input type="text" class="form-control" id="telefone1" name="telefone1">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="telefone2" class="form-label">Telefone 2</label>
@@ -328,17 +328,18 @@
     </div>
 </div>
 
+<!-- Modal Visualizar Cliente -->
 <div class="modal fade" id="visualizarClienteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid #60a5fa;">
+            <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
                 <h5 class="modal-title">
                     <i class="fas fa-eye me-2"></i>Detalhes do Cliente
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="visualizarClienteContent">
-                 Conteúdo será carregado via JavaScript 
+                <!-- Conteúdo será carregado via JavaScript -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -347,10 +348,11 @@
     </div>
 </div>
 
+<!-- Modal Editar Cliente -->
 <div class="modal fade" id="editarClienteModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid #60a5fa;">
+            <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
                 <h5 class="modal-title">
                     <i class="fas fa-edit me-2"></i>Editar Cliente
                 </h5>
@@ -368,8 +370,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_cpf" class="form-label">CPF</label>
-                            <input type="text" class="form-control" id="edit_cpf" name="cpf">
+                            <label for="edit_cpf" class="form-label">CPF *</label>
+                            <input type="text" class="form-control" id="edit_cpf" name="cpf" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="edit_email" class="form-label">Email</label>
@@ -392,8 +394,8 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_telefone1" class="form-label">Telefone 1 *</label>
-                            <input type="text" class="form-control" id="edit_telefone1" required name="telefone1">
+                            <label for="edit_telefone1" class="form-label">Telefone 1</label>
+                            <input type="text" class="form-control" id="edit_telefone1" name="telefone1">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="edit_telefone2" class="form-label">Telefone 2</label>
@@ -420,6 +422,7 @@
     </div>
 </div>
 
+<!-- Modal Excluir Cliente -->
 <div class="modal fade" id="excluirClienteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content" style="border: 2px solid #dc3545; border-radius: 12px;">
@@ -454,6 +457,7 @@
 @push('styles')
 <style>
     body {
+        
         font-family: 'Inter', sans-serif;
     }
 
@@ -462,8 +466,8 @@
     }
 
     .card-custom {
-        background: white;
-        border: 2px solid rgba(59, 130, 246, 0.2);
+        background: var(--card-bg);
+        border: 2px solid var(--border-color);
         border-radius: 12px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         transition: all 0.15s ease;
@@ -473,6 +477,11 @@
         transform: translateY(-2px);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
         border-color: rgba(59, 130, 246, 0.5);
+    }
+
+    .card-header {
+        background: var(--card-header-bg) !important;
+        color: var(--text-primary) !important;
     }
 
     .btn-primary-custom {
@@ -496,7 +505,7 @@
     .btn-outline-primary {
         border-color: #60a5fa;
         color: #60a5fa;
-        background: transparent;
+        background: var(--card-bg);
         transition: all 0.3s ease;
     }
 
@@ -509,7 +518,7 @@
     .btn-outline-info {
         border-color: #06b6d4;
         color: #06b6d4;
-        background: transparent;
+        background: var(--card-bg);
         transition: all 0.3s ease;
     }
 
@@ -522,7 +531,7 @@
     .btn-outline-danger {
         border-color: #ef4444;
         color: #ef4444;
-        background: transparent;
+        background: var(--card-bg);
         transition: all 0.3s ease;
     }
 
@@ -535,7 +544,7 @@
     .btn-outline-secondary {
         border-color: #6b7280;
         color: #6b7280;
-        background: transparent;
+        background: var(--card-bg);
         transition: all 0.3s ease;
     }
 
@@ -546,12 +555,12 @@
     }
 
     .product-card {
-        background: rgba(255, 255, 255, 0.95);
+        background: var(--card-bg);
         border-radius: 12px;
         padding: 1.5rem;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
         transition: all 0.3s ease;
-        border: 1px solid rgba(59, 130, 246, 0.3);
+        border: 1px solid var(--border-color);
         backdrop-filter: blur(10px);
     }
 
@@ -577,31 +586,32 @@
     .product-info h6 {
         margin: 0;
         font-weight: 600;
-        color: #1f2937;
+        color: var(--text-primary);
     }
 
     .product-info p {
         margin: 0;
         font-size: 0.85rem;
-        color: #6b7280;
+        color: var(--text-muted);
     }
 
     .status-ativo { color: #10b981; }
     .status-inativo { color: #ef4444; }
 
     .table {
-        background: transparent;
-        color: #1f2937;
+        background: var(--card-bg);
+        color: var(--text-primary);
     }
 
     .table th {
-        border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+        border-bottom: 2px solid var(--border-color);
         font-weight: 600;
         padding: 1rem 0.75rem;
+        color: var(--text-primary) !important;
     }
 
     .table td {
-        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        border-bottom: 1px solid var(--border-color);
         padding: 1rem 0.75rem;
         vertical-align: middle;
     }
@@ -611,12 +621,12 @@
     }
 
     .pagination-wrapper {
-        background: rgba(255, 255, 255, 0.95);
+        background: var(--card-bg);
         border-radius: 12px;
         padding: 1.5rem;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
         margin-top: 1.5rem;
-        border: 1px solid rgba(59, 130, 246, 0.3);
+        border: 1px solid var(--border-color);
         backdrop-filter: blur(10px);
     }
 
@@ -637,11 +647,50 @@
     .per-page-selector select {
         width: auto;
         min-width: 80px;
-        background: white;
-        border: 1px solid rgba(59, 130, 246, 0.2);
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
         border-radius: 6px;
         padding: 0.5rem;
-        color: #1f2937;
+        color: var(--text-primary);
+    }
+
+    .form-control, .form-select {
+        background: var(--input-bg) !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: var(--input-bg) !important;
+        border-color: #60a5fa !important;
+        color: var(--text-primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25) !important;
+    }
+
+    .modal-content {
+        background: var(--card-bg) !important;
+        color: var(--text-primary) !important;
+        border: 2px solid #60a5fa !important;
+    }
+
+    .modal-header {
+        background: var(--card-header-bg) !important;
+        border-bottom: 1px solid #60a5fa !important;
+        color: var(--text-primary) !important;
+    }
+
+    .modal-body {
+        background: var(--card-bg) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .modal-footer {
+        background: var(--card-bg) !important;
+        border-top: 1px solid var(--border-color) !important;
+    }
+
+    .form-label {
+        color: var(--text-primary) !important;
     }
 
     .pagination {
@@ -662,7 +711,7 @@
         padding: 0.5rem 0.75rem !important;
         border-radius: 6px !important;
         transition: all 0.3s ease !important;
-        background: white !important;
+        background: var(--card-bg) !important;
         text-decoration: none !important;
         display: flex;
         align-items: center;
@@ -686,14 +735,23 @@
 
     .page-item.disabled .page-link {
         color: #6b7280 !important;
-        background: rgba(248, 250, 252, 0.5) !important;
-        border-color: rgba(59, 130, 246, 0.1) !important;
+        background: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
         cursor: not-allowed !important;
+        opacity: 0.5;
     }
 
     .results-info {
-        color: #1f2937;
+        color: var(--text-primary);
         font-size: 0.9rem;
+    }
+
+    h2, h5, h6, p {
+        color: var(--text-primary) !important;
+    }
+
+    .text-muted {
+        color: var(--text-muted) !important;
     }
 
     @media (max-width: 768px) {
@@ -723,28 +781,24 @@
 @push('scripts')
 <script>
     // Auto-submit dos filtros
-    // document.querySelector('input[name="search"]').addEventListener('input', function() {
-    //     clearTimeout(this.searchTimeout);
-    //     this.searchTimeout = setTimeout(() => {
-    //         document.getElementById('filterForm').submit();
-    //     }, 500);
-    // });
+    document.querySelector('input[name="search"]').addEventListener('input', function() {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+            document.getElementById('filterForm').submit();
+        }, 500);
+    });
 
-    // document.querySelector('select[name="status"]').addEventListener('change', function() {
-    //     document.getElementById('filterForm').submit();
-    // });
+    document.querySelector('select[name="status"]').addEventListener('change', function() {
+        document.getElementById('filterForm').submit();
+    });
 
     // Seletor de itens por página
-    const perPageEl = document.getElementById('perPage');
-
-    if (perPageEl) {
-        perPageEl.addEventListener('change', function() {
-            const url = new URL(window.location);
-            url.searchParams.set('per_page', this.value);
-            url.searchParams.delete('page');
-            window.location.href = url.toString();
-        });
-    }
+    document.getElementById('perPage').addEventListener('change', function() {
+        const url = new URL(window.location);
+        url.searchParams.set('per_page', this.value);
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
+    });
 
     // Máscaras
     function aplicarMascaraCPF(elemento) {
@@ -853,14 +907,14 @@
         document.getElementById('edit_endereco').value = linha.dataset.endereco;
         document.getElementById('edit_ativo').checked = linha.dataset.ativo == '1';
         
-        document.getElementById('editarClienteForm').action = `clientes/${id}`;
+        document.getElementById('editarClienteForm').action = `/clientes/${id}`;
         new bootstrap.Modal(document.getElementById('editarClienteModal')).show();
     }
 
     // Função para confirmar exclusão
     function confirmarExclusao(id, nome) {
         document.getElementById('clienteNomeExcluir').textContent = nome;
-        document.getElementById('excluirClienteForm').action = `clientes/${id}`;
+        document.getElementById('excluirClienteForm').action = `/clientes/${id}`;
         new bootstrap.Modal(document.getElementById('excluirClienteModal')).show();
     }
 </script>
