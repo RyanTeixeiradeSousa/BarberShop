@@ -226,7 +226,7 @@
                         <div class="results-info">
                             Mostrando {{ $movimentacoes->firstItem() }} a {{ $movimentacoes->lastItem() }} de {{ $movimentacoes->total() }} resultados
                         </div>
-                        {{ $movimentacoes->links() }}
+                        {{ $movimentacoes->appends(request()->query())->links() }}
                     </div>
                 </div>
             @else

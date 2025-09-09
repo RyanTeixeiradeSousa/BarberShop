@@ -512,7 +512,8 @@
                         <div class="results-info">
                             Mostrando {{ $produtos->firstItem() }} a {{ $produtos->lastItem() }} de {{ $produtos->total() }} resultados
                         </div>
-                        {{ $produtos->links() }}
+                        {{ $produtos->appends(request()->query())->links() }}
+
                     </div>
                 </div>
             @else

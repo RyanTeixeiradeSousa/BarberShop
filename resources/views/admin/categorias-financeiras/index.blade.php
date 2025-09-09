@@ -471,7 +471,9 @@
                         <div class="text-muted">
                             Mostrando {{ $categorias->firstItem() ?? 0 }} a {{ $categorias->lastItem() ?? 0 }} de {{ $categorias->total() }} resultados
                         </div>
-                        {{ $categorias->links() }}
+                        {{ $categorias->appends(request()->query())->links() }}
+
+                        
                     </div>
                 </div>
             @else

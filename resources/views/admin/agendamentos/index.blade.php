@@ -301,7 +301,7 @@
                         <div class="results-info">
                             Mostrando {{ $agendamentos->firstItem() }} a {{ $agendamentos->lastItem() }} de {{ $agendamentos->total() }} resultados
                         </div>
-                        {{ $agendamentos->links() }}
+                        {{ $agendamentos->appends(request()->query())->links() }}
                     </div>
                 </div>
             @else

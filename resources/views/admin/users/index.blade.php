@@ -240,7 +240,8 @@
                         <div class="results-info">
                             Mostrando {{ $users->firstItem() }} a {{ $users->lastItem() }} de {{ $users->total() }} resultados
                         </div>
-                        {{ $users->links() }}
+                        {{ $users->appends(request()->query())->links() }}
+
                     </div>
                 </div>
             @else

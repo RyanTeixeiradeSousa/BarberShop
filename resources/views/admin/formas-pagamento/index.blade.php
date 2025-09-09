@@ -211,7 +211,7 @@
                         <div class="results-info">
                             Mostrando {{ $formasPagamento->firstItem() }} a {{ $formasPagamento->lastItem() }} de {{ $formasPagamento->total() }} resultados
                         </div>
-                        {{ $formasPagamento->links() }}
+                        {{ $formasPagamento->appends(request()->query())->links() }}
                     </div>
                 </div>
             @else
