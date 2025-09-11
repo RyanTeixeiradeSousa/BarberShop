@@ -594,7 +594,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
+                            <div class="d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
                                 <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="ativo" name="ativo" value="1" checked style="margin-top: 0;">
                                 <label class="form-check-label flex-grow-1" for="ativo" style="margin-bottom: 0;">
                                     <i class="fas fa-check-circle me-1" style="color: #10b981;"></i>
@@ -603,7 +603,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
+                            <div class=" d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
                                 <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="site" name="site" value="1" style="margin-top: 0;">
                                 <label class="form-check-label flex-grow-1" for="site" style="margin-bottom: 0;">
                                     <i class="fas fa-globe me-1" style="color: #3b82f6;"></i>
@@ -764,7 +764,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
+                            <div class="d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
                                 <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="edit_ativo" name="ativo" value="1" style="margin-top: 0;">
                                 <label class="form-check-label flex-grow-1" for="edit_ativo" style="margin-bottom: 0;">
                                     <i class="fas fa-check-circle me-1" style="color: #10b981;"></i>
@@ -773,7 +773,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
+                            <div class="d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
                                 <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="edit_site" name="site" value="1" style="margin-top: 0;">
                                 <label class="form-check-label flex-grow-1" for="edit_site" style="margin-bottom: 0;">
                                     <i class="fas fa-globe me-1" style="color: #3b82f6;"></i>

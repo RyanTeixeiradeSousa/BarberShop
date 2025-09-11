@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\Categoria;
 use Illuminate\Http\Request;
@@ -30,10 +31,27 @@ class CategoriaController extends Controller
     public function store(Request $request)
     {
         try{
-            $request->validate([
-                'nome' => 'required|string|max:255',
-                'descricao' => 'nullable|string|max:1000',
-            ]);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'nome' => 'required|string|max:255',
+                    'descricao' => 'nullable|string|max:1000',
+                ],
+                [
+                    'nome.required'  => 'O campo nome é obrigatório.',
+                    'nome.string'    => 'O campo nome deve ser um texto válido.',
+                    'nome.max'       => 'O campo nome não pode ter mais de 255 caracteres.',
+
+                    'descricao.string' => 'O campo descrição deve ser um texto válido.',
+                    'descricao.max'    => 'O campo descrição não pode ter mais de 1000 caracteres.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                // Para uma aplicação web
+                return redirect()->route('categorias.index')->with(['type' => 'error' , 'message'=> 'Campos inválidos para cadastro de categoria: ' . $validator->errors()->first(), 'errors' => $validator->errors()]);
+        
+            }
     
             Categoria::create($request->all());
     
@@ -47,10 +65,27 @@ class CategoriaController extends Controller
     public function update(Request $request, Categoria $categoria)
     {
         try{
-            $request->validate([
-                'nome' => 'required|string|max:255',
-                'descricao' => 'nullable|string|max:1000',
-            ]);
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'nome' => 'required|string|max:255',
+                    'descricao' => 'nullable|string|max:1000',
+                ],
+                [
+                    'nome.required'  => 'O campo nome é obrigatório.',
+                    'nome.string'    => 'O campo nome deve ser um texto válido.',
+                    'nome.max'       => 'O campo nome não pode ter mais de 255 caracteres.',
+
+                    'descricao.string' => 'O campo descrição deve ser um texto válido.',
+                    'descricao.max'    => 'O campo descrição não pode ter mais de 1000 caracteres.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                // Para uma aplicação web
+                return redirect()->route('categorias.index')->with(['type' => 'error' , 'message'=> 'Campos inválidos para cadastro de categoria: ' . $validator->errors()->first(), 'errors' => $validator->errors()]);
+        
+            }
 
             $categoria->update($request->all());
 

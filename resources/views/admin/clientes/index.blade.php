@@ -457,7 +457,6 @@
 @push('styles')
 <style>
     body {
-        
         font-family: 'Inter', sans-serif;
     }
 
@@ -780,17 +779,6 @@
 
 @push('scripts')
 <script>
-    // Auto-submit dos filtros
-    document.querySelector('input[name="search"]').addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(() => {
-            document.getElementById('filterForm').submit();
-        }, 500);
-    });
-
-    document.querySelector('select[name="status"]').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
 
     // Seletor de itens por página
     document.getElementById('perPage').addEventListener('change', function() {

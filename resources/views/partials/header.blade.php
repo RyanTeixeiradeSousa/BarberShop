@@ -22,11 +22,11 @@
         
         <div class="header-right">
             <!-- Adicionando toggle de modo dark -->
-            <div class="dark-mode-toggle d-none">
+            <div class="dark-mode-toggle">
                 <input type="checkbox" id="darkModeToggle" class="dark-mode-checkbox">
                 <label for="darkModeToggle" class="dark-mode-label">
-                    <i class="fas fa-moon dark-icon"></i>
-                    <i class="fas fa-sun light-icon"></i>
+                    <i class="fas fa-sun light-icon text-center"></i>
+                    <i class="fas fa-moon dark-icon text-center"></i>
                     <span class="toggle-slider"></span>
                 </label>
             </div>
@@ -87,4 +87,75 @@
 </div>
 
 
-<!-- JavaScript para o Sistema de Notificações -->
+@if (session()->has('type') && session()->has('message'))
+    <script>
+        const type = @json(session('type'));
+        const message = @json(session('message'));
+        const toastColors = {
+            success: { background: "#10b981", icon: "check-circle" },  // verde
+            error: { background: "#ef4444", icon: "times-circle" },    // vermelho
+            warning: { background: "#f59e0b", icon: "exclamation-triangle" }, // amarelo
+            info: { background: "#3b82f6", icon: "info-circle" }       // azul
+        };
+        function showToast(message, type) {
+            const { background, icon } = toastColors[type] || toastColors.info;
+
+            // Criar toast simples sem Bootstrap
+            const toastHtml = `
+                <div class="custom-toast toast-${type}" style="
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${background};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 9999;
+                    font-size: 0.9rem;
+                    max-width: 300px;
+                    opacity: 0;
+                    transform: translateX(100%);
+                    transition: all 0.3s ease;
+                ">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-${icon}"></i>
+                        <span>${message}</span>
+                        <button onclick="this.parentElement.parentElement.remove()" style="
+                            background: none;
+                            border: none;
+                            color: white;
+                            margin-left: auto;
+                            cursor: pointer;
+                            padding: 0;
+                            font-size: 1.2rem;
+                        ">×</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML("beforeend", toastHtml)
+            const toastElement = document.body.lastElementChild
+
+            // Animar entrada
+            setTimeout(() => {
+            toastElement.style.opacity = "1"
+            toastElement.style.transform = "translateX(0)"
+            }, 100)
+
+            // Remover automaticamente após 3 segundos
+            setTimeout(() => {
+            if (toastElement && toastElement.parentElement) {
+                toastElement.style.opacity = "0"
+                toastElement.style.transform = "translateX(100%)"
+                setTimeout(() => {
+                if (toastElement && toastElement.parentElement) {
+                    toastElement.remove()
+                }
+                }, 300)
+            }
+            }, 3000)
+        }
+        showToast(message, type)
+    </script>
+@endif
