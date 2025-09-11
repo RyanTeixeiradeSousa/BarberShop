@@ -895,14 +895,14 @@
         document.getElementById('edit_endereco').value = linha.dataset.endereco;
         document.getElementById('edit_ativo').checked = linha.dataset.ativo == '1';
         
-        document.getElementById('editarClienteForm').action = `/clientes/${id}`;
+        document.getElementById('editarClienteForm').action = `/admin/clientes/${id}`;
         new bootstrap.Modal(document.getElementById('editarClienteModal')).show();
     }
 
     // Função para confirmar exclusão
     function confirmarExclusao(id, nome) {
         document.getElementById('clienteNomeExcluir').textContent = nome;
-        document.getElementById('excluirClienteForm').action = `/clientes/${id}`;
+        document.getElementById('excluirClienteForm').action = `/admin/clientes/${id}`;
         new bootstrap.Modal(document.getElementById('excluirClienteModal')).show();
     }
 </script>
