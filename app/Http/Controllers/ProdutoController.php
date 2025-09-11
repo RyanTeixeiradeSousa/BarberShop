@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Produto;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProdutoController extends Controller
 {
@@ -121,6 +122,17 @@ class ProdutoController extends Controller
     public function destroy(Produto $produto)
     {
         try{
+
+            if(db::table("movimentacao_produto")->where('produto_id', $produto->id)->count() > 0 ){
+                return redirect()->route('produtos.index')->with(['type' => 'error' , 'message'=> 'Não foi possível excluir o produto. Há movimentações financeiras associadas a ele.']);
+
+            }
+
+            if(db::table("agendamento_produto")->where('produto_id', $produto->id)->count() > 0 ){
+                return redirect()->route('produtos.index')->with(['type' => 'error' , 'message'=> 'Não foi possível excluir o produto. Há agendamentos associados a ele.']);
+
+            }
+
             $produto->delete();
             return redirect()->route('produtos.index')->with(['type' => 'success', 'message' => 'Produto/Serviço excluído com sucesso!']);
         } catch( \Exception $e) {

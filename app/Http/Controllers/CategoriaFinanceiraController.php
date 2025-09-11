@@ -85,7 +85,7 @@ class CategoriaFinanceiraController extends Controller
         try{
             if ($categoriaFinanceira->movimentacoes()->count() > 0) {
                 return redirect()->route('categorias-financeiras.index')
-                                ->with('error', 'Não é possível excluir uma categoria que possui movimentações associadas.');
+                                ->with(['type' => 'error', 'message' => 'Não é possível excluir uma categoria que possui movimentações associadas.']);
             }
     
             $categoriaFinanceira->delete();

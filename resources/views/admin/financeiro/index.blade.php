@@ -205,8 +205,12 @@
                                                 <i class="fas fa-cogs"></i> Processos
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="#" onclick="abrirModalBaixar({{ $movimentacao->id }})"><i class="fas fa-check me-2"></i>Baixar</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="abrirModalCancelar({{ $movimentacao->id }}, '{{ $movimentacao->descricao }}')"><i class="fas fa-ban me-2"></i>Cancelar</a></li>
+                                                @if ($movimentacao->situacao == 'em_aberto' || $movimentacao->situacao == 'pago')
+                                                     <li><a class="dropdown-item" href="#" onclick="abrirModalCancelar({{ $movimentacao->id }}, '{{ $movimentacao->descricao }}')"><i class="fas fa-ban me-2"></i>Cancelar</a></li>
+                                                @endif
+                                                @if ($movimentacao->situacao == 'em_aberto')
+                                                    <li><a class="dropdown-item" href="#" onclick="abrirModalBaixar({{ $movimentacao->id }})"><i class="fas fa-check me-2"></i>Baixar</a></li>
+                                                @endif
                                             </ul>
                                         </div>
                                         <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmarExclusao({{ $movimentacao->id }}, '{{ $movimentacao->descricao }}')" title="Excluir">
@@ -259,7 +263,7 @@
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label for="tipo" class="form-label">Tipo *</label>
-                            <select class="form-select" id="tipo" name="tipo" required>
+                            <select class="form-select" id="tipoModal" name="tipo" required>
                                 <option value="">Selecione...</option>
                                 <option value="entrada">Entrada</option>
                                 <option value="saida">Saída</option>
@@ -290,8 +294,8 @@
                         <label for="descricao" class="form-label">Descrição *</label>
                         <input type="text" class="form-control" id="descricao" name="descricao" required>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                    <div class="row" >
+                        <div class="col-md-6 mb-3" id="col-cliente-add">
                             <label for="cliente_id" class="form-label">Cliente</label>
                             <select class="form-select" id="cliente_id" name="cliente_id">
                                 <option value="">Selecione...</option>
@@ -305,7 +309,9 @@
                             <select class="form-select" id="categoria_financeira_id" name="categoria_financeira_id">
                                 <option value="">Selecione...</option>
                                 @foreach($categorias as $categoria)
-                                    <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
+                                    <option value="{{ $categoria->id }}" style="display: none;" data-tipo="{{$categoria->tipo}}">{{ $categoria->nome . ' ('.  $categoria->tipo .')' }} 
+                                        
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -317,7 +323,7 @@
                             <h6 class="text-primary mb-0 fw-bold">
                                 <i class="fas fa-box me-2"></i>Produtos/Serviços Associados
                             </h6>
-                            <button type="button" class="btn btn-primary btn-sm shadow-sm" onclick="adicionarProduto()">
+                            <button id="btnAddProd" type="button" class="btn btn-primary btn-sm shadow-sm" onclick="adicionarProduto()">
                                 <i class="fas fa-plus me-1"></i>Adicionar Produto
                             </button>
                         </div>
@@ -481,7 +487,7 @@
                                     <select class="form-select" id="edit_categoria_financeira_id" name="categoria_financeira_id">
                                         <option value="">Selecione...</option>
                                         @foreach($categorias as $categoria)
-                                            <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
+                                            <option value="{{ $categoria->id }}" data-tipo="{{ $categoria->tipo }}">{{ $categoria->nome . ' ('. $categoria->tipo .')' }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -1004,6 +1010,17 @@
                 document.getElementById('edit_situacao').value = data.situacao;
                 document.getElementById('edit_observacoes').value = data.observacoes || '';
                 
+                const options = document.getElementById('edit_categoria_financeira_id').querySelectorAll('option');
+                options.forEach(option => {
+                    if (option.dataset.tipo === data.tipo || option.dataset.tipo === 'ambos') {
+                        option.style.display = '';
+                    } else{
+                        option.style.display = 'none';
+                    }
+                });
+
+            
+
                 // Preencher dados de pagamento se status for "pago"
                 if (data.situacao === 'pago') {
                     document.getElementById('edit_forma_pagamento_id').value = data.forma_pagamento_id || '';
@@ -1166,21 +1183,36 @@
             calcularTotalMovimentacao();
         }
     }
-
+    
     function controlarProdutosPorTipo() {
-        const tipoSelect = document.getElementById('tipo');
+        const select = document.getElementById('tipoModal');
         const produtosContainer = document.getElementById('produtos-container');
-        const addProdutoBtn = document.querySelector('.btn-outline-primary[onclick="adicionarProduto()"]');
-        
-        if (tipoSelect && produtosContainer && addProdutoBtn) {
-            if (tipoSelect.value === 'saida') {
+        const addProdutoBtn = document.querySelector('#btnAddProd[onclick="adicionarProduto()"]');
+        const clienteSelect = document.querySelector('#col-cliente-add');
+
+        document.getElementById('categoria_financeira_id').value = '';
+        const options = document.getElementById('categoria_financeira_id').querySelectorAll('option');
+        if (select && produtosContainer && addProdutoBtn) {
+            if (select.value === 'saida') {
                 // Para movimentação de saída, ocultar seção de produtos
                 produtosContainer.style.display = 'none';
                 addProdutoBtn.style.display = 'none';
-                
+                clienteSelect.style.display = 'none'
                 // Limpar produtos existentes
                 produtosContainer.innerHTML = '';
                 produtoIndex = 0;
+
+                options.forEach(option => {
+                    if (option.dataset.tipo === 'entrada' || option.dataset.tipo === 'ambos') {
+                        option.style.display = 'none';
+                    }
+                });
+
+                options.forEach(option => {
+                    if (option.dataset.tipo === 'saida' || option.dataset.tipo === 'ambos') {
+                        option.style.display = '';
+                    }
+                });
                 
                 // Recalcular total
                 calcularTotalMovimentacao();
@@ -1188,14 +1220,27 @@
                 // Para entrada ou vazio, mostrar seção de produtos
                 produtosContainer.style.display = 'block';
                 addProdutoBtn.style.display = 'inline-block';
+                clienteSelect.style.display = 'inline-block'
+
+                options.forEach(option => {
+                    if (option.dataset.tipo === 'saida' || option.dataset.tipo === 'ambos') {
+                        option.style.display = 'none';
+                    }
+                });
+
+                options.forEach(option => {
+                    if (option.dataset.tipo === 'entrada' || option.dataset.tipo === 'ambos') {
+                        option.style.display = '';
+                    }
+                });
             }
         }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const tipoSelect = document.getElementById('tipo');
-        if (tipoSelect) {
-            tipoSelect.addEventListener('change', controlarProdutosPorTipo);
+        const tipoSelectModal = document.getElementById('tipoModal');
+        if (tipoSelectModal) {
+            tipoSelectModal.addEventListener('change', controlarProdutosPorTipo);
         }
         
         document.addEventListener('input', function(e) {

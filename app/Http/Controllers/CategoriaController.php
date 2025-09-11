@@ -101,7 +101,7 @@ class CategoriaController extends Controller
          try{
         // Verificar se a categoria tem produtos associados
             if ($categoria->produtos()->count() > 0) {
-                return redirect()->route('categorias.index')->with('error', 'Não é possível excluir uma categoria que possui produtos associados.');
+                return redirect()->route('categorias.index')->with(['type' => 'error', 'message' =>  'Não é possível excluir uma categoria que possui produtos associados.']);
             }
 
             $categoria->delete();
