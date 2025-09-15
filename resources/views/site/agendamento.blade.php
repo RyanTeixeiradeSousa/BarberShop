@@ -1021,9 +1021,8 @@ function applyPhoneMask(input) {
             const dayDate = new Date(currentYear, currentMonth, day);
             const isToday = dayDate.toDateString() === today.toDateString();
             const isPast = dayDate < today && !isToday;
-            const isSunday = dayDate.getDay() === 0;
             
-            if (isPast || isSunday) {
+            if (isPast) {
                 dayButton.classList.add('disabled');
                 dayButton.disabled = true;
             } else {
@@ -1069,10 +1068,10 @@ function applyPhoneMask(input) {
         selectedDate = date.toISOString().split('T')[0];
         
         setTimeout(() => {
-            const timeSection = document.querySelector('#step1 .time-slots').parentElement;
+            const timeSection = document.querySelector('#step1 .time-picker');
             timeSection.scrollIntoView({ 
                 behavior: 'smooth', 
-                block: 'start',
+                block: 'center',
                 inline: 'nearest'
             });
         }, 300);
@@ -1216,7 +1215,16 @@ function applyPhoneMask(input) {
             if (currentStep === 2) {
                 // Após selecionar serviços, ir para produtos
                 currentStep = 3;
+                
                 updateStepDisplay();
+                setTimeout(() => {
+                    const section = document.querySelector('.produtos-swiper');
+                        section.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center',
+                            inline: 'nearest'
+                        });
+                }, 200);
                 return;
             }
             
@@ -1227,8 +1235,30 @@ function applyPhoneMask(input) {
                 return; // Não avança automaticamente
             }
             
+            if(currentStep === 3){
+                setTimeout(() => {
+                    const section = document.querySelector('.client-form');
+                        section.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center',
+                            inline: 'nearest'
+                        });
+                }, 200);
+            } 
+            if(currentStep === 1) {
+                setTimeout(() => {
+                    const section = document.querySelector('.services-swiper');
+                        section.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center',
+                            inline: 'nearest'
+                        });
+                }, 200);
+            }
             currentStep++;
+            
             updateStepDisplay();
+            
         }
     }
     
@@ -1484,7 +1514,7 @@ window.changeMonthYear = function() {
                         @endif
                     @empty
                         <!-- Serviços padrão caso não haja cadastrados -->
-                        <div class="service-card servico-card" data-service-id="1" data-price="25.00" data-name="corte masculino">
+                        {{-- <div class="service-card servico-card" data-service-id="1" data-price="25.00" data-name="corte masculino">
                             <div class="service-image"><i class="fas fa-cut"></i></div>
                             <div class="service-title">Corte Masculino</div>
                             <div class="service-description">Corte profissional personalizado</div>
@@ -1506,7 +1536,7 @@ window.changeMonthYear = function() {
                             <div class="service-description">Pacote completo</div>
                             <div class="service-price">R$ 35,00</div>
                             <div class="service-duration">Duração: 45 min</div>
-                        </div>
+                        </div> --}}
                     @endforelse
                 </div>
             </div>
@@ -1574,7 +1604,7 @@ window.changeMonthYear = function() {
                         @endif
                     @empty
                         <!-- Produtos padrão caso não haja cadastrados -->
-                        <div class="produto-card" data-produto-id="1" data-price="15.00" data-name="pomada modeladora">
+                        {{-- <div class="produto-card" data-produto-id="1" data-price="15.00" data-name="pomada modeladora">
                             <div class="produto-image"><i class="fas fa-shopping-bag"></i></div>
                             <div class="service-title">Pomada Modeladora</div>
                             <div class="service-description">Pomada para modelar cabelo</div>
@@ -1586,7 +1616,7 @@ window.changeMonthYear = function() {
                             <div class="service-title">Spray Fixador</div>
                             <div class="service-description">Spray para fixar penteado</div>
                             <div class="service-price">R$ 12,00</div>
-                        </div>
+                        </div> --}}
                     @endforelse
                 </div>
             </div>

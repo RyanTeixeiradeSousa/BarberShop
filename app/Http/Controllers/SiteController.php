@@ -124,17 +124,22 @@ class SiteController extends Controller
             // Buscar ou criar cliente pelo telefone
             $telefone = preg_replace('/\D/', '', $request->telefone);
             
-            $cliente = Cliente::where('telefone1', $telefone)
-                ->orWhere('telefone1', $request->telefone)
-                ->orWhere('telefone2', $telefone)
-                ->orWhere('telefone2', $request->telefone)
-                ->orWhere('email', $request->email)
-                ->first();
+            $cliente = Cliente::query()
+            ->when($telefone, fn($q) => $q->where('telefone1', $telefone))
+            ->when($request->telefone, fn($q) => $q->orWhere('telefone1', $request->telefone))
+            ->when($request->email, fn($q) => $q->orWhere('email', $request->email))
+            ->first();
+
+            if($cliente){
+                $cliente->email = $request->email;
+                $cliente->ativo = true;
+                $cliente->save();
+            }
             
             if (!$cliente) {
                 $cliente = Cliente::create([
                     'nome' => $request->nome,
-                    'telefone' => $request->telefone,
+                    'telefone1' => $request->telefone,
                     'email' => $request->email,
                     'sexo' => 'M',
                     'ativo' => true
