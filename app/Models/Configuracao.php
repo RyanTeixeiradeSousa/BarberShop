@@ -14,7 +14,8 @@ class Configuracao extends Model
     protected $fillable = [
         'chave',
         'valor',
-        'descricao'
+        'descricao',
+        'user_created'
     ];
 
     public static function get($chave, $default = null)

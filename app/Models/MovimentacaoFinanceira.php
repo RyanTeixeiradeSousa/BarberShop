@@ -26,7 +26,8 @@ class MovimentacaoFinanceira extends Model
         'categoria_financeira_id',
         'agendamento_id', // Adicionando relacionamento com agendamento
         'observacoes',
-        'ativo'
+        'ativo',
+        'user_created'
     ];
 
     protected $casts = [

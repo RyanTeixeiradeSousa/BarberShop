@@ -9,6 +9,7 @@ use App\Models\FormaPagamento;
 use App\Models\Configuracao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
 use Exception;
@@ -155,7 +156,8 @@ class AgendamentoController extends Controller
             'hora_inicio' => $request->hora_inicio,
             'hora_fim' => $horaFim->format('H:i'),
             'observacoes' => $request->observacoes,
-            'status' => 'disponivel'
+            'status' => 'disponivel',
+            'user_created' => Auth::user()->id
         ]);
 
         // Se tem cliente e serviços, associar

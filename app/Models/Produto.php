@@ -18,7 +18,8 @@ class Produto extends Model
         'ativo',
         'tipo',
         'imagem',
-        'site'
+        'site',
+        'user_created'
     ];
 
     protected $casts = [

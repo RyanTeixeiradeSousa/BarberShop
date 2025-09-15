@@ -18,7 +18,8 @@ class Cliente extends Model
         'ativo',
         'telefone1',
         'telefone2',
-        'endereco'
+        'endereco',
+        'user_created'
     ];
 
     protected $casts = [

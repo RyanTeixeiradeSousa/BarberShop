@@ -18,7 +18,8 @@ class Agendamento extends Model
         'status',
         'observacoes',
         'valor_total',
-        'ativo'
+        'ativo',
+        'user_created'
     ];
 
     protected $casts = [

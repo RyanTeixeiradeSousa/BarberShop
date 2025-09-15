@@ -14,7 +14,8 @@ class CategoriaFinanceira extends Model
         'nome',
         'descricao',
         'tipo',
-        'ativo'
+        'ativo',
+        'user_created'
     ];
 
     protected $casts = [

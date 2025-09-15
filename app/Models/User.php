@@ -17,7 +17,8 @@ class User extends Authenticatable
     protected $table = "users";
     protected $fillable = ['id', 'nome', 'email', 'senha', 'ativo', 'master',
     'last_acess',
-    'redefinir_senha_login',];
+    'redefinir_senha_login',
+    'user_created'];
     
     public function authenticateBd($password) {
         return $this->authenticateBd_Password($this->email, $password);

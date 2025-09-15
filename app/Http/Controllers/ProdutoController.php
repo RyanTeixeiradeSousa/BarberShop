@@ -6,6 +6,7 @@ use App\Models\Produto;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ProdutoController extends Controller
 {
