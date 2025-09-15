@@ -65,7 +65,33 @@ class MovimentacaoFinanceiraController extends Controller
         $clientes = Cliente::where('ativo', true)->orderBy('nome')->get();
         $categorias = CategoriaFinanceira::where('ativo', true)->orderBy('nome')->get();
         $formasPagamento = FormaPagamento::where('ativo', true)->orderBy('nome')->get();
-        $produtos = Produto::where('ativo', true)->orderBy('nome')->get();
+
+        $servicosAtivos = Produto::where('ativo', true)->where('tipo','servico')->where('site', true)->get();
+
+        $produtosAtivosNaoComprometidos = Produto::where('ativo', true)
+        ->where('site', true)
+        ->where('tipo', 'produto')
+        ->select('produtos.*')
+        ->whereRaw('estoque > 
+            (
+                SELECT COALESCE(SUM(ap.quantidade), 0)
+                FROM agendamento_produto ap
+                JOIN agendamentos a ON ap.agendamento_id = a.id
+                WHERE a.status IN (?, ?)
+                    AND ap.produto_id = produtos.id
+            ) +
+            (
+                SELECT COALESCE(SUM(mp.quantidade), 0)
+                FROM movimentacao_produto mp
+                JOIN movimentacoes_financeiras mf ON mp.movimentacao_financeira_id = mf.id
+                WHERE mf.situacao = ?
+                    AND mp.produto_id = produtos.id
+            )
+        ', ['agendado', 'em_andamento', 'em_aberto'])
+        ->get();
+
+        $produtos = $servicosAtivos->merge($produtosAtivosNaoComprometidos);
+
         $agendamentos = Agendamento::with('cliente')->orderBy('data_agendamento', 'desc')->get();
 
         return view('admin.financeiro.index', compact(
@@ -110,7 +136,17 @@ class MovimentacaoFinanceiraController extends Controller
             if ($validator->fails()) {
                 return redirect()->route('financeiro.index') ->with(['type' => 'error', 'message' => 'Erro ao cadastrar movimentalção: ' . $validator->errors()->first()]);
             }
+
+            if ($request->has('produtos') && is_array($request->produtos)) {
+                foreach ($request->produtos as $produto) {
+                    $p = Produto::find($produto['id']);
+                    if(!$p->verificarEstoqueComprometido($produto['quantidade'])){
+                        throw new Exception('O produto ' . $p->nome . ' não tem estoque suficiente ou está com saldo comprometido.',1);
+                    } 
+                }
+            }
     
+           
             $data = $request->all();
             
             foreach (['valor', 'desconto', 'valor_pago'] as $campo) {
@@ -125,7 +161,7 @@ class MovimentacaoFinanceiraController extends Controller
     
             DB::transaction(function () use ($data, $request) {
                 $movimentacao = MovimentacaoFinanceira::create($data);
-    
+                
                 if ($request->has('produtos') && is_array($request->produtos)) {
                     foreach ($request->produtos as $produto) {
                         $valorUnitario = str_replace(['R$', ' ', '.', ','], ['', '', '', '.'], $produto['valor_unitario']);
@@ -136,11 +172,11 @@ class MovimentacaoFinanceiraController extends Controller
                     }
                 }
             });
-    
+            
             return redirect()->route('financeiro.index') ->with(['type' => 'success', 'message' => 'Movimentação cadastrada com sucesso!']);
 
         } catch(Exception $e){
-            return redirect()->route('financeiro.index') ->with(['type' => 'error', 'message' => 'Erro ao cadastrar movimentalção: ' . $e->getMessage()]);
+            return redirect()->route('financeiro.index') ->with(['type' => 'error', 'message' => 'Erro ao cadastrar movimentação: ' . $e->getMessage()]);
 
         }
     }
@@ -207,6 +243,12 @@ class MovimentacaoFinanceiraController extends Controller
                 }
             }
     
+            $produtosAssociados = db::table('movimentacao_produto')->where('movimentacao_financeira_id',$financeiro->id)->get();
+
+            foreach ($produtosAssociados as $key => $p) {
+                Produto::find($p->produto_id)->atualizarEstoque($p->quantidade, 'diminuir');
+            }
+
             $movimentacao->update([
                 'situacao' => 'pago',
                 'forma_pagamento_id' => $data['forma_pagamento_id'],
@@ -226,6 +268,13 @@ class MovimentacaoFinanceiraController extends Controller
     {
         try{
             $movimentacao = $financeiro;
+
+            $produtosAssociados = db::table('movimentacao_produto')->where('movimentacao_financeira_id',$financeiro->id)->get();
+
+            foreach ($produtosAssociados as $key => $p) {
+                Produto::find($p->produto_id)->atualizarEstoque($p->quantidade, 'aumentar');
+            }
+
             $movimentacao->update([
                 'situacao' => 'cancelado',
                 'data_pagamento' => null,
@@ -233,7 +282,7 @@ class MovimentacaoFinanceiraController extends Controller
                 'data_pagamento' => null,
                 'valor_pago' => null,
             ]);
-    
+            
             return redirect()->route('financeiro.index') ->with(['type' => 'success', 'message' => 'Movimentação cancelada com sucesso!']);
 
         } catch(Exception $e){

@@ -437,6 +437,7 @@ class AgendamentoController extends Controller
         // Associar produtos à movimentação financeira
         $produtos = [];
         foreach ($agendamento->produtos as $produto) {
+            Produto::find($produto->id)->atualizarEstoque($produto->pivot->quantidade, 'diminuir');
             $produtos[$produto->id] = [
                 'quantidade' => $produto->pivot->quantidade,
                 'valor_unitario' => $produto->pivot->valor_unitario

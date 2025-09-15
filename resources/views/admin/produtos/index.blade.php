@@ -433,7 +433,7 @@
                                 <th style="color: #1f2937;">Tipo</th>
                                 <th style="color: #1f2937;">Categoria</th>
                                 <th style="color: #1f2937;">Preço</th>
-                                <th style="color: #1f2937;">Estoque</th>
+                                <th style="color: #1f2937;">Estoque/Comprometido</th>
                                 <th style="color: #1f2937;">Status</th>
                                 <th width="160" style="color: #1f2937;">Ações</th>
                             </tr>
@@ -478,7 +478,7 @@
                                 </td>
                                 <td>
                                     @if($produto->tipo == 'produto')
-                                        {{ $produto->estoque ?? 0 }}
+                                    <span class="badge bg-info p-2">{{ $produto->estoque ?? 0 }}</span> / <span class="p-2 badge bg-danger">{{ $produto->comprometido ?? 0 }}</span>
                                     @else
                                         <span class="text-muted">N/A</span>
                                     @endif

@@ -11,43 +11,61 @@ class ProdutoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Produto::with('categoria');
+        $query = Produto::with('categoria')
+        ->select('produtos.*')
+        ->selectRaw('(
+            (
+                SELECT COALESCE(SUM(ap.quantidade), 0)
+                FROM agendamento_produto ap
+                JOIN agendamentos a ON ap.agendamento_id = a.id
+                WHERE a.status IN (?, ?)
+                AND ap.produto_id = produtos.id
+            ) +
+            (
+                SELECT COALESCE(SUM(mp.quantidade), 0)
+                FROM movimentacao_produto mp
+                JOIN movimentacoes_financeiras mf ON mp.movimentacao_financeira_id = mf.id
+                WHERE mf.situacao = ?
+                AND mp.produto_id = produtos.id
+            )
+        ) AS comprometido', ['agendado', 'em_andamento', 'em_aberto']);
 
-        // Filtros backend
-        if ($request->filled('busca')) {
-            $search = $request->busca;
-            $query->where(function($q) use ($search) {
-                $q->where('nome', 'like', "%{$search}%")
-                  ->orWhere('descricao', 'like', "%{$search}%");
-            });
-        }
+    // Filtros backend (aplicar antes de get/paginate)
+    if ($request->filled('busca')) {
+        $search = $request->busca;
+        $query->where(function($q) use ($search) {
+            $q->where('nome', 'like', "%{$search}%")
+            ->orWhere('descricao', 'like', "%{$search}%");
+        });
+    }
 
-        if ($request->filled('status')) {
-            $query->where('ativo', $request->status);
-        }
+    if ($request->filled('status')) {
+        $query->where('ativo', $request->status);
+    }
 
-        if ($request->filled('tipo')) {
-            $query->where('tipo', $request->tipo);
-        }
+    if ($request->filled('tipo')) {
+        $query->where('tipo', $request->tipo);
+    }
 
-        if ($request->filled('categoria_id')) {
-            $query->where('categoria_id', $request->categoria_id);
-        }
+    if ($request->filled('categoria_id')) {
+        $query->where('categoria_id', $request->categoria_id);
+    }
 
-        $perPage = $request->get('per_page', 15);
-        $produtos = $query->orderBy('nome')->paginate($perPage);
+    $perPage = $request->get('per_page', 15);
+    $produtos = $query->orderBy('nome')->paginate($perPage);
 
-        // Estatísticas
-        $stats = [
-            'total' => Produto::count(),
-            'ativos' => Produto::where('ativo', true)->count(),
-            'produtos' => Produto::where('tipo', 'produto')->count(),
-            'servicos' => Produto::where('tipo', 'servico')->count(),
-        ];
+    // Estatísticas
+    $stats = [
+        'total' => Produto::count(),
+        'ativos' => Produto::where('ativo', true)->count(),
+        'produtos' => Produto::where('tipo', 'produto')->count(),
+        'servicos' => Produto::where('tipo', 'servico')->count(),
+    ];
 
-        $categorias = Categoria::where('ativo', true)->orderBy('nome')->get();
+    $categorias = Categoria::where('ativo', true)->orderBy('nome')->get();
 
-        return view('admin.produtos.index', compact('produtos', 'stats', 'categorias'));
+    return view('admin.produtos.index', compact('produtos', 'stats', 'categorias'));
+
     }
 
     public function store(Request $request)

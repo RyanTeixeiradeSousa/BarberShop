@@ -42,34 +42,30 @@ class Produto extends Model
         return $this->tipo === 'produto' ? 'Produto' : 'Serviço';
     }
 
-    public function verificarEstoque()
+    public function verificarEstoqueComprometido($quantidadeDesejada)
     {
         if ($this->tipo === 'servico') {
             return true; // Serviços não têm estoque
         }
 
         // Verifica a quantidade de produtos reservados em agendamentos futuros
-        $quantidadeReservadaAgendamento = db::table('agendamento_produtos')
-        ->join('produtos', 'agendamento_produtos.produto_id', '=', 'produtos.id')
-        ->join('agendamentos', 'agendamento_produtos.agendamento_id', '=', 'agendamentos.id')
-        ->where('agendamentos.status',  'agendado')
-        ->where('agendamentos.status',  'em_andamento')
-        ->where('produtos.id', $this->id)
-        ->sum('agendamento_produtos.quantidade');
+        $agendamento = DB::table('agendamento_produto as ap')
+            ->join('agendamentos as a', 'ap.agendamento_id', '=', 'a.id')
+            ->whereIn('a.status', ['agendado', 'em_andamento'])
+            ->where('ap.produto_id', $this->id)
+            ->sum('ap.quantidade');
 
-        // Verifica a quantidade de produtos reservados em movimentações financeiras futuras
-        $quantidadeReservadaFinanceira = db::table('movimentacao_produtos')
-        ->join('produtos', 'movimentacao_produtos.produto_id', '=', 'produtos.id')
-        ->join('movimentacoes_financeiras', 'movimentacao_produtos.movimentacao_financeira_id', '=', 'movimentacoes_financeiras.id')
-        ->where('produtos.id', $this->id)
-        ->where('movimentacoes_financeiras.status', 'em_aberto')
-        ->sum('movimentacao_produtos.quantidade');
+        $movimentacao = DB::table('movimentacao_produto as mp')
+            ->join('movimentacoes_financeiras as mf', 'mp.movimentacao_financeira_id', '=', 'mf.id')
+            ->where('mf.situacao', 'em_aberto')
+            ->where('mp.produto_id', $this->id)
+            ->sum('mp.quantidade');
+
+        $comprometido = $agendamento + $movimentacao;
             
-        if($this->estoque < $quantidadeReservadaAgendamento + $quantidadeReservadaFinanceira){
-            return false; // Estoque insuficiente
-        }
+        $estoqueDisponivel = $this->estoque - $comprometido;
 
-        return true; // Estoque suficiente
+        return $quantidadeDesejada <= $estoqueDisponivel;
     }
 
     public function atualizarEstoque($quantidade, $operacao = 'diminuir')
