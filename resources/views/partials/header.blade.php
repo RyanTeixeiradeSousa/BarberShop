@@ -154,7 +154,7 @@
                 }
                 }, 300)
             }
-            }, 3000)
+            }, 5000)
         }
         showToast(message, type)
     </script>
