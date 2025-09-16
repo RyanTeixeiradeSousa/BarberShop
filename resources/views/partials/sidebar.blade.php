@@ -47,7 +47,7 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Gerenciar Fornecedores">
+                    <a href="{{route('fornecedores.index')}}" class="nav-link" title="Gerenciar Fornecedores">
                         <i class="fas fa-truck"></i>
                         <span class="nav-text">Fornecedores</span>
                     </a>

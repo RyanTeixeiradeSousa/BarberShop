@@ -36,6 +36,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Filiais
     Route::resource('/admin/filiais', App\Http\Controllers\FilialController::class)->parameters(['filiais' => 'filial']);;
+    // Fornecedores
+    Route::resource('/admin/fornecedores',  App\Http\Controllers\FornecedorController::class)->parameters(['fornecedores' => 'fornecedor']);;
 
     Route::resource('/admin/clientes', App\Http\Controllers\ClienteController::class); 
     Route::resource('/admin/categorias', App\Http\Controllers\CategoriaController::class);  
