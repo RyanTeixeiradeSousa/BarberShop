@@ -53,7 +53,7 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="#" class="nav-link" title="Gerenciar Barbeiros">
+                    <a href="{{route('barbeiros.index')}}" class="nav-link" title="Gerenciar Barbeiros">
                         <i class="fas fa-scissors"></i>
                         <span class="nav-text">Barbeiros</span>
                     </a>

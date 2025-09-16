@@ -36,8 +36,15 @@ Route::middleware(['auth'])->group(function () {
 
     // Filiais
     Route::resource('/admin/filiais', App\Http\Controllers\FilialController::class)->parameters(['filiais' => 'filial']);;
+    
     // Fornecedores
     Route::resource('/admin/fornecedores',  App\Http\Controllers\FornecedorController::class)->parameters(['fornecedores' => 'fornecedor']);;
+
+    // Barbeiros
+    Route::resource('/admin/barbeiros', App\Http\Controllers\BarbeiroController::class);
+    Route::get('barbeiros/{barbeiro}/filiais', [App\Http\Controllers\BarbeiroController::class, 'getFiliais'])->name('barbeiros.filiais');
+    Route::post('barbeiros/{barbeiro}/vincular-filial', [App\Http\Controllers\BarbeiroController::class, 'vincularFilial'])->name('barbeiros.vincular-filial');
+    Route::post('barbeiros/{barbeiro}/desvincular-filial', [App\Http\Controllers\BarbeiroController::class, 'desvincularFilial'])->name('barbeiros.desvincular-filial');
 
     Route::resource('/admin/clientes', App\Http\Controllers\ClienteController::class); 
     Route::resource('/admin/categorias', App\Http\Controllers\CategoriaController::class);  
