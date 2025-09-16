@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MovimentacaoFinanceira;
 use App\Models\Cliente;
+use App\Models\Fornecedor;
 use App\Models\CategoriaFinanceira;
 use App\Models\FormaPagamento;
 use App\Models\Produto;
@@ -19,7 +20,7 @@ class MovimentacaoFinanceiraController extends Controller
 {
     public function index(Request $request)
     {
-        $query = MovimentacaoFinanceira::with(['cliente', 'categoriaFinanceira', 'formaPagamento', 'agendamento', 'produtos']);
+        $query = MovimentacaoFinanceira::with(['cliente', 'categoriaFinanceira', 'formaPagamento', 'agendamento', 'produtos', 'fornecedor']);
 
         if ($request->filled('busca')) {
             $query->where(function($q) use ($request) {
@@ -64,6 +65,7 @@ class MovimentacaoFinanceiraController extends Controller
         $movimentacoesAbertas = MovimentacaoFinanceira::where('situacao', 'em_aberto')->count();
 
         $clientes = Cliente::where('ativo', true)->orderBy('nome')->get();
+        $fornecedores = Fornecedor::where('ativo', true)->orderBy('nome')->get();
         $categorias = CategoriaFinanceira::where('ativo', true)->orderBy('nome')->get();
         $formasPagamento = FormaPagamento::where('ativo', true)->orderBy('nome')->get();
 
@@ -106,7 +108,8 @@ class MovimentacaoFinanceiraController extends Controller
             'categorias',
             'formasPagamento',
             'produtos', 
-            'agendamentos' 
+            'agendamentos',
+            'fornecedores'
         ));
     }
 
@@ -159,6 +162,13 @@ class MovimentacaoFinanceiraController extends Controller
             $data['ativo'] = true;
             $data['user_created'] = Auth::user()->id;
 
+            if($data['tipo'] == 'saida'){
+                $data['cliente_id'] = null;
+            }
+
+            if($data['tipo'] == 'entrada'){
+                $data['fornecedor_id'] = null;
+            }
     
             unset($data['produtos']);
     
@@ -246,10 +256,12 @@ class MovimentacaoFinanceiraController extends Controller
                 }
             }
     
-            $produtosAssociados = db::table('movimentacao_produto')->where('movimentacao_financeira_id',$financeiro->id)->get();
-
-            foreach ($produtosAssociados as $key => $p) {
-                Produto::find($p->produto_id)->atualizarEstoque($p->quantidade, 'diminuir');
+            if($movimentacao->tipo == 'entrada'){
+                $produtosAssociados = db::table('movimentacao_produto')->where('movimentacao_financeira_id',$financeiro->id)->get();
+    
+                foreach ($produtosAssociados as $key => $p) {
+                    Produto::find($p->produto_id)->atualizarEstoque($p->quantidade, 'diminuir');
+                }
             }
 
             $movimentacao->update([
@@ -272,10 +284,12 @@ class MovimentacaoFinanceiraController extends Controller
         try{
             $movimentacao = $financeiro;
 
-            $produtosAssociados = db::table('movimentacao_produto')->where('movimentacao_financeira_id',$financeiro->id)->get();
-
-            foreach ($produtosAssociados as $key => $p) {
-                Produto::find($p->produto_id)->atualizarEstoque($p->quantidade, 'aumentar');
+            
+            if($movimentacao->tipo == 'entrada'){
+                $produtosAssociados = db::table('movimentacao_produto')->where('movimentacao_financeira_id',$financeiro->id)->get();
+                foreach ($produtosAssociados as $key => $p) {
+                    Produto::find($p->produto_id)->atualizarEstoque($p->quantidade, 'aumentar');
+                }
             }
 
             $movimentacao->update([

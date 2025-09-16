@@ -74,7 +74,7 @@
                     </div>
                     <div class="ms-3">
                         <h4 class="mb-0">{{ $totalMovimentacoes }}</h4>
-                        <p class="text-muted mb-0">Total Movimentações</p>
+                        <p class="text-muted mb-0">Total Mov</p>
                     </div>
                 </div>
             </div>
@@ -166,7 +166,7 @@
                                 <th style="color: #1f2937;">Data</th>
                                 <th style="color: #1f2937;">Tipo</th>
                                 <th style="color: #1f2937;">Descrição</th>
-                                <th style="color: #1f2937;">Cliente</th>
+                                <th style="color: #1f2937;">Cliente/Fornecedor</th>
                                 <th style="color: #1f2937;">Categoria</th>
                                 <th style="color: #1f2937;">Situação</th>
                                 <th style="color: #1f2937;">Valor</th>
@@ -184,7 +184,7 @@
                                     </span>
                                 </td>
                                 <td>{{ $movimentacao->descricao }}</td>
-                                <td>{{ $movimentacao->cliente->nome ?? '-' }}</td>
+                                <td><span class="badge bg-info">{{ $movimentacao->tipo == 'saida' ? $movimentacao->fornecedor->nome : $movimentacao->cliente->nome ?? '-' }}</span></td>
                                 <td>{{ $movimentacao->categoriaFinanceira->nome ?? '-' }}</td>
                                 <td>
                                     <span class="badge bg-{{ $movimentacao->situacao == 'pago' ? 'success' : ($movimentacao->situacao == 'cancelado' ? 'danger' : 'warning') }}">
@@ -295,12 +295,21 @@
                         <input type="text" class="form-control" id="descricao" name="descricao" required>
                     </div>
                     <div class="row" >
-                        <div class="col-md-6 mb-3" id="col-cliente-add">
+                        <div class="col-md-6 mb-3" id="col-cliente-add" style="display: none;">
                             <label for="cliente_id" class="form-label">Cliente</label>
                             <select class="form-select" id="cliente_id" name="cliente_id">
                                 <option value="">Selecione...</option>
                                 @foreach($clientes as $cliente)
                                     <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3" id="col-fornecedor-add" style="display: none;">
+                            <label for="cliente_id" class="form-label">Fornecedor</label>
+                            <select class="form-select" id="fornecedor_id" name="fornecedor_id">
+                                <option value="">Selecione...</option>
+                                @foreach($fornecedores as $fornecedor)
+                                    <option value="{{ $fornecedor->id }}">{{ $fornecedor->nome }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -471,13 +480,24 @@
                                 <input type="text" class="form-control" id="edit_descricao" name="descricao" required readonly>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-6 mb-3" id="cliente_edit_div" style="display: none">
                                     <label for="edit_cliente_id" class="form-label">Cliente</label>
                                     <!-- CHANGE> Tornando campo readonly -->
                                     <select class="form-select" id="edit_cliente_id" name="cliente_id" disabled>
                                         <option value="">Selecione...</option>
                                         @foreach($clientes as $cliente)
                                             <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-3" id="fornecedor_edit_div" style="display: none">
+                                    <label for="edit_fornecedor_id" class="form-label">Fornecedor</label>
+                                    <!-- CHANGE> Tornando campo readonly -->
+                                    <select class="form-select" id="edit_fornecedor_id" name="fornecedor_id" disabled>
+                                        <option value="">Selecione...</option>
+                                        @foreach($fornecedores as $fornecedor)
+                                            <option value="{{ $fornecedor->id }}">{{ $fornecedor->nome }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -1005,6 +1025,7 @@
                 document.getElementById('edit_data_vencimento').value = new Date(data.data_vencimento).toISOString().split('T')[0] || '';
                 document.getElementById('edit_descricao').value = data.descricao;
                 document.getElementById('edit_cliente_id').value = data.cliente_id || '';
+                document.getElementById('edit_fornecedor_id').value = data.fornecedor_id || '';
                 document.getElementById('edit_categoria_financeira_id').value = data.categoria_financeira_id || '';
                 document.getElementById('edit_valor').value = data.valor;
                 document.getElementById('edit_situacao').value = data.situacao;
@@ -1019,14 +1040,22 @@
                     }
                 });
 
-            
-
                 // Preencher dados de pagamento se status for "pago"
                 if (data.situacao === 'pago') {
                     document.getElementById('edit_forma_pagamento_id').value = data.forma_pagamento_id || '';
                     document.getElementById('edit_data_pagamento').value = new Date(data.data_pagamento).toISOString().split('T')[0]  || '';
                     document.getElementById('edit_desconto').value = data.desconto || '0,00';
                     document.getElementById('edit_valor_pago').value = data.valor_pago || '';
+                }
+
+                if(data.tipo == 'saida'){
+                    document.getElementById('cliente_edit_div').style.display = 'none'
+                    document.getElementById('fornecedor_edit_div').style.display = 'inline-block'
+                }
+
+                if(data.tipo == 'entrada'){
+                    document.getElementById('cliente_edit_div').style.display = 'inline-block'
+                    document.getElementById('fornecedor_edit_div').style.display = 'none'
                 }
                 
                 // Carregar produtos associados
@@ -1189,6 +1218,7 @@
         const produtosContainer = document.getElementById('produtos-container');
         const addProdutoBtn = document.querySelector('#btnAddProd[onclick="adicionarProduto()"]');
         const clienteSelect = document.querySelector('#col-cliente-add');
+        const fornecedorSelect = document.querySelector('#col-fornecedor-add');
 
         document.getElementById('categoria_financeira_id').value = '';
         const options = document.getElementById('categoria_financeira_id').querySelectorAll('option');
@@ -1198,6 +1228,7 @@
                 produtosContainer.style.display = 'none';
                 addProdutoBtn.style.display = 'none';
                 clienteSelect.style.display = 'none'
+                fornecedorSelect.style.display = 'inline-block'
                 // Limpar produtos existentes
                 produtosContainer.innerHTML = '';
                 produtoIndex = 0;
@@ -1221,7 +1252,7 @@
                 produtosContainer.style.display = 'block';
                 addProdutoBtn.style.display = 'inline-block';
                 clienteSelect.style.display = 'inline-block'
-
+                fornecedorSelect.style.display = 'none'
                 options.forEach(option => {
                     if (option.dataset.tipo === 'saida' || option.dataset.tipo === 'ambos') {
                         option.style.display = 'none';

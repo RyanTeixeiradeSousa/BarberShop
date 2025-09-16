@@ -26,13 +26,13 @@
         <div class="nav-item">
             <a href="{{route('dashboard')}}" class="nav-link" title="Dashboard">
                 <i class="fas fa-home"></i>
-                <span class="nav-text">DASHBOARD</span>
+                <span class="nav-text">Dashboard</span>
             </a>
         </div>
 
         <!-- Categoria: Clientes -->
         <div class="nav-category">
-            <button class="nav-category-toggle" data-target="clients-menu" title="Clientes">
+            <button class="nav-category-toggle" data-target="clients-menu" title="Pessoas">
                 <div class="nav-category-header">
                     <i class="fas fa-users me-2"></i>
                     <span class="nav-text">Pessoas</span>
@@ -127,7 +127,7 @@
         <div class="nav-item">
             <a href="{{route('agendamentos.index')}}" class="nav-link " title="Agendamentos">
                 <i class="fas fa-calendar-alt" style="margin-right: 5px;"></i>
-                <span class="nav-text">AGENDAMENTOS</span>
+                <span class="nav-text">Agendamentos</span>
                 {{-- <span class="nav-badge-primary">5</span> --}}
             </a>
         </div>
@@ -171,7 +171,7 @@
         <div class="nav-item">
             <a href="{{route('perfilindex')}}" class="nav-link" title="Configurações">
                 <i class="fas fa-address-card" style="margin-right: 5px;"></i>
-                <span class="nav-text">MEU PERFIL</span>
+                <span class="nav-text">Meu Perfil</span>
             </a>
         </div>
 
@@ -179,7 +179,7 @@
         <div class="nav-item">
             <a href="{{route('configuracoes.index')}}" class="nav-link" title="Configurações">
                 <i class="fas fa-cog" style="margin-right: 5px;"></i>
-                <span class="nav-text">CONFIGURAÇÕES</span>
+                <span class="nav-text">Configurações</span>
             </a>
         </div>
 

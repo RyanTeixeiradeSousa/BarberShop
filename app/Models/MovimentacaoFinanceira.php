@@ -27,6 +27,7 @@ class MovimentacaoFinanceira extends Model
         'agendamento_id', // Adicionando relacionamento com agendamento
         'observacoes',
         'ativo',
+        'fornecedor_id',
         'user_created'
     ];
 
@@ -43,6 +44,11 @@ class MovimentacaoFinanceira extends Model
     public function cliente()
     {
         return $this->belongsTo(Cliente::class);
+    }
+
+    public function fornecedor()
+    {
+        return $this->belongsTo(Fornecedor::class);
     }
 
     public function categoriaFinanceira()
