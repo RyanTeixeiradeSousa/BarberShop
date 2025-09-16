@@ -82,7 +82,8 @@ class AgendamentoController extends Controller
             'data_agendamento' => $request->data_agendamento,
             'hora_inicio' => $request->hora_inicio,
             'hora_fim' => $horaFim->format('H:i'),
-            'status' => 'disponivel'
+            'status' => 'disponivel',
+            'user_created' => Auth::user()->id
         ]);
 
         return redirect()->route('agendamentos.index')
@@ -170,7 +171,7 @@ class AgendamentoController extends Controller
         }
 
         return redirect()->route('agendamentos.index')
-            ->with('success', 'Agendamento criado com sucesso!');
+            ->with(['type' => 'success', 'message' => 'Agendamento criado com sucesso!']);
     }
 
     public function update(Request $request, Agendamento $agendamento)
@@ -268,7 +269,8 @@ class AgendamentoController extends Controller
                                 'data_agendamento' => $dataAtual->format('Y-m-d'),
                                 'hora_inicio' => $horaAtual->format('H:i'),
                                 'hora_fim' => $horaFimSlot->format('H:i'),
-                                'status' => 'disponivel'
+                                'status' => 'disponivel',
+                                'user_created' => Auth::user()->id
                             ]);
 
                             $slotsGerados++;

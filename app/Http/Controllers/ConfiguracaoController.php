@@ -23,7 +23,11 @@ class ConfiguracaoController extends Controller
                 'descricao' => 'nullable|string|max:500'
             ]);
 
-            Configuracao::create($request->all());
+            $data = $request->all();
+            $data['user_created'] = Auth::user()->id;
+
+
+            Configuracao::create($data);
             return redirect()->route('configuracoes.index')->with(['type' => 'success', 'message' => 'Configuração criada com sucesso!']);
         
         } catch( \Exception $e) {

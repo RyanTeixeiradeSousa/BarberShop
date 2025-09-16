@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+
 class UserController extends Controller
 {
     public function index(Request $request)
@@ -64,6 +65,7 @@ class UserController extends Controller
                 'master' => $request->get('master', false),
                 'ativo' => $request->get('ativo', true),
                 'redefinir_senha_login' => $request->get('redefinir_senha_login', false),
+                'user_created' => Auth::user()->id
             ]);
 
             return redirect()->route('users.index')->with(['type' => 'success', 'message' => 'Usuário criado com sucesso!']);

@@ -9,7 +9,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
                 <div class="icon-container me-3">
-                    <i class="fas fa-cogs"></i>
+                    <i class="fas fa-cogs" style="color: #60a5fa;"></i>
                 </div>
                 <div>
                     <h1 class="page-title mb-0">Configurações</h1>
@@ -24,7 +24,7 @@
 
     <!-- Cards de Estatísticas -->
     <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
             <div class="card-custom">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -39,7 +39,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
             <div class="card-custom">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -48,7 +48,7 @@
                         </div>
                         <div class="ms-3">
                             <div class="stat-number">{{ \App\Models\Configuracao::get('duracao_servico_padrao', 60) }}min</div>
-                            <div class="stat-label">Duração padrão dos serviços em minutos	</div>
+                            <div class="stat-label">Duração padrão dos serviços.</div>
                         </div>
                     </div>
                 </div>
@@ -254,7 +254,6 @@
 @push('styles')
 <style>
     .page-header {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
         border-radius: 12px;
         padding: 2rem;
         color: white;

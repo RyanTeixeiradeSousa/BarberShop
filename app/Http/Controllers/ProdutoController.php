@@ -85,6 +85,7 @@ class ProdutoController extends Controller
             $data = $request->all();
             $data['ativo'] = $request->has('ativo');
             $data['site'] = $request->has('site');
+            $data['user_created'] = Auth::user()->id;
     
             if ($request->hasFile('imagem')) {
                 $image = $request->file('imagem');

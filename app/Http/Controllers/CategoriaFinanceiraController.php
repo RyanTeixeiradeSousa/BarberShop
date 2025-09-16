@@ -49,7 +49,7 @@ class CategoriaFinanceiraController extends Controller
 
             $data = $request->all();
             $data['ativo'] = $request->has('ativo');
-    
+            $data['user_created'] = Auth::user()->id;
             CategoriaFinanceira::create($data);
 
             return redirect()->route('categorias-financeiras.index')->with(['type' => 'success', 'message' => 'Categoria financeira criada com sucesso!']);

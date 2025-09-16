@@ -54,7 +54,10 @@ class CategoriaController extends Controller
         
             }
     
-            Categoria::create($request->all());
+            $data = $request->all();
+            $data['user_created'] = Auth::user()->id;                
+
+            Categoria::create($data);
     
             return redirect()->route('categorias.index')->with(['type' => 'success', 'message' => 'Categoria criada com sucesso!']);
 

@@ -107,7 +107,10 @@ class ClienteController extends Controller
                 return redirect()->route('clientes.index')->with(['type' => 'error' , 'message'=> 'Campos inválidos para cadastro de Cliente: ' . $validator->errors()->first(), 'errors' => $validator->errors()]);
         
             }
-            Cliente::create($request->all());
+            $data = $request->all();
+            $data['user_created'] = Auth::user()->id;
+
+            Cliente::create($data);
     
             return redirect()->route('clientes.index')->with(['type' => 'success' , 'message'=> 'Cliente criado com sucesso.']);
 

@@ -157,6 +157,8 @@ class MovimentacaoFinanceiraController extends Controller
             }
     
             $data['ativo'] = true;
+            $data['user_created'] = Auth::user()->id;
+
     
             unset($data['produtos']);
     

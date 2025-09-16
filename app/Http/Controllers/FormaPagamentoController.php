@@ -43,7 +43,8 @@ class FormaPagamentoController extends Controller
     
             $data = $request->all();
             $data['ativo'] = $request->has('ativo');
-    
+            $data['user_created'] = Auth::user()->id;
+
             FormaPagamento::create($data);
             return redirect()->route('formas-pagamento.index')
                         ->with(['type' => 'success', 'message' => 'Forma de pagamento criada com sucesso!']);
