@@ -34,6 +34,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard'); 
 
+    // Filiais
+    Route::resource('/admin/filiais', App\Http\Controllers\FilialController::class)->parameters(['filiais' => 'filial']);;
+
     Route::resource('/admin/clientes', App\Http\Controllers\ClienteController::class); 
     Route::resource('/admin/categorias', App\Http\Controllers\CategoriaController::class);  
     Route::resource('/admin/produtos', App\Http\Controllers\ProdutoController::class); 

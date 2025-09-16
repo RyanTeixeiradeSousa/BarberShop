@@ -26,7 +26,7 @@
         <div class="nav-item">
             <a href="{{route('dashboard')}}" class="nav-link" title="Dashboard">
                 <i class="fas fa-home"></i>
-                <span class="nav-text">Dashboard</span>
+                <span class="nav-text">DASHBOARD</span>
             </a>
         </div>
 
@@ -35,7 +35,7 @@
             <button class="nav-category-toggle" data-target="clients-menu" title="Clientes">
                 <div class="nav-category-header">
                     <i class="fas fa-users me-2"></i>
-                    <span class="nav-text">Clientes</span>
+                    <span class="nav-text">Pessoas</span>
                 </div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </button>
@@ -43,15 +43,21 @@
                 <div class="nav-item">
                     <a href="{{route('clientes.index')}}" class="nav-link " title="Gerenciar Clientes">
                         <i class="fas fa-user-friends"></i>
-                        <span class="nav-text">Gerenciar Clientes</span>
+                        <span class="nav-text">Clientes</span>
                     </a>
                 </div>
-                {{-- <div class="nav-item">
-                    <a href="#" class="nav-link" title="Histórico de Atendimentos">
-                        <i class="fas fa-history"></i>
-                        <span class="nav-text">Histórico</span>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" title="Gerenciar Fornecedores">
+                        <i class="fas fa-truck"></i>
+                        <span class="nav-text">Fornecedores</span>
                     </a>
-                </div> --}}
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" title="Gerenciar Barbeiros">
+                        <i class="fas fa-scissors"></i>
+                        <span class="nav-text">Barbeiros</span>
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -120,10 +126,28 @@
         <!-- Agendamentos -->
         <div class="nav-item">
             <a href="{{route('agendamentos.index')}}" class="nav-link " title="Agendamentos">
-                <i class="fas fa-calendar-alt"></i>
-                <span class="nav-text">Agendamentos</span>
-                <span class="nav-badge-primary">5</span>
+                <i class="fas fa-calendar-alt" style="margin-right: 5px;"></i>
+                <span class="nav-text">AGENDAMENTOS</span>
+                {{-- <span class="nav-badge-primary">5</span> --}}
             </a>
+        </div>
+
+        <div class="nav-category">
+            <button class="nav-category-toggle" data-target="org-menu" title="Organização">
+                <div class="nav-category-header">
+                    <i class="fas fa-building me-2"></i>
+                    <span class="nav-text ml-2">Organização</span>
+                </div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </button>
+            <div class="nav-submenu" id="org-menu">
+                <div class="nav-item">
+                    <a href="{{route('filiais.index')}}" class="nav-link " title="Filiais">
+                        <i class="fas fa-store"></i>
+                        <span class="nav-text">Filiais</span>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <div class="nav-category">
@@ -146,16 +170,16 @@
 
         <div class="nav-item">
             <a href="{{route('perfilindex')}}" class="nav-link" title="Configurações">
-                <i class="fas fa-address-card"></i>
-                <span class="nav-text">Meu perfil</span>
+                <i class="fas fa-address-card" style="margin-right: 5px;"></i>
+                <span class="nav-text">MEU PERFIL</span>
             </a>
         </div>
 
         <!-- Configurações -->
         <div class="nav-item">
             <a href="{{route('configuracoes.index')}}" class="nav-link" title="Configurações">
-                <i class="fas fa-cog"></i>
-                <span class="nav-text">Configurações</span>
+                <i class="fas fa-cog" style="margin-right: 5px;"></i>
+                <span class="nav-text">CONFIGURAÇÕES</span>
             </a>
         </div>
 
