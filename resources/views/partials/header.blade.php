@@ -22,7 +22,7 @@
         
         <div class="header-right">
             <!-- Adicionando toggle de modo dark -->
-            <div class="dark-mode-toggle">
+            <div class="dark-mode-toggle d-none">
                 <input type="checkbox" id="darkModeToggle" class="dark-mode-checkbox">
                 <label for="darkModeToggle" class="dark-mode-label">
                     <i class="fas fa-sun light-icon text-center"></i>
