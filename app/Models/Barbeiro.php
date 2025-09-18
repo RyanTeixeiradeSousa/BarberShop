@@ -20,7 +20,8 @@ class Barbeiro extends Model
         'telefone',
         'email',
         'user_id',
-        'ativo'
+        'ativo',
+        'user_created'
     ];
 
     protected $casts = [

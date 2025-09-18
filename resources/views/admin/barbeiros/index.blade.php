@@ -239,7 +239,7 @@
                         <div class="results-info">
                             Mostrando {{ $barbeiros->firstItem() }} a {{ $barbeiros->lastItem() }} de {{ $barbeiros->total() }} resultados
                         </div>
-                        {{ $barbeiros->links() }}
+                        {{ $barbeiros->appends(request()->query())->links() }}
                     </div>
                 </div>
             @else
@@ -285,51 +285,25 @@
                             <input type="text" class="form-control" id="rg" name="rg">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Email *</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="telefone" class="form-label">Telefone *</label>
-                            <input type="text" class="form-control" id="telefone" name="telefone" required>
-                        </div>
-                    </div>
+                    <!-- Restaurando campo data de nascimento -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="data_nascimento" class="form-label">Data de Nascimento</label>
                             <input type="date" class="form-control" id="data_nascimento" name="data_nascimento">
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="endereco" class="form-label">Endereço</label>
-                        <textarea class="form-control" id="endereco" name="endereco" rows="3"></textarea>
-                    </div>
-                    
-                    <!-- Adicionando campos de comissão padrão -->
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <h6 class="text-primary"><i class="fas fa-percentage me-2"></i>Comissão Padrão</h6>
-                            <hr>
+                        <div class="col-md-6 mb-3">
+                            <label for="endereco" class="form-label">Endereço</label>
+                            <input type="text" class="form-control" id="endereco" name="endereco">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="tipo_comissao_default" class="form-label">Tipo de Comissão *</label>
-                            <select class="form-select" id="tipo_comissao_default" name="tipo_comissao_default" required onchange="toggleTipoComissaoDefault()">
-                                <option value="percentual">Percentual (%)</option>
-                                <option value="valor_fixo">Valor Fixo (R$)</option>
-                            </select>
+                            <label for="telefone" class="form-label">Telefone *</label>
+                            <input type="text" class="form-control" id="telefone" name="telefone" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="valor_comissao_default" class="form-label">
-                                <span id="label_valor_default">Percentual (%)</span> *
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text" id="simbolo_default">%</span>
-                                <input type="number" class="form-control" id="valor_comissao_default" name="valor_comissao_default" 
-                                       step="0.01" min="0" required>
-                            </div>
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                     </div>
                     
@@ -399,51 +373,25 @@
                             <input type="text" class="form-control" id="edit_rg" name="rg">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_email" class="form-label">Email *</label>
-                            <input type="email" class="form-control" id="edit_email" name="email" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_telefone" class="form-label">Telefone *</label>
-                            <input type="text" class="form-control" id="edit_telefone" name="telefone" required>
-                        </div>
-                    </div>
+                    <!-- Restaurando campo data de nascimento no modal de edição -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="edit_data_nascimento" class="form-label">Data de Nascimento</label>
                             <input type="date" class="form-control" id="edit_data_nascimento" name="data_nascimento">
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_endereco" class="form-label">Endereço</label>
-                        <textarea class="form-control" id="edit_endereco" name="endereco" rows="3"></textarea>
-                    </div>
-                    
-                    <!-- Adicionando campos de comissão padrão no formulário de edição -->
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <h6 class="text-primary"><i class="fas fa-percentage me-2"></i>Comissão Padrão</h6>
-                            <hr>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_endereco" class="form-label">Endereço</label>
+                            <input type="text" class="form-control" id="edit_endereco" name="endereco">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="edit_tipo_comissao_default" class="form-label">Tipo de Comissão *</label>
-                            <select class="form-select" id="edit_tipo_comissao_default" name="tipo_comissao_default" required onchange="toggleTipoComissaoEditDefault()">
-                                <option value="percentual">Percentual (%)</option>
-                                <option value="valor_fixo">Valor Fixo (R$)</option>
-                            </select>
+                            <label for="edit_telefone" class="form-label">Telefone *</label>
+                            <input type="text" class="form-control" id="edit_telefone" name="telefone" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edit_valor_comissao_default" class="form-label">
-                                <span id="edit_label_valor_default">Percentual (%)</span> *
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text" id="edit_simbolo_default">%</span>
-                                <input type="number" class="form-control" id="edit_valor_comissao_default" name="valor_comissao_default" 
-                                       step="0.01" min="0" required>
-                            </div>
+                            <label for="edit_email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="edit_email" name="email" required>
                         </div>
                     </div>
                     
@@ -515,7 +463,6 @@
 @push('styles')
 <style>
     body {
-        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
         font-family: 'Inter', sans-serif;
     }
 
@@ -906,15 +853,31 @@
     .filial-item {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 8px;
+        border-radius: 8px; 
         padding: 1rem;
         margin-bottom: 0.75rem;
         transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
+        position: relative;
+        overflow: hidden;
+    }
+
+    .filial-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #60a5fa, #3b82f6);
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
 
     .filial-item:hover {
-        border-color: rgba(59, 130, 246, 0.5);
-        transform: translateY(-1px);
+        border-color: rgba(59, 130, 246, 0.3);
+        transform: translateY(-1px);  
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
 
     .filial-item.vinculada {
@@ -922,92 +885,155 @@
         background: rgba(16, 185, 129, 0.05);
     }
 
+    .filial-item.vinculada::before {
+        background: linear-gradient(90deg, #10b981, #34d399);
+        opacity: 1;
+    }
+
     .filial-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
     }
 
     .filial-nome {
         font-weight: 600;
         color: var(--text-primary);
         margin: 0;
+        font-size: 1rem;  
+        line-height: 1.3;
     }
 
     .filial-status {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem; 
         border-radius: 12px;
-        font-weight: 500;
+        font-weight: 500; 
+        text-transform: uppercase;
+        letter-spacing: 0.3px; 
     }
 
     .status-vinculada {
-        background: rgba(16, 185, 129, 0.2);
-        color: #10b981;
+        background: linear-gradient(45deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.2));
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     .status-disponivel {
-        background: rgba(107, 114, 128, 0.2);
-        color: #6b7280;
+        background: linear-gradient(45deg, rgba(107, 114, 128, 0.15), rgba(156, 163, 175, 0.15)); 
+        color: #4b5563;
+        border: 1px solid rgba(107, 114, 128, 0.2);
     }
 
     .filial-info {
-        font-size: 0.875rem;
+        font-size: 0.8rem; 
         color: var(--text-muted);
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.75rem; 
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem; 
+    }
+
+    .filial-info::before {
+        content: '\f3c5';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        color: var(--text-muted);
+        opacity: 0.7;
     }
 
     .filial-actions {
         display: flex;
         gap: 0.5rem;
+        flex-wrap: wrap;
     }
 
     .btn-vincular {
         background: linear-gradient(45deg, #10b981, #34d399);
         border: none;
         color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        font-size: 0.875rem;
-        font-weight: 500;
+        padding: 0.375rem 0.75rem; 
+        border-radius: 6px; 
+        font-size: 0.8rem;
+        font-weight: 500; 
         transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem; 
+        box-shadow: 0 1px 4px rgba(16, 185, 129, 0.2); 
     }
 
     .btn-vincular:hover {
         background: linear-gradient(45deg, #059669, #10b981);
         transform: translateY(-1px);
         color: white;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); 
+    }
+
+    .btn-vincular::before {
+        content: '\f0c1';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
     }
 
     .btn-desvincular {
         background: linear-gradient(45deg, #ef4444, #f87171);
         border: none;
         color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        font-size: 0.875rem;
-        font-weight: 500;
+        padding: 0.375rem 0.75rem; 
+        border-radius: 6px; 
+        font-size: 0.8rem; 
+        font-weight: 500; 
         transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem; 
+        box-shadow: 0 1px 4px rgba(239, 68, 68, 0.2); 
     }
 
     .btn-desvincular:hover {
         background: linear-gradient(45deg, #dc2626, #ef4444);
         transform: translateY(-1px);
         color: white;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
     }
 
-    .btn-outline-warning {
-        border-color: #f59e0b;
-        color: #f59e0b;
-        background: var(--card-bg);
+    .btn-desvincular::before {
+        content: '\f127';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+    }
+
+    .btn-comissoes {
+        background: linear-gradient(45deg, #f59e0b, #fbbf24);
+        border: none;
+        color: white;
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px; 
+        font-size: 0.8rem; 
+        font-weight: 500; 
         transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        box-shadow: 0 1px 4px rgba(245, 158, 11, 0.2);
+        text-decoration: none;
     }
 
-    .btn-outline-warning:hover {
-        background: rgba(245, 158, 11, 0.1);
-        border-color: #d97706;
-        color: #d97706;
+    .btn-comissoes:hover {
+        background: linear-gradient(45deg, #d97706, #f59e0b);
+        transform: translateY(-1px);
+        color: white;
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3); 
+        text-decoration: none;
+    }
+
+    .btn-comissoes::before {
+        content: '\f53a';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
     }
 
     /* Adicionando estilos para o sistema de comissões */
@@ -1201,7 +1227,73 @@
 @endpush
 
 @push('scripts')
-<script>
+<script defer>
+    const toastColorsPerson = {
+        success: { background: "#10b981", icon: "check-circle" },  // verde
+        error: { background: "#ef4444", icon: "times-circle" },    // vermelho
+        warning: { background: "#f59e0b", icon: "exclamation-triangle" }, // amarelo
+        info: { background: "#3b82f6", icon: "info-circle" }       // azul
+    };
+    function showToastPerson(message, type) {
+        const { background, icon } = toastColorsPerson[type] || toastColorsPerson.info;
+
+        // Criar toast simples sem Bootstrap
+        const toastHtml = `
+            <div class="custom-toast toast-${type}" style="
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${background};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 9999;
+                font-size: 0.9rem;
+                max-width: 300px;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            ">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-${icon}"></i>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        background: none;
+                        border: none;
+                        color: white;
+                        margin-left: auto;
+                        cursor: pointer;
+                        padding: 0;
+                        font-size: 1.2rem;
+                    ">×</button>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML("beforeend", toastHtml)
+        const toastElement = document.body.lastElementChild
+
+        // Animar entrada
+        setTimeout(() => {
+        toastElement.style.opacity = "1"
+        toastElement.style.transform = "translateX(0)"
+        }, 100)
+
+        // Remover automaticamente após 3 segundos
+        setTimeout(() => {
+        if (toastElement && toastElement.parentElement) {
+            toastElement.style.opacity = "0"
+            toastElement.style.transform = "translateX(100%)"
+            setTimeout(() => {
+            if (toastElement && toastElement.parentElement) {
+                toastElement.remove()
+            }
+            }, 300)
+        }
+        }, 5000)
+    }
+    
     let currentBarbeiroId = null;
 
     function gerenciarFiliais(barbeiroId) {
@@ -1216,33 +1308,34 @@
         fetch(`/barbeiros/${currentBarbeiroId}/filiais`)
             .then(response => response.json())
             .then(data => {
-                let html = '<div class="mb-3"><h6>Filiais Disponíveis</h6></div>';
+                let html = '<div class="mb-3"><h6>Filiais Disponíveis</h6><button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="offcanvas">Fechar</button></div>';
                 
                 data.filiais.forEach(filial => {
                     const isVinculada = data.vinculadas.includes(filial.id);
                     
                     html += `
-                        <div class="card mb-2">
-                            <div class="card-body p-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">${filial.nome}</h6>
-                                        <small class="text-muted">${filial.endereco || 'Endereço não informado'}</small>
-                                    </div>
-                                    <div>
-                                        ${isVinculada ? 
-                                            `<button class="btn btn-sm btn-danger me-2" onclick="desvincularFilial(${filial.id})">
-                                                <i class="fas fa-unlink"></i> Desvincular
-                                            </button>
-                                            <button class="btn btn-sm btn-primary" onclick="gerenciarComissoes(${currentBarbeiroId}, ${filial.id})">
-                                                <i class="fas fa-percentage"></i> Comissões
-                                            </button>` :
-                                            `<button class="btn btn-sm btn-success" onclick="vincularFilial(${filial.id})">
-                                                <i class="fas fa-link"></i> Vincular
-                                            </button>`
-                                        }
-                                    </div>
-                                </div>
+                        <div class="filial-item">
+                            <div class="filial-header">
+                                <h6 class="filial-nome">${filial.nome}</h6>
+                                <span class="filial-status ${isVinculada ? 'status-vinculada' : 'status-disponivel'}">
+                                    ${isVinculada ? 'Vinculada' : 'Disponível'}
+                                </span>
+                            </div>
+                            <div class="filial-info">
+                                ${filial.endereco || 'Endereço não informado'}
+                            </div>
+                            <div class="filial-actions">
+                                ${isVinculada ? 
+                                    `<button class="btn btn-desvincular" onclick="desvincularFilial(${filial.id})">
+                                        Desvincular
+                                    </button>
+                                    <a href="/admin/comissoes/${currentBarbeiroId}/${filial.id}" class="btn btn-comissoes">
+                                        Comissões
+                                    </a>` :
+                                    `<button class="btn btn-vincular" onclick="vincularFilial(${filial.id})">
+                                        Vincular
+                                    </button>`
+                                }
                             </div>
                         </div>
                     `;
@@ -1252,7 +1345,7 @@
             })
             .catch(error => {
                 console.error('Erro ao carregar filiais:', error);
-                toastr.error('Erro ao carregar filiais');
+                alert('Erro ao carregar filiais');
             });
     }
 
@@ -1271,17 +1364,16 @@
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             if (data.success) {
-                alert(data.message);
+                showToastPerson(data.message, 'success');
                 carregarFiliais(); // Recarregar lista
             } else {
-                alert(data.message || 'Erro ao desvincular filial');
+                showToastPerson(data.message || 'Erro ao vincular filial', 'error');
             }
         })
         .catch(error => {
             console.error('Erro:', error);
-            toastr.error('Erro ao vincular filial');
+            showToastPerson('Erro ao vincular filial', 'error');
         });
     }
 
@@ -1296,7 +1388,7 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
             body: JSON.stringify({
                 filial_id: filialId
@@ -1304,17 +1396,16 @@
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             if (data.success) {
-                alert(data.message);
+                showToastPerson(data.message, 'success');
                 carregarFiliais(); // Recarregar lista
             } else {
-                alert(data.message || 'Erro ao desvincular filial');
+                showToastPerson(data.message || 'Erro ao desvincular filial', 'error');
             }
         })
         .catch(error => {
             console.error('Erro:', error);
-            toastr.error('Erro ao desvincular filial');
+            showToastPerson('Erro ao desvincular filial', 'error');
         });
     }
 
@@ -1324,16 +1415,16 @@
 
 
     // Auto-submit dos filtros
-    document.querySelector('input[name="search"]').addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(() => {
-            document.getElementById('filterForm').submit();
-        }, 500);
-    });
+    // document.querySelector('input[name="search"]').addEventListener('input', function() {
+    //     clearTimeout(this.searchTimeout);
+    //     this.searchTimeout = setTimeout(() => {
+    //         document.getElementById('filterForm').submit();
+    //     }, 500);
+    // });
 
-    document.querySelector('select[name="status"]').addEventListener('change', function() {
-        document.getElementById('filterForm').submit();
-    });
+    // document.querySelector('select[name="status"]').addEventListener('change', function() {
+    //     document.getElementById('filterForm').submit();
+    // });
 
     // Seletor de itens por página
     document.getElementById('perPage').addEventListener('change', function() {
@@ -1431,22 +1522,22 @@
 
     // Função para editar barbeiro
     function editarBarbeiro(id) {
-        fetch(`/barbeiros/${id}`)
+        fetch(`/admin/barbeiros/${id}`)
             .then(response => response.json())
             .then(barbeiro => {
-                document.getElementById('editarBarbeiroForm').action = `/barbeiros/${barbeiro.id}`;
+                console.log(barbeiro.data_nascimento)
+                document.getElementById('editarBarbeiroForm').action = `/admin/barbeiros/${barbeiro.id}`;
                 document.getElementById('edit_nome').value = barbeiro.nome;
                 document.getElementById('edit_cpf').value = barbeiro.cpf;
                 document.getElementById('edit_rg').value = barbeiro.rg || '';
-                document.getElementById('edit_email').value = barbeiro.email;
-                document.getElementById('edit_telefone').value = barbeiro.telefone;
-                document.getElementById('edit_data_nascimento').value = barbeiro.data_nascimento || '';
+                document.getElementById('edit_telefone').value = barbeiro.telefone || '';
+                document.getElementById('edit_email').value = barbeiro.email || '';
+                if(barbeiro.data_nascimento != null && barbeiro.data_nascimento != ''){
+                    document.getElementById('edit_data_nascimento').value = new Date(barbeiro.data_nascimento).toISOString().split("T")[0] || '';
+                }
                 document.getElementById('edit_endereco').value = barbeiro.endereco || '';
-                document.getElementById('edit_ativo').checked = barbeiro.ativo;
+                document.getElementById('edit_ativo').checked = barbeiro.ativo == 1;
                 
-                document.getElementById('edit_tipo_comissao_default').value = barbeiro.tipo_comissao_default || 'percentual';
-                document.getElementById('edit_valor_comissao_default').value = barbeiro.valor_comissao_default || '';
-                toggleTipoComissaoEditDefault();
                 
                 new bootstrap.Modal(document.getElementById('editarBarbeiroModal')).show();
             })
@@ -1459,36 +1550,13 @@
     // Função para confirmar exclusão
     function confirmarExclusao(id, nome) {
         document.getElementById('barbeiroNomeExcluir').textContent = nome;
-        document.getElementById('excluirBarbeiroForm').action = `/barbeiros/${id}`;
+        document.getElementById('excluirBarbeiroForm').action = `/admin/barbeiros/${id}`;
         new bootstrap.Modal(document.getElementById('excluirBarbeiroModal')).show();
     }
 
-    function toggleTipoComissaoDefault() {
-        const tipo = document.getElementById('tipo_comissao_default').value;
-        const label = document.getElementById('label_valor_default');
-        const simbolo = document.getElementById('simbolo_default');
+    
+    function editBarbeiro(id) {
         
-        if (tipo === 'percentual') {
-            label.textContent = 'Percentual (%)';
-            simbolo.textContent = '%';
-        } else {
-            label.textContent = 'Valor Fixo (R$)';
-            simbolo.textContent = 'R$';
-        }
-    }
-
-    function toggleTipoComissaoEditDefault() {
-        const tipo = document.getElementById('edit_tipo_comissao_default').value;
-        const label = document.getElementById('edit_label_valor_default');
-        const simbolo = document.getElementById('edit_simbolo_default');
-        
-        if (tipo === 'percentual') {
-            label.textContent = 'Percentual (%)';
-            simbolo.textContent = '%';
-        } else {
-            label.textContent = 'Valor Fixo (R$)';
-            simbolo.textContent = 'R$';
-        }
     }
 
     function showAlert(type, message) {

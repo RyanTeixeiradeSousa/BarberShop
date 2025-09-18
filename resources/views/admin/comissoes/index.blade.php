@@ -1,3 +1,4 @@
+{{-- {{dd($filial)}} --}}
 @extends('layouts.app')
 
 @section('title', 'Gerenciar Comissões - BarberShop Pro')
@@ -6,112 +7,110 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Aplicando header da página no estilo da tela de clientes -->
     <!-- Header da Página -->
     <div class="row mb-4">
-        <div class="col-md-6">
-            <h2 class="mb-0" style="color: var(--text-primary);">
-                <i class="fas fa-percentage me-2" style="color: #60a5fa;"></i>
-                Comissões - {{ $barbeiro->nome }}
-            </h2>
-            <p class="mb-0" style="color: var(--text-muted);">Gerencie as comissões do barbeiro na filial selecionada</p>
+        <div class="col-md-8">
+            <div class="d-flex align-items-center">
+                <div class="header-icon me-3">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div>
+                    <h2 class="mb-1 fw-bold">Comissões - {{ $barbeiro->nome }}</h2>
+                    <p class="mb-0 text-muted"><span class=" badge bg-primary">{{ $filial->nome ?? 'Filial Selecionada' }}</span> • Gerencie comissões da filial e por serviço</p>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6 text-end">
-            <a href="{{ route('barbeiros.index') }}" class="btn btn-secondary me-2">
+        <div class="col-md-4 text-end">
+            <a href="{{ route('barbeiros.index') }}" class="btn btn-outline-secondary me-2">
                 <i class="fas fa-arrow-left me-1"></i>
-                Voltar
+                Voltar aos Barbeiros
             </a>
         </div>
     </div>
 
-    <!-- Adicionando cards de estatísticas no estilo da tela de clientes -->
     <!-- Cards de Estatísticas -->
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
-            <div class="product-card">
-                <div class="d-flex align-items-center">
-                    <div class="product-avatar">
-                        <i class="fas fa-building"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h4 class="mb-0">{{ $comissaoFilial ? ($comissaoFilial->tipo_comissao_filial == 'percentual' ? $comissaoFilial->valor_comissao_filial.'%' : 'R$ '.number_format($comissaoFilial->valor_comissao_filial, 2, ',', '.')) : 'Não definida' }}</h4>
-                        <p class="text-muted mb-0">Comissão da Filial</p>
-                    </div>
+            <div class="stats-card primary">
+                <div class="stats-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="stats-content">
+                    <h3 class="stats-value">{{ $comissaoFilial ? ($comissaoFilial->tipo_comissao_filial == 'percentual' ? $comissaoFilial->valor_comissao_filial.'%' : 'R$ '.number_format($comissaoFilial->valor_comissao_filial, 2, ',', '.')) : 'Não definida' }}</h3>
+                    <p class="stats-label">Comissão da Filial</p>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="product-card">
-                <div class="d-flex align-items-center">
-                    <div class="product-avatar" style="background: linear-gradient(45deg, #10b981, #34d399);">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h4 class="mb-0">{{ $comissoesServicos->count() }}</h4>
-                        <p class="text-muted mb-0">Serviços com Comissão</p>
-                    </div>
+            <div class="stats-card success">
+                <div class="stats-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <div class="stats-content">
+                    <h3 class="stats-value">{{ $comissoesServicos->count() }}</h3>
+                    <p class="stats-label">Serviços com Comissão</p>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="product-card">
-                <div class="d-flex align-items-center">
-                    <div class="product-avatar" style="background: linear-gradient(45deg, #06b6d4, #67e8f9);">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h4 class="mb-0">{{ $comissoesServicos->where('tipo_comissao', 'percentual')->count() }}</h4>
-                        <p class="text-muted mb-0">Comissões Percentuais</p>
-                    </div>
+            <div class="stats-card info">
+                <div class="stats-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stats-content">
+                    <h3 class="stats-value">{{ $comissoesServicos->where('tipo_comissao', 'percentual')->count() }}</h3>
+                    <p class="stats-label">Comissões Percentuais</p>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="product-card">
-                <div class="d-flex align-items-center">
-                    <div class="product-avatar" style="background: linear-gradient(45deg, #f59e0b, #fbbf24);">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h4 class="mb-0">{{ $comissoesServicos->where('tipo_comissao', 'valor_fixo')->count() }}</h4>
-                        <p class="text-muted mb-0">Comissões Fixas</p>
-                    </div>
+            <div class="stats-card warning">
+                <div class="stats-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stats-content">
+                    <h3 class="stats-value">{{ $comissoesServicos->where('tipo_comissao', 'valor_fixo')->count() }}</h3>
+                    <p class="stats-label">Comissões Fixas</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Card de Comissão da Filial no estilo da tela de clientes -->
     <!-- Card de Comissão da Filial -->
-    <div class="card-custom mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center" style="background: var(--card-header-bg); border-bottom: 1px solid rgba(59, 130, 246, 0.2);">
-            <h6 class="m-0 font-weight-bold" style="color: var(--text-primary);">
-                <i class="fas fa-building me-2" style="color: #60a5fa;"></i>Comissão da Filial
-            </h6>
+    <div class="main-card mb-4">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-building me-2"></i>
+                <h5 class="mb-0">Comissão da Filial</h5>
+            </div>
         </div>
         <div class="card-body">
             <form id="formComissaoFilial">
                 <input type="hidden" name="barbeiro_id" value="{{ $barbeiro->id }}">
                 <input type="hidden" name="filial_id" value="{{ $filialId }}">
                 
-                <div class="row g-3">
+                <div class="row g-4">
                     <div class="col-md-4">
-                        <label class="form-label">Tipo de Comissão</label>
-                        <select name="tipo_comissao_filial" class="form-select" required style="background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary);">
-                            <option value="percentual" {{ $comissaoFilial && $comissaoFilial->tipo_comissao_filial == 'percentual' ? 'selected' : '' }}>Percentual</option>
-                            <option value="valor_fixo" {{ $comissaoFilial && $comissaoFilial->tipo_comissao_filial == 'valor_fixo' ? 'selected' : '' }}>Valor Fixo</option>
-                        </select>
+                        <div class="form-group">
+                            <label class="form-label">Tipo de Comissão</label>
+                            <select name="tipo_comissao_filial" class="form-select" required>
+                                <option value="percentual" {{ $comissaoFilial && $comissaoFilial->tipo_comissao_filial == 'percentual' ? 'selected' : '' }}>Percentual (%)</option>
+                                <option value="valor_fixo" {{ $comissaoFilial && $comissaoFilial->tipo_comissao_filial == 'valor_fixo' ? 'selected' : '' }}>Valor Fixo (R$)</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Valor da Comissão</label>
-                        <input type="number" name="valor_comissao_filial" class="form-control" step="0.01" min="0" 
-                               value="{{ $comissaoFilial ? $comissaoFilial->valor_comissao_filial : '' }}" required
-                               style="background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary);">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="form-label">Valor da Comissão</label>
+                            <input type="text" name="valor_comissao_filial" id="valor_comissao_filial" class="form-control" 
+                                   value="{{ $comissaoFilial ? $comissaoFilial->valor_comissao_filial : '' }}" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
                     </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary-custom w-100">
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-save me-1"></i>
-                            Salvar Comissão da Filial
+                            Salvar Comissão
                         </button>
                     </div>
                 </div>
@@ -119,43 +118,49 @@
         </div>
     </div>
 
-    <!-- Card de Comissões por Serviço no estilo da tela de clientes -->
-    <!-- Card de Comissões por Serviço -->
-    <div class="card-custom mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center" style="background: var(--card-header-bg); border-bottom: 1px solid rgba(59, 130, 246, 0.2);">
-            <h6 class="m-0 font-weight-bold" style="color: var(--text-primary);">
-                <i class="fas fa-cogs me-2" style="color: #60a5fa;"></i>Nova Comissão por Serviço
-            </h6>
+    <!-- Card de Nova Comissão por Serviço -->
+    <div class="main-card mb-4">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-plus-circle me-2"></i>
+                <h5 class="mb-0">Nova Comissão por Serviço</h5>
+            </div>
         </div>
         <div class="card-body">
             <form id="formComissaoServico">
                 <input type="hidden" name="barbeiro_id" value="{{ $barbeiro->id }}">
                 <input type="hidden" name="filial_id" value="{{ $filialId }}">
                 
-                <div class="row g-3">
+                <div class="row g-4">
                     <div class="col-md-3">
-                        <label class="form-label">Serviço</label>
-                        <select name="produto_id" class="form-select" required style="background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary);">
-                            <option value="">Selecione um serviço</option>
-                            @foreach($produtos as $produto)
-                                <option value="{{ $produto->id }}">{{ $produto->nome }}</option>
-                            @endforeach
-                        </select>
+                        <div class="form-group">
+                            <label class="form-label">Serviço</label>
+                            <select name="produto_id" class="form-select" required>
+                                <option value="">Selecione um serviço</option>
+                                @foreach($produtos as $produto)
+                                    <option value="{{ $produto->id }}">{{ $produto->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Tipo de Comissão</label>
-                        <select name="tipo_comissao" class="form-select" required style="background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary);">
-                            <option value="percentual">Percentual</option>
-                            <option value="valor_fixo">Valor Fixo</option>
-                        </select>
+                        <div class="form-group">
+                            <label class="form-label">Tipo de Comissão</label>
+                            <select name="tipo_comissao" class="form-select" required>
+                                <option value="percentual">Percentual (%)</option>
+                                <option value="valor_fixo">Valor Fixo (R$)</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Valor da Comissão</label>
-                        <input type="number" name="valor_comissao" class="form-control" step="0.01" min="0" required
-                               style="background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-primary);">
+                        <div class="form-group">
+                            <label class="form-label">Valor da Comissão</label>
+                            <input type="text" name="valor_comissao" id="valor_comissao" class="form-control" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary-custom w-100">
+                        <button type="submit" class="btn btn-success w-100">
                             <i class="fas fa-plus me-1"></i>
                             Adicionar Comissão
                         </button>
@@ -165,20 +170,27 @@
         </div>
     </div>
 
-    <!-- Card da Tabela no estilo da tela de clientes -->
     <!-- Card da Tabela -->
-    <div class="card-custom">
-        <div class="card-body">
+    <div class="main-card">
+        <div class="card-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-list me-2"></i>
+                    <h5 class="mb-0">Comissões por Serviço</h5>
+                </div>
+                <span class="badge bg-primary">{{ $comissoesServicos->count() }} comissões</span>
+            </div>
+        </div>
+        <div class="card-body p-0">
             @if($comissoesServicos->count() > 0)
-                <!-- Tabela -->
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover mb-0">
                         <thead>
                             <tr>
-                                <th style="color: var(--text-primary);">Serviço</th>
-                                <th style="color: var(--text-primary);">Tipo</th>
-                                <th style="color: var(--text-primary);">Valor</th>
-                                <th width="100" style="color: var(--text-primary);">Ações</th>
+                                <th>Serviço</th>
+                                <th>Tipo</th>
+                                <th>Valor</th>
+                                <th width="80">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -186,28 +198,33 @@
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="product-avatar me-3">
+                                        <div class="service-avatar me-3">
                                             {{ strtoupper(substr($comissao->produto->nome, 0, 2)) }}
                                         </div>
-                                        <div class="product-info">
-                                            <h6>{{ $comissao->produto->nome }}</h6>
+                                        <div>
+                                            <h6 class="mb-0">{{ $comissao->produto->nome }}</h6>
+                                            <small class="text-muted">Serviço</small>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     <span class="badge bg-{{ $comissao->tipo_comissao == 'percentual' ? 'info' : 'warning' }}">
-                                        {{ ucfirst($comissao->tipo_comissao) }}
+                                        {{ $comissao->tipo_comissao == 'percentual' ? 'Percentual' : 'Valor Fixo' }}
                                     </span>
                                 </td>
                                 <td>
-                                    @if($comissao->tipo_comissao == 'percentual')
-                                        <strong>{{ $comissao->valor_comissao }}%</strong>
-                                    @else
-                                        <strong>R$ {{ number_format($comissao->valor_comissao, 2, ',', '.') }}</strong>
-                                    @endif
+                                    <div class="commission-value">
+                                        @if($comissao->tipo_comissao == 'percentual')
+                                            <strong class="text-info">{{ $comissao->valor_comissao }}%</strong>
+                                        @else
+                                            <strong class="text-warning">R$ {{ number_format($comissao->valor_comissao, 2, ',', '.') }}</strong>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removerComissaoServico({{ $comissao->id }})" title="Remover">
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            onclick="removerComissaoServico({{ $comissao->id }})" 
+                                            title="Remover comissão">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -217,10 +234,12 @@
                     </table>
                 </div>
             @else
-                <div class="text-center py-5">
-                    <i class="fas fa-cogs fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">Nenhuma comissão por serviço encontrada</h5>
-                    <p class="text-muted">Configure a primeira comissão por serviço para começar.</p>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h5>Nenhuma comissão por serviço</h5>
+                    <p>Configure a primeira comissão por serviço para começar a gerenciar as comissões individuais.</p>
                 </div>
             @endif
         </div>
@@ -230,56 +249,226 @@
 @push('styles')
 <style>
     body {
-        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
-        font-family: 'Inter', sans-serif;
+        background: #f8fafc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #1e293b;
     }
 
     .container-fluid {
-        background: transparent;
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
-    .card-custom {
-        background: var(--card-bg);
-        border: 2px solid var(--border-color);
+    /* Header Styles */
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+    }
+
+    h2 {
+        color: #1e293b !important;
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+
+    .text-muted {
+        color: #64748b !important;
+    }
+
+    /* Stats Cards */
+    .stats-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .stats-card:hover::before {
+        opacity: 1;
+    }
+
+    .stats-card.primary::before { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+    .stats-card.success::before { background: linear-gradient(90deg, #10b981, #059669); }
+    .stats-card.info::before { background: linear-gradient(90deg, #06b6d4, #0891b2); }
+    .stats-card.warning::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+
+    .stats-icon {
+        width: 48px;
+        height: 48px;
         border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: white;
     }
 
-    .card-custom:hover {
+    .stats-card.primary .stats-icon { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .stats-card.success .stats-icon { background: linear-gradient(135deg, #10b981, #059669); }
+    .stats-card.info .stats-icon { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+    .stats-card.warning .stats-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+    .stats-value {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+    }
+
+    .stats-label {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    /* Main Cards */
+    .main-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .main-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-        border-color: rgba(59, 130, 246, 0.5);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        border-color: rgba(59, 130, 246, 0.2);
     }
 
     .card-header {
-        background: var(--card-header-bg) !important;
-        color: var(--text-primary) !important;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 1.25rem 1.5rem;
+        border-radius: 16px 16px 0 0;
     }
 
-    .btn-primary-custom {
-        background: linear-gradient(45deg, #3b82f6, #60a5fa);
-        border: none;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
+    .card-header h5 {
+        color: #1e293b;
         font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        font-size: 1.125rem;
     }
 
-    .btn-primary-custom:hover {
-        background: linear-gradient(45deg, #2563eb, #3b82f6);
-        transform: translateY(-2px);
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        color: #374151 !important;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .form-control, .form-select {
+        background: white !important;
+        border: 1px solid #d1d5db !important;
+        color: #1f2937 !important;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: white !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        color: #1f2937 !important;
+    }
+
+    .form-control::placeholder {
+        color: #9ca3af;
+    }
+
+    /* Button Styles */
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        transform: translateY(-1px);
         box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
         color: white;
     }
 
+    .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        color: white;
+    }
+
+    .btn-outline-secondary {
+        border: 1px solid #d1d5db;
+        color: #6b7280;
+        background: transparent;
+    }
+
+    .btn-outline-secondary:hover {
+        background: #f9fafb;
+        border-color: #9ca3af;
+        color: #374151;
+    }
+
     .btn-outline-danger {
-        border-color: #ef4444;
+        border: 1px solid #ef4444;
         color: #ef4444;
-        background: var(--card-bg);
-        transition: all 0.3s ease;
+        background: transparent;
     }
 
     .btn-outline-danger:hover {
@@ -288,164 +477,330 @@
         color: #dc2626;
     }
 
-    .product-card {
-        background: var(--card-bg);
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-        transition: all 0.3s ease;
-        border: 1px solid var(--border-color);
-        backdrop-filter: blur(10px);
-    }
-
-    .product-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-        border-color: rgba(59, 130, 246, 0.5);
-    }
-
-    .product-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 8px;
-        background: linear-gradient(45deg, #60a5fa, #3b82f6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 700;
-        font-size: 1.2rem;
-    }
-
-    .product-info h6 {
-        margin: 0;
-        font-weight: 600;
-        color: var(--text-primary);
-    }
-
-    .product-info p {
-        margin: 0;
-        font-size: 0.85rem;
-        color: var(--text-muted);
-    }
-
+    /* Table Styles */
     .table {
-        background: var(--card-bg);
-        color: var(--text-primary);
+        color: #1e293b;
+        margin: 0;
     }
 
     .table th {
-        border-bottom: 2px solid var(--border-color);
+        background: #f8fafc;
+        border: none;
+        color: #374151 !important;
         font-weight: 600;
-        padding: 1rem 0.75rem;
-        color: var(--text-primary) !important;
+        font-size: 0.875rem;
+        padding: 1rem 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
     }
 
     .table td {
-        border-bottom: 1px solid var(--border-color);
-        padding: 1rem 0.75rem;
+        border: none;
+        padding: 1rem 1.5rem;
         vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
     }
 
     .table tbody tr:hover {
         background: rgba(59, 130, 246, 0.05);
     }
 
-    .form-control, .form-select {
-        background: var(--input-bg) !important;
-        border: 1px solid var(--border-color) !important;
-        color: var(--text-primary) !important;
+    .service-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.875rem;
     }
 
-    .form-control:focus, .form-select:focus {
-        background: var(--input-bg) !important;
-        border-color: #60a5fa !important;
-        color: var(--text-primary) !important;
-        box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25) !important;
+    .commission-value strong {
+        font-size: 1rem;
+        font-weight: 600;
     }
 
-    .form-label {
-        color: var(--text-primary) !important;
+    /* Badge Styles */
+    .badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
     }
 
-    h2, h5, h6, p {
-        color: var(--text-primary) !important;
+    .bg-info { background: linear-gradient(135deg, #06b6d4, #0891b2) !important; }
+    .bg-warning { background: linear-gradient(135deg, #f59e0b, #d97706) !important; }
+    .bg-primary { background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important; }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
     }
 
-    .text-muted {
-        color: var(--text-muted) !important;
+    .empty-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: #3b82f6;
+        font-size: 2rem;
+    }
+
+    .empty-state h5 {
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        margin: 0;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 1rem;
+        }
+        
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.25rem;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+        }
+        
+        .stats-card {
+            padding: 1.25rem;
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+        }
     }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
+    function aplicarMascaraFilial() {
+        const tipo = document.querySelector('select[name="tipo_comissao_filial"]').value;
+        const input = document.getElementById('valor_comissao_filial');
+        
+        if (tipo === 'percentual') {
+            input.placeholder = 'Ex: 15,50';
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
+                }
+                e.target.value = value;
+            });
+        } else {
+            input.placeholder = 'Ex: 25,00';
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = (parseInt(value) / 100).toFixed(2);
+                    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.').replace('.', ',');
+                    if (value.indexOf(',') === -1) {
+                        value += ',00';
+                    }
+                }
+                e.target.value = value;
+            });
+        }
+    }
+    
+    function aplicarMascaraServico() {
+        const tipo = document.querySelector('select[name="tipo_comissao"]').value;
+        const input = document.getElementById('valor_comissao');
+        
+        if (tipo === 'percentual') {
+            input.placeholder = 'Ex: 15,50';
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = (parseInt(value) / 100).toFixed(2).replace('.', ',');
+                }
+                e.target.value = value;
+            });
+        } else {
+            input.placeholder = 'Ex: 25,00';
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = (parseInt(value) / 100).toFixed(2);
+                    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.').replace('.', ',');
+                    if (value.indexOf(',') === -1) {
+                        value += ',00';
+                    }
+                }
+                e.target.value = value;
+            });
+        }
+    }
+    
+    aplicarMascaraFilial();
+    aplicarMascaraServico();
+    
+    document.querySelector('select[name="tipo_comissao_filial"]').addEventListener('change', function() {
+        document.getElementById('valor_comissao_filial').value = '';
+        aplicarMascaraFilial();
+    });
+    
+    document.querySelector('select[name="tipo_comissao"]').addEventListener('change', function() {
+        document.getElementById('valor_comissao').value = '';
+        aplicarMascaraServico();
+    });
+    
+    function validarValor(valor, tipo) {
+        const valorNumerico = parseFloat(valor.replace(',', '.'));
+        
+        if (isNaN(valorNumerico) || valorNumerico <= 0) {
+            return 'O valor deve ser maior que zero';
+        }
+        
+        if (tipo === 'percentual' && valorNumerico > 100) {
+            return 'O percentual não pode ser maior que 100%';
+        }
+        
+        return null;
+    }
+    
+    document.getElementById('valor_comissao_filial').addEventListener('blur', function() {
+        const valor = this.value;
+        const tipo = document.querySelector('select[name="tipo_comissao_filial"]').value;
+        const erro = validarValor(valor, tipo);
+        
+        if (erro) {
+            this.classList.add('is-invalid');
+            this.nextElementSibling.textContent = erro;
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+    
+    document.getElementById('valor_comissao').addEventListener('blur', function() {
+        const valor = this.value;
+        const tipo = document.querySelector('select[name="tipo_comissao"]').value;
+        const erro = validarValor(valor, tipo);
+        
+        if (erro) {
+            this.classList.add('is-invalid');
+            this.nextElementSibling.textContent = erro;
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
     // Salvar comissão da filial
-    $('#formComissaoFilial').on('submit', function(e) {
+    document.getElementById('formComissaoFilial').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        $.ajax({
-            url: '{{ route("comissoes.salvar-filial") }}',
+        const valor = document.getElementById('valor_comissao_filial').value;
+        const tipo = document.querySelector('select[name="tipo_comissao_filial"]').value;
+        const erro = validarValor(valor, tipo);
+        
+        if (erro) {
+            document.getElementById('valor_comissao_filial').classList.add('is-invalid');
+            document.getElementById('valor_comissao_filial').nextElementSibling.textContent = erro;
+            return;
+        }
+        
+        const valorFormatado = valor.replace('.', '').replace(',', '.');
+        const formData = new FormData(this);
+        formData.set('valor_comissao_filial', valorFormatado);
+        
+        fetch('{{ route("comissoes.salvar-filial") }}', {
             method: 'POST',
-            data: $(this).serialize(),
+            body: formData,
             headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if(response.success) {
-                    toastr.success(response.message);
-                    setTimeout(() => location.reload(), 1000);
-                }
-            },
-            error: function(xhr) {
-                toastr.error('Erro ao salvar comissão da filial');
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert(data.message);
+                setTimeout(() => location.reload(), 1000);
+            }
+        })
+        .catch(error => {
+            alert('Erro ao salvar comissão da filial');
         });
     });
 
     // Salvar comissão do serviço
-    $('#formComissaoServico').on('submit', function(e) {
+    document.getElementById('formComissaoServico').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        $.ajax({
-            url: '{{ route("comissoes.salvar-servico") }}',
+        const valor = document.getElementById('valor_comissao').value;
+        const tipo = document.querySelector('select[name="tipo_comissao"]').value;
+        const erro = validarValor(valor, tipo);
+        
+        if (erro) {
+            document.getElementById('valor_comissao').classList.add('is-invalid');
+            document.getElementById('valor_comissao').nextElementSibling.textContent = erro;
+            return;
+        }
+        
+        const valorFormatado = valor.replace('.', '').replace(',', '.');
+        const formData = new FormData(this);
+        formData.set('valor_comissao', valorFormatado);
+        
+        fetch('{{ route("comissoes.salvar-servico") }}', {
             method: 'POST',
-            data: $(this).serialize(),
+            body: formData,
             headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if(response.success) {
-                    toastr.success(response.message);
-                    $('#formComissaoServico')[0].reset();
-                    setTimeout(() => location.reload(), 1000);
-                }
-            },
-            error: function(xhr) {
-                toastr.error('Erro ao salvar comissão do serviço');
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert(data.message);
+                this.reset();
+                aplicarMascaraServico();
+                setTimeout(() => location.reload(), 1000);
+            }
+        })
+        .catch(error => {
+            alert('Erro ao salvar comissão do serviço');
         });
     });
 });
 
 function removerComissaoServico(id) {
     if(confirm('Tem certeza que deseja remover esta comissão?')) {
-        $.ajax({
-            url: '{{ route("comissoes.remover-servico", "") }}/' + id,
+        fetch('{{ route("comissoes.remover-servico", "") }}/' + id, {
             method: 'DELETE',
             headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if(response.success) {
-                    toastr.success(response.message);
-                    setTimeout(() => location.reload(), 1000);
-                }
-            },
-            error: function(xhr) {
-                toastr.error('Erro ao remover comissão');
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert(data.message);
+                setTimeout(() => location.reload(), 1000);
+            }
+        })
+        .catch(error => {
+            alert('Erro ao remover comissão');
         });
     }
 }

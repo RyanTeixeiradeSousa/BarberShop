@@ -27,5 +27,12 @@ return new class extends Migration
     public function down(): void
     {
         //
+        Schema::table('movimentacoes_financeiras', function (Blueprint $table) {
+            // remove a foreign key
+            $table->dropForeign(['fornecedor_id']);
+            
+            // remove a coluna
+            $table->dropColumn('fornecedor_id');
+        });
     }
 };

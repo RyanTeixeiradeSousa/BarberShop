@@ -7,6 +7,7 @@ use App\Models\Barbeiro;
 use App\Models\BarbeiroComissao;
 use App\Models\BarbeiroServicoComissao;
 use App\Models\Produto;
+use App\Models\Filial;
 
 class ComissaoController extends Controller
 {
@@ -23,10 +24,10 @@ class ComissaoController extends Controller
                                                        ->where('filial_id', $filialId)
                                                        ->with('produto')
                                                        ->get();
-            
-            $produtos = Produto::where('ativo', true)->get();
+            $filial = Filial::find($filialId);
+            $produtos = Produto::where('ativo', true)->where('tipo', 'servico')->get();
                 
-            return view('admin.comissoes.index', compact('barbeiro', 'filialId', 'comissaoFilial', 'comissoesServicos', 'produtos'));
+            return view('admin.comissoes.index', compact('filial','barbeiro', 'filialId', 'comissaoFilial', 'comissoesServicos', 'produtos'));
         } catch (\Exception $e) {
             dd($e->getMessage());
         }

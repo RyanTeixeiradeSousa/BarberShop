@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Barbeiro;
 use App\Models\Filial;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class BarbeiroController extends Controller
 {
@@ -14,7 +17,7 @@ class BarbeiroController extends Controller
     {
         $query = Barbeiro::query();
 
-        if ($request->has('search') && $request->search) {
+        if ($request->has('search') && $request->search && $request->search != null ) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('nome', 'like', "%{$search}%")
@@ -24,7 +27,7 @@ class BarbeiroController extends Controller
             });
         }
 
-        if ($request->has('status') && $request->status !== '') {
+        if ($request->has('status') && $request->status !== '' && $request->status != null) {
             $query->where('ativo', $request->status);
         }
 
@@ -44,22 +47,41 @@ class BarbeiroController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'cpf' => 'required|string|size:14|unique:barbeiros',
-            'email' => 'required|email|unique:barbeiros',
-            'telefone' => 'required|string|max:15',
-            'data_nascimento' => 'nullable|date|before:today',
-            'rg' => 'nullable|string|max:20',
-            'endereco' => 'nullable|string'
-        ]);
-
-        $data = $request->all();
-        $data['user_id'] = auth()->id();
-
-        Barbeiro::create($data);
-
-        return response()->json(['success' => true, 'message' => 'Barbeiro criado com sucesso!']);
+        
+        try{
+            $validator = Validator::make($request->all(), [
+                'nome'            => 'required|string|max:255',
+                'cpf'             => 'required|string|size:14|unique:barbeiros',
+                'email'           => 'required|email|unique:barbeiros',
+                'telefone'        => 'required|string|max:15',
+                'data_nascimento' => 'nullable|date|before:today',
+                'rg'              => 'nullable|string|max:20',
+                'endereco'        => 'nullable|string',
+            ], [
+                'nome.required'            => 'O campo nome é obrigatório.',
+                'cpf.required'             => 'O CPF é obrigatório.',
+                'cpf.unique'               => 'Este CPF já está cadastrado.',
+                'email.required'           => 'O e-mail é obrigatório.',
+                'email.unique'             => 'Este e-mail já está cadastrado.',
+                'telefone.required'        => 'O telefone é obrigatório.',
+                'data_nascimento.before'   => 'A data de nascimento deve ser anterior a hoje.',
+            ]);
+            
+            if ($validator->fails()) {
+                throw new Exception($validator->errors()->first());
+            }
+            
+    
+            $data = $request->all();
+            $data['user_created'] = Auth::user()->id;
+            $data['user_id'] = null;
+            $data['ativo'] = isset($request->ativo);
+            Barbeiro::create($data);
+    
+            return redirect()->route('barbeiros.index')->with(['type' => 'success', 'message' => 'Barbeiro criado com sucesso!']);
+        } catch(Exception $e){
+            return redirect()->route('barbeiros.index')->with(['type' => 'error', 'message' => 'Erro ao criar barbeiro: ' . $e->getMessage()]);
+        }
     }
 
     public function show(Barbeiro $barbeiro)
@@ -69,25 +91,63 @@ class BarbeiroController extends Controller
 
     public function update(Request $request, Barbeiro $barbeiro)
     {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'cpf' => ['required', 'string', 'size:14', Rule::unique('barbeiros')->ignore($barbeiro->id)],
-            'email' => ['required', 'email', Rule::unique('barbeiros')->ignore($barbeiro->id)],
-            'telefone' => 'required|string|max:15',
-            'data_nascimento' => 'nullable|date|before:today',
-            'rg' => 'nullable|string|max:20',
-            'endereco' => 'nullable|string'
-        ]);
+        try{
 
-        $barbeiro->update($request->all());
+            $validator = Validator::make($request->all(), [
+                'nome' => 'required|string|max:255',
+                'cpf' => [
+                    'required',
+                    'string',
+                    'size:14',
+                    Rule::unique('barbeiros')->ignore($barbeiro->id)
+                ],
+                'email' => [
+                    'required',
+                    'email',
+                    Rule::unique('barbeiros')->ignore($barbeiro->id)
+                ],
+                'telefone'        => 'required|string|max:15',
+                'data_nascimento' => 'nullable|date|before:today',
+                'rg'              => 'nullable|string|max:20',
+                'endereco'        => 'nullable|string',
+            ], [
+                'nome.required'          => 'O campo nome é obrigatório.',
+                'cpf.required'           => 'O CPF é obrigatório.',
+                'cpf.size'               => 'O CPF deve ter exatamente 14 caracteres.',
+                'cpf.unique'             => 'Este CPF já está cadastrado.',
+                'email.required'         => 'O e-mail é obrigatório.',
+                'email.email'            => 'Informe um e-mail válido.',
+                'email.unique'           => 'Este e-mail já está cadastrado.',
+                'telefone.required'      => 'O telefone é obrigatório.',
+                'data_nascimento.date'   => 'A data de nascimento deve ser uma data válida.',
+                'data_nascimento.before' => 'A data de nascimento deve ser anterior a hoje.',
+            ]);
+        
+            if ($validator->fails()) {
+                throw new Exception($validator->errors()->first());
+            }
+        
 
-        return response()->json(['success' => true, 'message' => 'Barbeiro atualizado com sucesso!']);
+            $data = $request->all();
+            $data['ativo'] = isset($request->ativo);
+    
+            $barbeiro->update($data);
+    
+            return redirect()->route('barbeiros.index')->with(['type' => 'success', 'message' => 'Barbeiro atualizado com sucesso!']);
+        } catch(\Exception $e){
+            return redirect()->route('barbeiros.index')->with(['type' => 'error', 'message' => 'Erro ao atualizar barbeiro: ' . $e->getMessage()]);
+        }
     }
 
     public function destroy(Barbeiro $barbeiro)
     {
-        $barbeiro->delete();
-        return response()->json(['success' => true, 'message' => 'Barbeiro excluído com sucesso!']);
+        try{
+            $barbeiro->delete();
+            return redirect()->route('barbeiros.index')->with(['type' => 'success', 'message' => 'Barbeiro excluído com sucesso!']);
+        } catch(Exception $e){
+            return redirect()->route('barbeiros.index')->with(['type' => 'error', 'message' => 'Barbeiro excluído com sucesso!']);
+
+        }
     }
 
     public function getFiliais(Barbeiro $barbeiro)

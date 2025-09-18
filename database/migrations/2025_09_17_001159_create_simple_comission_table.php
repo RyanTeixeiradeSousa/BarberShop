@@ -15,7 +15,7 @@ return new class extends Migration
             $table->enum('tipo_comissao_filial', ['percentual', 'valor_fixo'])->default('percentual');
             $table->decimal('valor_comissao_filial', 8, 2)->default(0);
             $table->timestamps();
-             $table->foreign('barbeiro_id')
+            $table->foreign('barbeiro_id')
                 ->references('id')
                 ->on('barbeiros')
                 ->onDelete('cascade');
