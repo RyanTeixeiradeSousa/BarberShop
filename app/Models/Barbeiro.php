@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\BarbeiroComissao;
+use App\Models\BarbeiroServicoComissao;
 
 class Barbeiro extends Model
 {
@@ -18,8 +20,7 @@ class Barbeiro extends Model
         'telefone',
         'email',
         'user_id',
-        'ativo',
-        'user_created'
+        'ativo'
     ];
 
     protected $casts = [
@@ -39,6 +40,32 @@ class Barbeiro extends Model
 
     public function filiais()
     {
-        return $this->belongsToMany(Filial::class, 'barbeiro_filial');
+        return $this->belongsToMany(Filial::class, 'barbeiro_filial')
+                    ->withTimestamps();
+    }
+
+    public function comissoes()
+    {
+        return $this->hasMany(BarbeiroComissao::class);
+    }
+
+    public function servicoComissoes()
+    {
+        return $this->hasMany(BarbeiroServicoComissao::class);
+    }
+
+    public function getComissaoFilial($filialId)
+    {
+        return $this->comissoes()
+                    ->where('filial_id', $filialId)
+                    ->first();
+    }
+
+    public function getComissoesServicos($filialId)
+    {
+        return $this->servicoComissoes()
+                    ->where('filial_id', $filialId)
+                    ->with('produto')
+                    ->get();
     }
 }

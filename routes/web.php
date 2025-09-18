@@ -41,11 +41,17 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/admin/fornecedores',  App\Http\Controllers\FornecedorController::class)->parameters(['fornecedores' => 'fornecedor']);;
 
     // Barbeiros
-    Route::resource('/admin/barbeiros', App\Http\Controllers\BarbeiroController::class);
+    Route::resource('admin/barbeiros', App\Http\Controllers\BarbeiroController::class);
     Route::get('barbeiros/{barbeiro}/filiais', [App\Http\Controllers\BarbeiroController::class, 'getFiliais'])->name('barbeiros.filiais');
     Route::post('barbeiros/{barbeiro}/vincular-filial', [App\Http\Controllers\BarbeiroController::class, 'vincularFilial'])->name('barbeiros.vincular-filial');
-    Route::post('barbeiros/{barbeiro}/desvincular-filial', [App\Http\Controllers\BarbeiroController::class, 'desvincularFilial'])->name('barbeiros.desvincular-filial');
-
+    Route::post('/barbeiros/{barbeiro}/desvincular-filial', [App\Http\Controllers\BarbeiroController::class, 'desvincularFilial'])->name('barbeiros.desvincular-filial');
+    
+    // Admin routes for comissions
+    Route::get('/admin/comissoes/{barbeiro}/{filial}', [App\Http\Controllers\ComissaoController::class, 'index'])->name('comissoes.index');
+    Route::post('comissoes/salvar-filial', [App\Http\Controllers\ComissaoController::class, 'salvarComissaoFilial'])->name('comissoes.salvar-filial');
+    Route::post('comissoes/salvar-servico', [App\Http\Controllers\ComissaoController::class, 'salvarComissaoServico'])->name('comissoes.salvar-servico');
+    Route::delete('comissoes/remover-servico/{id}', [App\Http\Controllers\ComissaoController::class, 'removerComissaoServico'])->name('comissoes.remover-servico');
+    
     Route::resource('/admin/clientes', App\Http\Controllers\ClienteController::class); 
     Route::resource('/admin/categorias', App\Http\Controllers\CategoriaController::class);  
     Route::resource('/admin/produtos', App\Http\Controllers\ProdutoController::class); 

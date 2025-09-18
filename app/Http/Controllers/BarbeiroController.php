@@ -6,6 +6,7 @@ use App\Models\Barbeiro;
 use App\Models\Filial;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class BarbeiroController extends Controller
 {
@@ -116,6 +117,10 @@ class BarbeiroController extends Controller
         $request->validate([
             'filial_id' => 'required|exists:filiais,id'
         ]);
+
+
+        db::table('barbeiro_comissoes')->where('barbeiro_id', $barbeiro->id)->where('filial_id', $request->filial_id)->delete();
+        db::table('barbeiro_servico_comissoes')->where('barbeiro_id', $barbeiro->id)->where('filial_id', $request->filial_id)->delete();
 
         $barbeiro->filiais()->detach($request->filial_id);
 

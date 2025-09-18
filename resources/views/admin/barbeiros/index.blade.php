@@ -305,6 +305,34 @@
                         <label for="endereco" class="form-label">Endereço</label>
                         <textarea class="form-control" id="endereco" name="endereco" rows="3"></textarea>
                     </div>
+                    
+                    <!-- Adicionando campos de comissão padrão -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <h6 class="text-primary"><i class="fas fa-percentage me-2"></i>Comissão Padrão</h6>
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tipo_comissao_default" class="form-label">Tipo de Comissão *</label>
+                            <select class="form-select" id="tipo_comissao_default" name="tipo_comissao_default" required onchange="toggleTipoComissaoDefault()">
+                                <option value="percentual">Percentual (%)</option>
+                                <option value="valor_fixo">Valor Fixo (R$)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="valor_comissao_default" class="form-label">
+                                <span id="label_valor_default">Percentual (%)</span> *
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="simbolo_default">%</span>
+                                <input type="number" class="form-control" id="valor_comissao_default" name="valor_comissao_default" 
+                                       step="0.01" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="ativo" name="ativo" value="1" checked>
                         <label class="form-check-label" for="ativo">
@@ -391,6 +419,34 @@
                         <label for="edit_endereco" class="form-label">Endereço</label>
                         <textarea class="form-control" id="edit_endereco" name="endereco" rows="3"></textarea>
                     </div>
+                    
+                    <!-- Adicionando campos de comissão padrão no formulário de edição -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <h6 class="text-primary"><i class="fas fa-percentage me-2"></i>Comissão Padrão</h6>
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_tipo_comissao_default" class="form-label">Tipo de Comissão *</label>
+                            <select class="form-select" id="edit_tipo_comissao_default" name="tipo_comissao_default" required onchange="toggleTipoComissaoEditDefault()">
+                                <option value="percentual">Percentual (%)</option>
+                                <option value="valor_fixo">Valor Fixo (R$)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="edit_valor_comissao_default" class="form-label">
+                                <span id="edit_label_valor_default">Percentual (%)</span> *
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="edit_simbolo_default">%</span>
+                                <input type="number" class="form-control" id="edit_valor_comissao_default" name="valor_comissao_default" 
+                                       step="0.01" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="edit_ativo" name="ativo" value="1">
                         <label class="form-check-label" for="edit_ativo">
@@ -439,40 +495,19 @@
     </div>
 </div>
 
+<!-- Modificando o offcanvas para incluir sistema de comissões -->
+<!-- Simplificando offcanvas para apenas vincular filiais -->
 <!-- Offcanvas Gerenciar Filiais -->
-<div class="offcanvas-filiais" id="filiaisOffcanvas">
-    <div class="offcanvas-overlay" onclick="fecharFiliaisOffcanvas()"></div>
-    <div class="offcanvas-content">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title">
-                <i class="fas fa-building me-2"></i>
-                Gerenciar Filiais
-            </h5>
-            <button type="button" class="btn-close-custom" onclick="fecharFiliaisOffcanvas()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="offcanvas-body">
-            <div class="barbeiro-info mb-4">
-                <div class="d-flex align-items-center">
-                    <div class="product-avatar me-3" id="barbeiroAvatar">
-                        <!-- Avatar será preenchido via JS -->
-                    </div>
-                    <div>
-                        <h6 class="mb-0" id="barbeiroNome"><!-- Nome será preenchido via JS --></h6>
-                        <small class="text-muted">Barbeiro</small>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="filiais-list" id="filiaisList">
-                <!-- Lista de filiais será carregada via AJAX -->
-                <div class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Carregando...</span>
-                    </div>
-                </div>
-            </div>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="gerenciarFiliaisOffcanvas" style="width: 400px;">
+    <div class="offcanvas-header" style="background: var(--card-header-bg); border-bottom: 2px solid #60a5fa;">
+        <h5 class="offcanvas-title">
+            <i class="fas fa-building me-2"></i>Gerenciar Filiais
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div id="filiaisContent">
+            <!-- Conteúdo será carregado via JavaScript -->
         </div>
     </div>
 </div>
@@ -480,6 +515,7 @@
 @push('styles')
 <style>
     body {
+        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
         font-family: 'Inter', sans-serif;
     }
 
@@ -974,29 +1010,191 @@
         color: #d97706;
     }
 
-    @media (max-width: 768px) {
-        .pagination-controls {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        
-        .per-page-selector {
-            justify-content: center;
-        }
-        
-        .pagination {
-            gap: 0.125rem;
-        }
-        
-        .page-link {
-            padding: 0.375rem 0.5rem !important;
-            min-width: 35px;
-            height: 35px;
-            font-size: 0.875rem;
-        }
+    /* Adicionando estilos para o sistema de comissões */
+    .nav-tabs-custom .nav-tabs {
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 1rem;
+    }
 
+    .nav-tabs-custom .nav-link {
+        border: none;
+        color: var(--text-muted);
+        padding: 0.75rem 1rem;
+        border-radius: 8px 8px 0 0;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .nav-tabs-custom .nav-link:hover {
+        color: var(--text-primary);
+        background: rgba(59, 130, 246, 0.1);
+    }
+
+    .nav-tabs-custom .nav-link.active {
+        color: #3b82f6;
+        background: rgba(59, 130, 246, 0.1);
+        border-bottom: 2px solid #3b82f6;
+    }
+
+    .comissao-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .comissao-card:hover {
+        border-color: rgba(59, 130, 246, 0.5);
+        transform: translateY(-1px);
+    }
+
+    .comissao-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .comissao-filial {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .comissao-valor {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .comissao-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .comissao-info-item {
+        color: var(--text-muted);
+    }
+
+    .comissao-info-item strong {
+        color: var(--text-primary);
+    }
+
+    .comissao-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-comissao-base {
+        background: linear-gradient(45deg, #3b82f6, #60a5fa);
+        border: none;
+        color: white;
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-comissao-base:hover {
+        background: linear-gradient(45deg, #2563eb, #3b82f6);
+        transform: translateY(-1px);
+        color: white;
+    }
+
+    .btn-comissao-servicos {
+        background: linear-gradient(45deg, #8b5cf6, #a78bfa);
+        border: none;
+        color: white;
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-comissao-servicos:hover {
+        background: linear-gradient(45deg, #7c3aed, #8b5cf6);
+        transform: translateY(-1px);
+        color: white;
+    }
+
+    .servico-item {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .servico-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .servico-nome {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .servico-preco {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .servico-comissao {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .input-comissao {
+        max-width: 120px;
+    }
+
+    .comissao-atual {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+    }
+
+    .comissao-atual.tem-comissao {
+        color: #10b981;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
         .offcanvas-content {
             width: 100%;
+        }
+
+        .comissao-info {
+            grid-template-columns: 1fr;
+        }
+
+        .servico-comissao {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+
+        .input-comissao {
+            max-width: 100%;
         }
     }
 </style>
@@ -1004,6 +1202,127 @@
 
 @push('scripts')
 <script>
+    let currentBarbeiroId = null;
+
+    function gerenciarFiliais(barbeiroId) {
+        currentBarbeiroId = barbeiroId;
+        carregarFiliais();
+        new bootstrap.Offcanvas(document.getElementById('gerenciarFiliaisOffcanvas')).show();
+    }
+
+    function carregarFiliais() {
+        if (!currentBarbeiroId) return;
+        
+        fetch(`/barbeiros/${currentBarbeiroId}/filiais`)
+            .then(response => response.json())
+            .then(data => {
+                let html = '<div class="mb-3"><h6>Filiais Disponíveis</h6></div>';
+                
+                data.filiais.forEach(filial => {
+                    const isVinculada = data.vinculadas.includes(filial.id);
+                    
+                    html += `
+                        <div class="card mb-2">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">${filial.nome}</h6>
+                                        <small class="text-muted">${filial.endereco || 'Endereço não informado'}</small>
+                                    </div>
+                                    <div>
+                                        ${isVinculada ? 
+                                            `<button class="btn btn-sm btn-danger me-2" onclick="desvincularFilial(${filial.id})">
+                                                <i class="fas fa-unlink"></i> Desvincular
+                                            </button>
+                                            <button class="btn btn-sm btn-primary" onclick="gerenciarComissoes(${currentBarbeiroId}, ${filial.id})">
+                                                <i class="fas fa-percentage"></i> Comissões
+                                            </button>` :
+                                            `<button class="btn btn-sm btn-success" onclick="vincularFilial(${filial.id})">
+                                                <i class="fas fa-link"></i> Vincular
+                                            </button>`
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('filiaisContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Erro ao carregar filiais:', error);
+                toastr.error('Erro ao carregar filiais');
+            });
+    }
+
+    function vincularFilial(filialId) {
+        if (!currentBarbeiroId) return;
+        
+        fetch(`/barbeiros/${currentBarbeiroId}/vincular-filial`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                filial_id: filialId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.success) {
+                alert(data.message);
+                carregarFiliais(); // Recarregar lista
+            } else {
+                alert(data.message || 'Erro ao desvincular filial');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            toastr.error('Erro ao vincular filial');
+        });
+    }
+
+    function desvincularFilial(filialId) {
+        if (!currentBarbeiroId) return;
+        
+        if (!confirm('Tem certeza que deseja desvincular esta filial?')) {
+            return;
+        }
+        
+        fetch(`/barbeiros/${currentBarbeiroId}/desvincular-filial`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+            },
+            body: JSON.stringify({
+                filial_id: filialId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.success) {
+                alert(data.message);
+                carregarFiliais(); // Recarregar lista
+            } else {
+                alert(data.message || 'Erro ao desvincular filial');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            toastr.error('Erro ao desvincular filial');
+        });
+    }
+
+    function gerenciarComissoes(barbeiroId, filialId) {
+        window.location.href = `/admin/comissoes/${barbeiroId}/${filialId}`;
+    }
+
+
     // Auto-submit dos filtros
     document.querySelector('input[name="search"]').addEventListener('input', function() {
         clearTimeout(this.searchTimeout);
@@ -1112,19 +1431,29 @@
 
     // Função para editar barbeiro
     function editarBarbeiro(id) {
-        const linha = document.querySelector(`tr[data-barbeiro-id="${id}"]`);
-        
-        document.getElementById('edit_nome').value = linha.dataset.nome;
-        document.getElementById('edit_cpf').value = linha.dataset.cpf;
-        document.getElementById('edit_rg').value = linha.dataset.rg;
-        document.getElementById('edit_email').value = linha.dataset.email;
-        document.getElementById('edit_telefone').value = linha.dataset.telefone;
-        document.getElementById('edit_data_nascimento').value = linha.dataset.dataNascimento;
-        document.getElementById('edit_endereco').value = linha.dataset.endereco;
-        document.getElementById('edit_ativo').checked = linha.dataset.ativo == '1';
-        
-        document.getElementById('editarBarbeiroForm').action = `/barbeiros/${id}`;
-        new bootstrap.Modal(document.getElementById('editarBarbeiroModal')).show();
+        fetch(`/barbeiros/${id}`)
+            .then(response => response.json())
+            .then(barbeiro => {
+                document.getElementById('editarBarbeiroForm').action = `/barbeiros/${barbeiro.id}`;
+                document.getElementById('edit_nome').value = barbeiro.nome;
+                document.getElementById('edit_cpf').value = barbeiro.cpf;
+                document.getElementById('edit_rg').value = barbeiro.rg || '';
+                document.getElementById('edit_email').value = barbeiro.email;
+                document.getElementById('edit_telefone').value = barbeiro.telefone;
+                document.getElementById('edit_data_nascimento').value = barbeiro.data_nascimento || '';
+                document.getElementById('edit_endereco').value = barbeiro.endereco || '';
+                document.getElementById('edit_ativo').checked = barbeiro.ativo;
+                
+                document.getElementById('edit_tipo_comissao_default').value = barbeiro.tipo_comissao_default || 'percentual';
+                document.getElementById('edit_valor_comissao_default').value = barbeiro.valor_comissao_default || '';
+                toggleTipoComissaoEditDefault();
+                
+                new bootstrap.Modal(document.getElementById('editarBarbeiroModal')).show();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showAlert('error', 'Erro ao carregar dados do barbeiro');
+            });
     }
 
     // Função para confirmar exclusão
@@ -1134,151 +1463,57 @@
         new bootstrap.Modal(document.getElementById('excluirBarbeiroModal')).show();
     }
 
-    // Funções para gerenciar filiais
-    let barbeiroAtualId = null;
-
-    function gerenciarFiliais(barbeiroId) {
-        barbeiroAtualId = barbeiroId;
-        const linha = document.querySelector(`tr[data-barbeiro-id="${barbeiroId}"]`);
-        const nome = linha.dataset.nome;
+    function toggleTipoComissaoDefault() {
+        const tipo = document.getElementById('tipo_comissao_default').value;
+        const label = document.getElementById('label_valor_default');
+        const simbolo = document.getElementById('simbolo_default');
         
-        // Atualizar informações do barbeiro no offcanvas
-        document.getElementById('barbeiroNome').textContent = nome;
-        document.getElementById('barbeiroAvatar').textContent = nome.substring(0, 2).toUpperCase();
-        
-        // Mostrar offcanvas
-        document.getElementById('filiaisOffcanvas').classList.add('show');
-        document.body.style.overflow = 'hidden';
-        
-        // Carregar filiais
-        carregarFiliais(barbeiroId);
-    }
-
-    function fecharFiliaisOffcanvas() {
-        document.getElementById('filiaisOffcanvas').classList.remove('show');
-        document.body.style.overflow = '';
-        barbeiroAtualId = null;
-    }
-
-    function carregarFiliais(barbeiroId) {
-        fetch(`/barbeiros/${barbeiroId}/filiais`)
-            .then(response => response.json())
-            .then(data => {
-                const filiaisList = document.getElementById('filiaisList');
-                
-                if (data.filiais.length === 0) {
-                    filiaisList.innerHTML = `
-                        <div class="text-center py-4">
-                            <i class="fas fa-building fa-2x text-muted mb-3"></i>
-                            <h6 class="text-muted">Nenhuma filial cadastrada</h6>
-                            <p class="text-muted mb-0">Cadastre filiais para vincular aos barbeiros.</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                let html = '';
-                data.filiais.forEach(filial => {
-                    const isVinculada = data.vinculadas.includes(filial.id);
-                    html += `
-                        <div class="filial-item ${isVinculada ? 'vinculada' : ''}">
-                            <div class="filial-header">
-                                <h6 class="filial-nome">${filial.nome}</h6>
-                                <span class="filial-status ${isVinculada ? 'status-vinculada' : 'status-disponivel'}">
-                                    ${isVinculada ? 'Vinculada' : 'Disponível'}
-                                </span>
-                            </div>
-                            <div class="filial-info">
-                                ${filial.nome_fantasia ? `<div><strong>Nome Fantasia:</strong> ${filial.nome_fantasia}</div>` : ''}
-                                ${filial.endereco ? `<div><strong>Endereço:</strong> ${filial.endereco}</div>` : ''}
-                                ${filial.telefone ? `<div><strong>Telefone:</strong> ${filial.telefone}</div>` : ''}
-                            </div>
-                            <div class="filial-actions">
-                                ${isVinculada ? 
-                                    `<button class="btn btn-desvincular" onclick="desvincularFilial(${filial.id})">
-                                        <i class="fas fa-unlink me-1"></i>Desvincular
-                                    </button>` :
-                                    `<button class="btn btn-vincular" onclick="vincularFilial(${filial.id})">
-                                        <i class="fas fa-link me-1"></i>Vincular
-                                    </button>`
-                                }
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                filiaisList.innerHTML = html;
-            })
-            .catch(error => {
-                console.error('Erro ao carregar filiais:', error);
-                document.getElementById('filiaisList').innerHTML = `
-                    <div class="text-center py-4">
-                        <i class="fas fa-exclamation-triangle fa-2x text-danger mb-3"></i>
-                        <h6 class="text-danger">Erro ao carregar filiais</h6>
-                        <p class="text-muted mb-0">Tente novamente mais tarde.</p>
-                    </div>
-                `;
-            });
-    }
-
-    function vincularFilial(filialId) {
-        if (!barbeiroAtualId) return;
-        
-        fetch(`/barbeiros/${barbeiroAtualId}/vincular-filial`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ filial_id: filialId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                carregarFiliais(barbeiroAtualId);
-                // Mostrar toast de sucesso se disponível
-                if (typeof showToast === 'function') {
-                    showToast('success', data.message);
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao vincular filial:', error);
-        });
-    }
-
-    function desvincularFilial(filialId) {
-        if (!barbeiroAtualId) return;
-        
-        fetch(`/barbeiros/${barbeiroAtualId}/desvincular-filial`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ filial_id: filialId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                carregarFiliais(barbeiroAtualId);
-                // Mostrar toast de sucesso se disponível
-                if (typeof showToast === 'function') {
-                    showToast('success', data.message);
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao desvincular filial:', error);
-        });
-    }
-
-    // Fechar offcanvas com ESC
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && document.getElementById('filiaisOffcanvas').classList.contains('show')) {
-            fecharFiliaisOffcanvas();
+        if (tipo === 'percentual') {
+            label.textContent = 'Percentual (%)';
+            simbolo.textContent = '%';
+        } else {
+            label.textContent = 'Valor Fixo (R$)';
+            simbolo.textContent = 'R$';
         }
-    });
+    }
+
+    function toggleTipoComissaoEditDefault() {
+        const tipo = document.getElementById('edit_tipo_comissao_default').value;
+        const label = document.getElementById('edit_label_valor_default');
+        const simbolo = document.getElementById('edit_simbolo_default');
+        
+        if (tipo === 'percentual') {
+            label.textContent = 'Percentual (%)';
+            simbolo.textContent = '%';
+        } else {
+            label.textContent = 'Valor Fixo (R$)';
+            simbolo.textContent = 'R$';
+        }
+    }
+
+    function showAlert(type, message) {
+        // Implementação simples de alerta - pode ser substituída por uma biblioteca de toast
+        const alertClass = type === 'success' ? 'alert-success' : 
+                          type === 'error' ? 'alert-danger' : 
+                          type === 'info' ? 'alert-info' : 'alert-warning';
+        
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto-remover após 5 segundos
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.parentNode.removeChild(alertDiv);
+            }
+        }, 5000);
+    }
 </script>
 @endpush
 @endsection
