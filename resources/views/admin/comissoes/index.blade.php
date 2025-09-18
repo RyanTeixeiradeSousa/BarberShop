@@ -670,10 +670,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function validarValor(valor, tipo) {
         const valorNumerico = parseFloat(valor.replace(',', '.'));
         
-        if (isNaN(valorNumerico) || valorNumerico <= 0) {
-            return 'O valor deve ser maior que zero';
-        }
-        
         if (tipo === 'percentual' && valorNumerico > 100) {
             return 'O percentual não pode ser maior que 100%';
         }
