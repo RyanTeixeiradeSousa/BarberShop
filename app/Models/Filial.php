@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Filial extends Model
 {
@@ -41,5 +42,9 @@ class Filial extends Model
     public function barbeiros()
     {
         return $this->belongsToMany(Barbeiro::class, 'barbeiro_filial');
+    }
+
+    public function getFilials(){
+        return db::table('filiais')->where('ativo', true)->get();
     }
 }

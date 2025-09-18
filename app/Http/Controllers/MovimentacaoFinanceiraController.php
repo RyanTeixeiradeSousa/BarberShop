@@ -69,7 +69,7 @@ class MovimentacaoFinanceiraController extends Controller
         $fornecedores = Fornecedor::where('ativo', true)->orderBy('nome')->get();
         $categorias = CategoriaFinanceira::where('ativo', true)->orderBy('nome')->get();
         $formasPagamento = FormaPagamento::where('ativo', true)->orderBy('nome')->get();
-        $filialSelect = Filial::where('ativo', true)->get();
+        $filialSelect = (new Filial())->getFilials();
         $servicosAtivos = Produto::where('ativo', true)->where('tipo','servico')->where('site', true)->get();
 
         $produtosAtivosNaoComprometidos = Produto::where('ativo', true)

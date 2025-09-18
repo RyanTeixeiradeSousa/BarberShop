@@ -11,6 +11,8 @@ class Agendamento extends Model
     use HasFactory;
 
     protected $fillable = [
+        'barbeiro_id',
+        'filial_id',
         'cliente_id',
         'data_agendamento',
         'hora_inicio',
@@ -33,6 +35,16 @@ class Agendamento extends Model
     public function cliente()
     {
         return $this->belongsTo(Cliente::class);
+    }
+
+    public function filial()
+    {
+        return $this->belongsTo(Filial::class);
+    }
+
+    public function barbeiro()
+    {
+        return $this->belongsTo(Barbeiro::class);
     }
 
     public function produtos()

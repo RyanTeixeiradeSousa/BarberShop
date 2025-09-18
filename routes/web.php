@@ -73,6 +73,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/agendamentos/{agendamento}/mudar-status', [App\Http\Controllers\AgendamentoController::class, 'mudarStatus'])->name('agendamentos.mudar-status');
     Route::post('/admin/agendamentos/{agendamento}/iniciar', [App\Http\Controllers\AgendamentoController::class, 'iniciarAtendimento'])->name('agendamentos.iniciar-atendimento');
     Route::post('/admin/agendamentos/{agendamento}/finalizar', [App\Http\Controllers\AgendamentoController::class, 'finalizarAtendimento'])->name('agendamentos.finalizar-atendimento');
+    Route::get('/admin/agendamentos/barbeiros/{agendamento}', [App\Http\Controllers\AgendamentoController::class, 'buscarBarbeirosDisponiveis'])->name('agendamentos.buscar-barbeiros');
     
     // Usuários
     Route::resource('/admin/users', App\Http\Controllers\UserController::class);

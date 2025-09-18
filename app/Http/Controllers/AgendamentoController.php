@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agendamento;
+use App\Models\Barbeiro;
 use App\Models\Cliente;
 use App\Models\Produto;
+use App\Models\Filial;
 use App\Models\FormaPagamento;
 use App\Models\Configuracao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 use Carbon\Carbon;
 use Exception;
@@ -62,8 +65,12 @@ class AgendamentoController extends Controller
         $clientes = Cliente::where('ativo', true)->get();
         $produtos = Produto::where('ativo', true)->where('tipo', 'servico')->get();
         $formasPagamento = FormaPagamento::where('ativo', 1)->get();
+        $filialSelect = (new Filial())->getFilials();
+        $barbeiros = Barbeiro::where('ativo', true)->get();
+
         return view('admin.agendamentos.index', compact(
-            'agendamentos', 'total', 'disponiveis', 'agendados', 'concluidos', 'cancelados', 'clientes', 'produtos', 'formasPagamento'
+            'agendamentos', 'total', 'disponiveis', 'agendados', 'concluidos', 'cancelados', 'clientes', 'produtos', 'formasPagamento',
+            'filialSelect', 'barbeiros'
         ));
     }
 
@@ -95,6 +102,7 @@ class AgendamentoController extends Controller
         try{
             $agendamento = $id;
             $validator = Validator::make($request->all(), [
+                'barbeiro_id' => 'required|exists:barbeiros,id',
                 'cliente_id' => 'required|exists:clientes,id',
                 'servicos' => 'required|array|min:1',
                 'servicos.*.produto_id' => 'required|exists:produtos,id',
@@ -111,7 +119,16 @@ class AgendamentoController extends Controller
             if ($agendamento->status !== 'disponivel') {
                 return redirect()->route('agendamentos.index')->with(['type' => 'error', 'message' => 'Este slot não está mais disponível!']);
             }
+
+            $barbeiro = db::table('barbeiro_filial')
+                ->where('filial_id', $agendamento->filial_id)
+                ->where('barbeiro_id', $request->barbeiro_id)->first();
+            
+            if(!$barbeiro){
+                throw new Exception("Barbeiro não está mais associado a filial.");
+            }
             $agendamento->update([
+                'barbeiro_id' => $request->barbeiro_id,
                 'cliente_id' => $request->cliente_id,
                 'status' => 'agendado',
                 'observacoes' => $request->observacoes
@@ -130,7 +147,7 @@ class AgendamentoController extends Controller
             return redirect()->to(url()->previous())->with(['type' => 'success', 'message' => 'Cliente associado ao slot.']);
 
         } catch(Exception $e){
-            return redirect()->route('agendamentos.index')->with(['type' => 'error', 'message' => 'Erro ao tentar associar cliente a slot.' . $e->getMessage()]);
+            return redirect()->route('agendamentos.index')->with(['type' => 'error', 'message' => 'Erro ao tentar associar cliente ou barbeiro a slot. ' . $e->getMessage()]);
         }
 
         
@@ -139,6 +156,7 @@ class AgendamentoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'filial_id' =>  'required|exists:filiais,id',
             'cliente_id' => 'nullable|exists:clientes,id',
             'servicos' => 'nullable|array',
             'servicos.*.produto_id' => 'required_with:servicos|exists:produtos,id',
@@ -153,6 +171,7 @@ class AgendamentoController extends Controller
         $horaFim = $horaInicio->copy()->addMinutes($duracaoPadrao);
 
         $agendamento = Agendamento::create([
+            'filial_id' => $request->filial_id,
             'data_agendamento' => $request->data_agendamento,
             'hora_inicio' => $request->hora_inicio,
             'hora_fim' => $horaFim->format('H:i'),
@@ -228,6 +247,7 @@ class AgendamentoController extends Controller
     {
         try {
             $request->validate([
+                'filial_id' =>  'required|exists:filiais,id',
                 'data_inicio' => 'required|date|after_or_equal:today',
                 'data_fim' => 'required|date|after_or_equal:data_inicio',
                 'hora_inicio' => 'required|date_format:H:i',
@@ -260,12 +280,13 @@ class AgendamentoController extends Controller
                         $horaFimSlot = $horaAtual->copy()->addMinutes($duracaoPadrao);
 
                         // Verificar se já existe agendamento neste horário
-                        $existeAgendamento = Agendamento::where('data_agendamento', $dataAtual->format('Y-m-d'))
-                            ->where('hora_inicio', $horaAtual->format('H:i'))
-                            ->exists();
+                        // $existeAgendamento = Agendamento::where('data_agendamento', $dataAtual->format('Y-m-d'))
+                        //     ->where('hora_inicio', $horaAtual->format('H:i'))
+                        //     ->exists();
 
-                        if (!$existeAgendamento) {
+                        // if (!$existeAgendamento) {
                             Agendamento::create([
+                                'filial_id' => $request->filial_id,
                                 'data_agendamento' => $dataAtual->format('Y-m-d'),
                                 'hora_inicio' => $horaAtual->format('H:i'),
                                 'hora_fim' => $horaFimSlot->format('H:i'),
@@ -274,7 +295,7 @@ class AgendamentoController extends Controller
                             ]);
 
                             $slotsGerados++;
-                        }
+                        // }
 
                         $horaAtual->addMinutes($intervalo);
                     }
@@ -295,7 +316,8 @@ class AgendamentoController extends Controller
 
     public function show(Agendamento $agendamento)
     {
-        $agendamento->load(['cliente', 'produtos']);
+       
+        $agendamento->load(['cliente', 'produtos', 'barbeiro', 'filial']);
         
         // Calcular valor total dos serviços
         $valorTotal = $agendamento->produtos->sum(function($produto) {
@@ -330,7 +352,9 @@ class AgendamentoController extends Controller
             'status_color' => $statusColors[$agendamento->status] ?? 'secondary',
             'status_label' => $statusLabels[$agendamento->status] ?? 'Desconhecido',
             'observacoes' => $agendamento->observacoes,
-            'valor_total' => $valorTotal
+            'valor_total' => $valorTotal,
+            'barbeiro' => $agendamento->barbeiro ?? '',
+            'filial' => $agendamento->filial ?? '',
         ]);
     }
 
@@ -345,6 +369,7 @@ class AgendamentoController extends Controller
 
         // Desassociar cliente e serviços
         $agendamento->update([
+            'barbeiro_id' => null,
             'cliente_id' => null,
             'status' => 'disponivel',
             'observacoes' => null
@@ -454,4 +479,13 @@ class AgendamentoController extends Controller
             'message' => 'Atendimento finalizado com sucesso!'
         ]);
     }
+
+    public function buscarBarbeirosDisponiveis(Agendamento $agendamento){
+        return DB::table('barbeiros')
+        ->join('barbeiro_filial', 'barbeiros.id', '=', 'barbeiro_filial.barbeiro_id')
+        ->where('barbeiros.ativo', true)
+        ->where('barbeiro_filial.filial_id', $agendamento->filial_id)
+        ->select('barbeiros.*')
+        ->get();
+    }   
 }

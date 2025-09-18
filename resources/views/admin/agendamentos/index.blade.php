@@ -330,14 +330,22 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
+                            <label for="tipo" class="form-label">Filial *</label>
+                            <select class="form-select" id="filial" name="filial_id" required>
+                                @foreach ($filialSelect as $key => $filial)
+                                    <option value="{{$filial->id}}" {{$key == 0 ? 'select' : ''}}>{{$filial->nome}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <label for="data_agendamento" class="form-label">Data *</label>
                                 <input type="date" class="form-control" id="data_agendamento" name="data_agendamento" 
                                        min="{{ date('Y-m-d') }}" required>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <label for="hora_inicio" class="form-label">Horário *</label>
                                 <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" required>
@@ -377,6 +385,13 @@
                             @foreach($clientes as $cliente)
                             <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
                             @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="associar-cliente_id" class="form-label">Barbeiro *</label>
+                        <select class="form-select" id="associar-barbeiro_id" name="barbeiro_id" required>
+                            
                         </select>
                     </div>
                     
@@ -482,6 +497,14 @@
                                     <label>Valor Total:</label>
                                     <span id="view-valor" class="fw-bold text-success"></span>
                                 </div>
+                                <div class="info-item">
+                                    <label>Filial:</label>
+                                    <span id="view-filial" class="fw-bold"></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Barbeiro(a):</label>
+                                    <span id="view-barbeiro" class="fw-bold"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -579,14 +602,22 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
+                            <label for="tipo" class="form-label">Filial *</label>
+                            <select class="form-select" id="filialLote" name="filial_id" required>
+                                @foreach ($filialSelect as $key => $filial)
+                                    <option value="{{$filial->id}}" {{$key == 0 ? 'select' : ''}}>{{$filial->nome}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <label for="data_inicio_lote" class="form-label">Data Início *</label>
                                 <input type="date" class="form-control" id="data_inicio_lote" name="data_inicio" 
                                        min="{{ date('Y-m-d') }}" required>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <label for="data_fim_lote" class="form-label">Data Fim *</label>
                                 <input type="date" class="form-control" id="data_fim_lote" name="data_fim" 
@@ -1342,7 +1373,9 @@
                         'view-data': new Date(data.data_agendamento).toLocaleDateString('pt-BR'),
                         'view-horario': `${data.hora_inicio} - ${data.hora_fim}`,
                         'view-valor': data.valor_total ? `R$ ${parseFloat(data.valor_total).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : 'N/A',
-                        'view-observacoes': data.observacoes || 'Nenhuma observação registrada'
+                        'view-observacoes': data.observacoes || 'Nenhuma observação registrada',
+                        'view-barbeiro': data.barbeiro.nome || 'Não informado',
+                        'view-filial': data.filial.nome || 'Não informado'
                     };
                     
                     Object.entries(elements).forEach(([id, content]) => {
@@ -1593,6 +1626,24 @@
     
     function associarSlot(id) {
         document.getElementById('associarForm').action = `/agendamentos/${id}/associar`;
+        const selectAssociarBarbeiro = document.getElementById('associar-barbeiro_id')
+        selectAssociarBarbeiro.innerHTML= ''
+        var html = ''
+        html = `<option value='' selected>Selecione um barbeiro</option>`
+        fetch(`/admin/agendamentos/barbeiros/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(barbeiro => {
+                    console.log(barbeiro)
+                    html += `<option value="${barbeiro.id}">${barbeiro.nome}</option>`
+                });
+
+                selectAssociarBarbeiro.innerHTML = html
+            })
+            .catch(error => {
+                console.error('Erro ao carregar barbeiros:', error);
+                alert('Erro ao carregar possíveis barbeiros do agendamento');
+            });
     }
     
 
@@ -1625,14 +1676,16 @@
                 .then(response => response.json())
                 .then(data => {
                     agendamentoAtual = data;
-                    
+                    console.log(data)
                     const elements = {
                         'view-cliente': data.cliente ? data.cliente.nome : 'Slot Livre',
                         'view-status': `<span class="badge bg-${data.status_color}">${data.status_label}</span>`,
                         'view-data': new Date(data.data_agendamento).toLocaleDateString('pt-BR'),
                         'view-horario': `${new Date(data.hora_inicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - ${new Date(data.hora_fim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
                         'view-valor': data.valor_total ? `R$ ${parseFloat(data.valor_total).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : 'N/A',
-                        'view-observacoes': data.observacoes || 'Nenhuma observação registrada'
+                        'view-observacoes': data.observacoes || 'Nenhuma observação registrada',
+                        'view-barbeiro': data.barbeiro.nome || 'Não informado',
+                        'view-filial': data.filial.nome || 'Não informado'
                     };
                     
                     Object.entries(elements).forEach(([id, content]) => {
