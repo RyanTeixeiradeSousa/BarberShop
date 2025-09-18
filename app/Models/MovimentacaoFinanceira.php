@@ -12,6 +12,7 @@ class MovimentacaoFinanceira extends Model
     protected $table = 'movimentacoes_financeiras';
 
     protected $fillable = [
+        'filial_id',
         'tipo',
         'descricao',
         'valor',
@@ -49,6 +50,10 @@ class MovimentacaoFinanceira extends Model
     public function fornecedor()
     {
         return $this->belongsTo(Fornecedor::class);
+    }
+
+    public function filial(){
+        return $this->belongsTo(Filial::class);
     }
 
     public function categoriaFinanceira()

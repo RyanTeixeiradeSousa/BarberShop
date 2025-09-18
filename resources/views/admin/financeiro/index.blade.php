@@ -262,6 +262,14 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-3 mb-3">
+                            <label for="tipo" class="form-label">Filial *</label>
+                            <select class="form-select" id="filial" name="filial_id" required>
+                                @foreach ($filialSelect as $key => $filial)
+                                    <option value="{{$filial->id}}" {{$key == 0 ? 'select' : ''}}>{{$filial->nome}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
                             <label for="tipo" class="form-label">Tipo *</label>
                             <select class="form-select" id="tipoModal" name="tipo" required>
                                 <option value="">Selecione...</option>
@@ -454,7 +462,15 @@
                          <!-- Aba Movimentação -->
                         <div class="tab-pane fade show active" id="movimentacao" role="tabpanel">
                             <div class="row">
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-3 mb-3">
+                                    <label for="tipo" class="form-label">Filial *</label>
+                                    <select class="form-select" id="edit_filial" name="filial_id" required disabled>
+                                        @foreach ($filialSelect as $key => $filial)
+                                            <option value="{{$filial->id}}" {{$key == 0 ? 'select' : ''}}>{{$filial->nome}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
                                     <label for="edit_tipo" class="form-label">Tipo *</label>
                                     <!-- CHANGE> Tornando campo readonly -->
                                     <select class="form-select" id="edit_tipo" name="tipo" required disabled>
@@ -463,12 +479,12 @@
                                         <option value="saida">Saída</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-3 mb-3">
                                     <label for="edit_data" class="form-label">Data *</label>
                                     <!-- CHANGE> Tornando campo readonly -->
                                     <input type="date" class="form-control" id="edit_data" name="data" required readonly>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-md-3 mb-3">
                                     <label for="edit_data_vencimento" class="form-label">Data Vencimento</label>
                                     <!-- CHANGE> Tornando campo readonly -->
                                     <input type="date" class="form-control" id="edit_data_vencimento" name="data_vencimento" readonly>
@@ -1010,7 +1026,6 @@
 
     });
 
-
     function editarMovimentacao(id) {
         const form = document.getElementById('editarMovimentacaoForm');
         form.action = `/admin/financeiro/${id}`;
@@ -1020,6 +1035,7 @@
             .then(response => response.json())
             .then(data => {
                 // Preencher dados da movimentação
+                document.getElementById('edit_filial').value = data.filial_id;
                 document.getElementById('edit_tipo').value = data.tipo;
                 document.getElementById('edit_data').value = new Date(data.data).toISOString().split('T')[0];
                 document.getElementById('edit_data_vencimento').value = new Date(data.data_vencimento).toISOString().split('T')[0] || '';

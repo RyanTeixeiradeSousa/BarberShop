@@ -9,6 +9,7 @@ use App\Models\CategoriaFinanceira;
 use App\Models\FormaPagamento;
 use App\Models\Produto;
 use App\Models\Agendamento;
+use App\Models\Filial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -20,7 +21,7 @@ class MovimentacaoFinanceiraController extends Controller
 {
     public function index(Request $request)
     {
-        $query = MovimentacaoFinanceira::with(['cliente', 'categoriaFinanceira', 'formaPagamento', 'agendamento', 'produtos', 'fornecedor']);
+        $query = MovimentacaoFinanceira::with(['cliente', 'categoriaFinanceira', 'formaPagamento', 'agendamento', 'produtos', 'fornecedor', 'filial']);
 
         if ($request->filled('busca')) {
             $query->where(function($q) use ($request) {
@@ -68,7 +69,7 @@ class MovimentacaoFinanceiraController extends Controller
         $fornecedores = Fornecedor::where('ativo', true)->orderBy('nome')->get();
         $categorias = CategoriaFinanceira::where('ativo', true)->orderBy('nome')->get();
         $formasPagamento = FormaPagamento::where('ativo', true)->orderBy('nome')->get();
-
+        $filialSelect = Filial::where('ativo', true)->get();
         $servicosAtivos = Produto::where('ativo', true)->where('tipo','servico')->where('site', true)->get();
 
         $produtosAtivosNaoComprometidos = Produto::where('ativo', true)
@@ -109,7 +110,8 @@ class MovimentacaoFinanceiraController extends Controller
             'formasPagamento',
             'produtos', 
             'agendamentos',
-            'fornecedores'
+            'fornecedores',
+            'filialSelect'
         ));
     }
 
@@ -117,6 +119,7 @@ class MovimentacaoFinanceiraController extends Controller
     {
         try{
             $validator = Validator::make($request->all(), [
+                'filial_id' => 'required|exists:filiais,id',
                 'tipo' => 'required|in:entrada,saida',
                 'descricao' => 'required|string|max:255',
                 'valor' => 'required',
@@ -232,7 +235,7 @@ class MovimentacaoFinanceiraController extends Controller
 
     public function show(MovimentacaoFinanceira $movimentacao)
     {
-        $movimentacao->load(['cliente', 'categoriaFinanceira', 'formaPagamento', 'agendamento', 'produtos']);
+        $movimentacao->load(['cliente', 'categoriaFinanceira', 'formaPagamento', 'agendamento', 'produtos', 'filial']);
         return response()->json($movimentacao);
     }
 
