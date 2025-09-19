@@ -8,6 +8,7 @@ use App\Models\Cliente;
 use App\Models\Produto;
 use App\Models\Filial;
 use App\Models\FormaPagamento;
+use App\Models\Fornecedor;
 use App\Models\Configuracao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -422,6 +423,7 @@ class AgendamentoController extends Controller
 
     public function finalizarAtendimento(Request $request, Agendamento $agendamento)
     {
+
         $validator = Validator::make($request->all(), [
             'forma_pagamento_id' => 'required|exists:formas_pagamento,id',
             'valor_pago_decimal' => 'required|numeric|min:0',
@@ -443,6 +445,14 @@ class AgendamentoController extends Controller
             ]);
         }
 
+        $idFornecedor = Fornecedor::where('cpf_cnpj', $agendamento->barbeiro->cpf)->value('id');
+
+        if(!$idFornecedor){
+            return redirect()->route('agendamentos.index')->with([
+                'type' => 'error',
+                'message' => 'Erro ao finalizar atendimento. Fornecedor do barbeiro não encontrado.'
+            ]);
+        }
         // Atualizar status do agendamento
         $agendamento->update(['status' => 'concluido']);
 
@@ -463,17 +473,102 @@ class AgendamentoController extends Controller
             'ativo' => true
         ]);
 
+        $valorComissao = 0;
+        $comissaoPorServico = [];
+        $comissao = false;
+        $observacaoComissao = "Comissão referente ao atendimento. \nBarbeiro: " . $agendamento->barbeiro->nome . " - Cliente: " . $agendamento->cliente->nome . "\n";
         // Associar produtos à movimentação financeira
         $produtos = [];
         foreach ($agendamento->produtos as $produto) {
+
+            if($produto->tipo == 'servico'){
+                $comissaoServico = DB::table('barbeiro_servico_comissoes')
+                ->where(
+                    'barbeiro_id', $agendamento->barbeiro_id
+                )->where(
+                    'filial_id', $agendamento->filial_id
+                )->where(
+                    'produto_id', $produto->id
+                )->where(
+                    'valor_comissao', '!=',0
+                )->select('tipo_comissao', 'valor_comissao')->first();
+
+                if($comissaoServico){
+                    array_push($comissaoPorServico, [
+                         'produto_id' => $produto->id,
+                         'produto_preco' => $produto->preco,
+                         'quantidade' => $produto->pivot->quantidade,
+                         'tipo_comissao' => $comissaoServico->tipo_comissao ?? 'percentual',
+                         'valor_comissao' => $comissaoServico->valor_comissao ?? 0
+                    ]);
+                }
+            }
+
             Produto::find($produto->id)->atualizarEstoque($produto->pivot->quantidade, 'diminuir');
             $produtos[$produto->id] = [
                 'quantidade' => $produto->pivot->quantidade,
                 'valor_unitario' => $produto->pivot->valor_unitario
             ];
         }
-        $movimentacao->produtos()->sync($produtos);
+        
+        // Busca se tem comissão na filial porque não tem serviço específico // No Else é com base no serviço
+        if(count($comissaoPorServico) <= 0){ 
+            
+            $comissaoFilial = DB::table('barbeiro_comissoes')
+                ->where('barbeiro_id', $agendamento->barbeiro_id)
+                ->where('filial_id', $agendamento->filial_id)
+                ->where('valor_comissao_filial', '!=', 0)
+                ->select('tipo_comissao_filial as tipo_comissao', 'valor_comissao_filial as valor_comissao')
+                ->first();
 
+                
+                if($comissaoFilial){
+                    $comissao = true;
+                } 
+
+                // Calcular valor da comissão se for percentual; No else é fixo
+                if($comissaoFilial && $comissaoFilial->tipo_comissao == 'percentual'){
+                    $valorComissao = floor((($movimentacao->valor * ($comissaoFilial->valor_comissao / 100))) * 100) / 100;   
+                } 
+                if($comissaoFilial && $comissaoFilial->tipo_comissao == 'valor_fixo'){
+                    $valorComissao = $comissaoFilial->valor_comissao ?? 0;
+                } 
+
+                $observacaoComissao .= "Comissão fixa da filial. \n Tipo: " . ($comissaoFilial->tipo_comissao ?? 'percentual') . " - Valor: " . ($comissaoFilial->valor_comissao ?? 0) . "\n";
+                
+        } else if(count($comissaoPorServico) > 0){
+                $valorComissao = 0;
+                foreach($comissaoPorServico as $comissaoServico){
+                    if($comissaoServico['tipo_comissao'] == 'percentual'){
+                        $valorComissao += floor((($comissaoServico['quantidade'] * $comissaoServico['produto_preco']) * ($comissaoServico['valor_comissao'] / 100)) * 100) / 100;
+                        $observacaoComissao .= "Comissão do serviço: " . $produto->nome . " - Tipo: Percentual - Valor: " . $comissaoServico['valor_comissao'] . "%\n" . " quantidade: " . $comissaoServico['quantidade'] . " - Valor unitário: " . $comissaoServico['produto_preco'] . "\n";
+                    } else{
+                        $valorComissao += $comissaoServico['valor_comissao'] * $comissaoServico['quantidade'];
+                        $observacaoComissao .= "Comissão do serviço: " . $produto->nome . " - Tipo: Valor Fixo - Valor: " . $comissaoServico['valor_comissao'] . "\n" . " quantidade: " . $comissaoServico['quantidade'] . " - Valor unitário: " . $comissaoServico['produto_preco'] . "\n";
+                    }
+                    
+                }
+
+                $comissao = true;
+        }
+  
+        $movimentacao->produtos()->sync($produtos);
+        
+        if($comissao){
+            $movimentacao = \App\Models\MovimentacaoFinanceira::create([
+                'tipo' => 'saida',
+                'descricao' => 'Atendimento - ' . $agendamento->cliente->nome . '. Pagamento de comissão para barbeiro: ' . $agendamento->barbeiro->nome,
+                'valor' => $valorComissao,
+                'data' => now()->format('Y-m-d'),
+                'data_vencimento' => now()->addMonth()->format('Y-m-d'),
+                'agendamento_id' => $agendamento->id,
+                'filial_id' => $agendamento->filial_id,
+                'fornecedor_id' => $idFornecedor ?? null,
+                'situacao' => 'em_aberto',
+                'observacoes' => $observacaoComissao ,
+                'ativo' => true
+            ]);
+        }
         return redirect()->to(url()->previous())->with([
             'type' => 'success',
             'message' => 'Atendimento finalizado com sucesso!'

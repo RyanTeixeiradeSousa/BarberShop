@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barbeiro;
 use App\Models\Filial;
+use App\Models\Fornecedor;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -76,8 +77,21 @@ class BarbeiroController extends Controller
             $data['user_created'] = Auth::user()->id;
             $data['user_id'] = null;
             $data['ativo'] = isset($request->ativo);
-            Barbeiro::create($data);
+            $barbeiro = Barbeiro::create($data);
     
+            if(!Fornecedor::where('cpf_cnpj', preg_replace('/\D/', '', $barbeiro->cpf))->value('id')){
+                Fornecedor::create([
+                    'nome' => $request->nome,
+                    'cpf_cnpj' => $request->cpf,
+                    'email' => $request->email,
+                    'telefone' => $request->telefone,
+                    'endereco' => $request->endereco,
+                    'pessoa_fisica_juridica' => 'F',
+                    'ativo' => true,
+                    'user_created' => Auth::user()->id,
+                ]);
+            }
+
             return redirect()->route('barbeiros.index')->with(['type' => 'success', 'message' => 'Barbeiro criado com sucesso!']);
         } catch(Exception $e){
             return redirect()->route('barbeiros.index')->with(['type' => 'error', 'message' => 'Erro ao criar barbeiro: ' . $e->getMessage()]);
@@ -145,7 +159,7 @@ class BarbeiroController extends Controller
             $barbeiro->delete();
             return redirect()->route('barbeiros.index')->with(['type' => 'success', 'message' => 'Barbeiro excluído com sucesso!']);
         } catch(Exception $e){
-            return redirect()->route('barbeiros.index')->with(['type' => 'error', 'message' => 'Barbeiro excluído com sucesso!']);
+            return redirect()->route('barbeiros.index')->with(['type' => 'error', 'message' => 'Erro ao excluir barbeiro: ' . $e->getMessage()]);
 
         }
     }

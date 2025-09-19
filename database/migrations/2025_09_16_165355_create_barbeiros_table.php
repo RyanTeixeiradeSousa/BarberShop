@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('endereco')->nullable();
             $table->string('telefone', 15);
             $table->string('email')->unique();
-            $table->integer('user_id')->unique()->nullable();
+            $table->integer('user_id')->nullable();
             $table->boolean('ativo')->default(true);
             $table->integer('user_created')->nullable();
             $table->timestamps();
