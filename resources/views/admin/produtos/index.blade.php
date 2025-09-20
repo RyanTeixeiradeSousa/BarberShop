@@ -763,7 +763,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
+                            <div class=" d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
                                 <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="edit_ativo" name="ativo" value="1" style="margin-top: 0;">
                                 <label class="form-check-label flex-grow-1" for="edit_ativo" style="margin-bottom: 0;">
                                     <i class="fas fa-check-circle me-1" style="color: #10b981;"></i>
@@ -772,7 +772,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
+                            <div class=" d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
                                 <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="edit_site" name="site" value="1" style="margin-top: 0;">
                                 <label class="form-check-label flex-grow-1" for="edit_site" style="margin-bottom: 0;">
                                     <i class="fas fa-globe me-1" style="color: #3b82f6;"></i>
@@ -1145,19 +1145,8 @@
                 carregarFiliais(produtoId, tipoProduto);
                 
                 // Mostrar mensagem de sucesso
-                const toast = document.createElement('div');
-                toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 m-3';
-                toast.style.zIndex = '9999';
-                toast.innerHTML = `
-                    <div class="d-flex">
-                        <div class="toast-body">Produto vinculado à filial com sucesso!</div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                `;
-                document.body.appendChild(toast);
-                new bootstrap.Toast(toast).show();
+                showToastPerson('Filial vinculada com sucesso!', 'success');
                 
-                setTimeout(() => toast.remove(), 5000);
             } else {
                 showToastPerson('Erro ao vincular produto: ' + result.message, 'error');
             }
@@ -1190,19 +1179,7 @@
                 carregarFiliais(produtoId, tipoProduto);
                 
                 // Mostrar mensagem de sucesso
-                const toast = document.createElement('div');
-                toast.className = 'toast align-items-center text-white bg-warning border-0 position-fixed top-0 end-0 m-3';
-                toast.style.zIndex = '9999';
-                toast.innerHTML = `
-                    <div class="d-flex">
-                        <div class="toast-body">Produto desvinculado da filial!</div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                `;
-                document.body.appendChild(toast);
-                new bootstrap.Toast(toast).show();
-                
-                setTimeout(() => toast.remove(), 5000);
+                showToastPerson('Produto desvinculado da filial!', 'success');
             } else {
                 showToastPerson('Erro ao desvincular produto: ' + result.message, 'error');
             }
@@ -1285,19 +1262,7 @@
                 carregarFiliais(produtoId, tipoProduto);
                 
                 // Mostrar mensagem de sucesso
-                const toast = document.createElement('div');
-                toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 m-3';
-                toast.style.zIndex = '9999';
-                toast.innerHTML = `
-                    <div class="d-flex">
-                        <div class="toast-body">Vinculação atualizada com sucesso!</div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                `;
-                document.body.appendChild(toast);
-                new bootstrap.Toast(toast).show();
-                
-                setTimeout(() => toast.remove(), 5000);
+                showToastPerson('Vinculação atualizada com sucesso!', 'success');
             } else {
                 showToastPerson('Erro ao atualizar vinculação: ' + result.message, 'error');
             }
