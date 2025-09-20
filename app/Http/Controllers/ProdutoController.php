@@ -12,24 +12,8 @@ class ProdutoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Produto::with('categoria')
-        ->select('produtos.*')
-        ->selectRaw('(
-            (
-                SELECT COALESCE(SUM(ap.quantidade), 0)
-                FROM agendamento_produto ap
-                JOIN agendamentos a ON ap.agendamento_id = a.id
-                WHERE a.status IN (?, ?)
-                AND ap.produto_id = produtos.id
-            ) +
-            (
-                SELECT COALESCE(SUM(mp.quantidade), 0)
-                FROM movimentacao_produto mp
-                JOIN movimentacoes_financeiras mf ON mp.movimentacao_financeira_id = mf.id
-                WHERE mf.situacao = ?
-                AND mp.produto_id = produtos.id
-            )
-        ) AS comprometido', ['agendado', 'em_andamento', 'em_aberto']);
+        $query = Produto::with(['categoria','filiais'])
+        ->select('produtos.*');
 
     // Filtros backend (aplicar antes de get/paginate)
     if ($request->filled('busca')) {
@@ -78,7 +62,7 @@ class ProdutoController extends Controller
                 'preco' => 'required|numeric|min:0',
                 'categoria_id' => 'required|exists:categorias,id',
                 'tipo' => 'required|in:produto,servico',
-                'estoque' => 'nullable|integer|min:0',
+                // 'estoque' => 'nullable|integer|min:0',
                 'descricao' => 'nullable|string',
                 'imagem' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
@@ -112,7 +96,7 @@ class ProdutoController extends Controller
                 'preco' => 'required|numeric|min:0',
                 'categoria_id' => 'required|exists:categorias,id',
                 'tipo' => 'required|in:produto,servico',
-                'estoque' => 'nullable|integer|min:0',
+                // 'estoque' => 'nullable|integer|min:0',
                 'descricao' => 'nullable|string',
                 'imagem' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);

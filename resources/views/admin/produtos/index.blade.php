@@ -98,6 +98,19 @@
         color: #4b5563;
     }
 
+    .btn-outline-success {
+        border-color: #10b981;
+        color: #10b981;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-success:hover {
+        background: rgba(16, 185, 121, 0.1);
+        border-color: #047857;
+        color: #047857;
+    }
+
     .product-card {
         background: rgba(255, 255, 255, 0.95);
         border-radius: 12px;
@@ -433,9 +446,8 @@
                                 <th style="color: #1f2937;">Tipo</th>
                                 <th style="color: #1f2937;">Categoria</th>
                                 <th style="color: #1f2937;">Preço</th>
-                                <th style="color: #1f2937;">Estoque/Comprometido</th>
                                 <th style="color: #1f2937;">Status</th>
-                                <th width="160" style="color: #1f2937;">Ações</th>
+                                <th width="200" style="color: #1f2937;">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -444,7 +456,6 @@
                                 data-nome="{{ $produto->nome }}" 
                                 data-descricao="{{ $produto->descricao }}" 
                                 data-preco="{{ $produto->preco }}" 
-                                data-estoque="{{ $produto->estoque }}"
                                 data-categoria-id="{{ $produto->categoria_id }}"
                                 data-ativo="{{ $produto->ativo ? '1' : '0' }}"
                                 data-tipo="{{ $produto->tipo }}"
@@ -477,13 +488,6 @@
                                     <strong style="color: #10b981;">R$ {{ number_format($produto->preco, 2, ',', '.') }}</strong>
                                 </td>
                                 <td>
-                                    @if($produto->tipo == 'produto')
-                                    <span class="badge bg-info p-2">{{ $produto->estoque ?? 0 }}</span> / <span class="p-2 badge bg-danger">{{ $produto->comprometido ?? 0 }}</span>
-                                    @else
-                                        <span class="text-muted">N/A</span>
-                                    @endif
-                                </td>
-                                <td>
                                     <i class="fas fa-circle status-{{ $produto->ativo ? 'ativo' : 'inativo' }}"></i>
                                     {{ $produto->ativo ? 'Ativo' : 'Inativo' }}
                                 </td>
@@ -494,6 +498,10 @@
                                         </button>
                                         <button type="button" class="btn btn-sm btn-outline-primary" onclick="editarProduto({{ $produto->id }})" title="Editar">
                                             <i class="fas fa-edit"></i>
+                                        </button>
+                                        <!-- Adicionando botão para gerenciar filiais -->
+                                        <button type="button" class="btn btn-sm btn-outline-success" onclick="gerenciarFiliais({{ $produto->id }})" title="Gerenciar Filiais">
+                                            <i class="fas fa-store"></i>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmarExclusao({{ $produto->id }}, '{{ $produto->nome }}')" title="Excluir">
                                             <i class="fas fa-trash"></i>
@@ -573,10 +581,7 @@
                             <!-- Alterando input de number para text e adicionando máscara monetária -->
                             <input type="text" class="form-control" id="preco" name="preco" required placeholder="R$ 0,00">
                         </div>
-                        <div class="col-md-3 mb-3" id="estoqueField">
-                            <label for="estoque" class="form-label">Estoque</label>
-                            <input type="number" class="form-control" id="estoque" name="estoque" min="0">
-                        </div>
+                        <!-- Removendo campo de estoque do modal de criação -->
                     </div>
                     <div class="mb-3">
                         <label for="descricao" class="form-label">Descrição</label>
@@ -589,7 +594,7 @@
                         <small class="text-muted">Formatos aceitos: JPEG, PNG, JPG, GIF. Tamanho máximo: 2MB</small>
                         <!-- Adicionando preview da imagem -->
                         <div id="imagePreview" class="mt-2" style="display: none;">
-                            <img id="previewImg" src="/placeholder.svg" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid rgba(59, 130, 246, 0.2);">
+                            <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid rgba(59, 130, 246, 0.2);">
                         </div>
                     </div>
                     <div class="row">
@@ -664,10 +669,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label" style="color: #374151; font-weight: 600;">Estoque:</label>
-                        <p class="mb-0" id="viewProductStock"></p>
-                    </div>
+                    <!-- Removendo campo de estoque do modal de visualização -->
                     <div class="col-md-6 mb-3">
                         <label class="form-label" style="color: #374151; font-weight: 600;">Status:</label>
                         <p class="mb-0" id="viewProductStatus"></p>
@@ -736,10 +738,7 @@
                             <!-- Alterando input de number para text e adicionando máscara monetária -->
                             <input type="text" class="form-control" id="edit_preco" name="preco" required placeholder="R$ 0,00">
                         </div>
-                        <div class="col-md-3 mb-3" id="editEstoqueField">
-                            <label for="edit_estoque" class="form-label">Estoque</label>
-                            <input type="number" class="form-control" id="edit_estoque" name="estoque" min="0">
-                        </div>
+                        <!-- Removendo campo de estoque do modal de edição -->
                     </div>
                     <div class="mb-3">
                         <label for="edit_descricao" class="form-label">Descrição</label>
@@ -754,17 +753,17 @@
                         <div id="editImagePreview" class="mt-2">
                             <div id="currentImage" style="display: none;">
                                 <label class="form-label" style="color: #374151; font-weight: 500;">Imagem Atual:</label>
-                                <img id="currentImg" src="/placeholder.svg" alt="Imagem Atual" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid rgba(59, 130, 246, 0.2);">
+                                <img id="currentImg" src="" alt="Imagem Atual" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid rgba(59, 130, 246, 0.2);">
                             </div>
                             <div id="newImagePreview" style="display: none;">
                                 <label class="form-label" style="color: #374151; font-weight: 500;">Nova Imagem:</label>
-                                <img id="newPreviewImg" src="/placeholder.svg" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid rgba(59, 130, 246, 0.2);">
+                                <img id="newPreviewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid rgba(59, 130, 246, 0.2);">
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <div class="d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
+                            <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
                                 <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="edit_ativo" name="ativo" value="1" style="margin-top: 0;">
                                 <label class="form-check-label flex-grow-1" for="edit_ativo" style="margin-bottom: 0;">
                                     <i class="fas fa-check-circle me-1" style="color: #10b981;"></i>
@@ -773,7 +772,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <div class="d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
+                            <div class="form-check d-flex align-items-center" style="padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.1);">
                                 <input type="checkbox" class="form-check-input me-2 flex-shrink-0" id="edit_site" name="site" value="1" style="margin-top: 0;">
                                 <label class="form-check-label flex-grow-1" for="edit_site" style="margin-bottom: 0;">
                                     <i class="fas fa-globe me-1" style="color: #3b82f6;"></i>
@@ -836,27 +835,109 @@
         </div>
     </div>
 </div>
+
+<!-- Adicionando offcanvas para gerenciar filiais -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filiaisOffcanvas" aria-labelledby="filiaisOffcanvasLabel" style="width: 500px; z-index: 1060;">
+    <div class="offcanvas-header" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid rgba(59, 130, 246, 0.2); position: relative; z-index: 1061;">
+        <h5 class="offcanvas-title" id="filiaisOffcanvasLabel">
+            <i class="fas fa-store me-2" style="color: #60a5fa;"></i>
+            Gerenciar Filiais
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="mb-4">
+            <div class="d-flex align-items-center mb-3">
+                <div class="product-avatar me-3" id="offcanvasProductAvatar">
+                    <!-- Avatar será preenchido via JavaScript -->
+                </div>
+                <div>
+                    <h6 class="mb-0" id="offcanvasProductName"></h6>
+                    <small class="text-muted" id="offcanvasProductType"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h6 class="mb-3">
+                <i class="fas fa-building me-2" style="color: #60a5fa;"></i>
+                Filiais
+            </h6>
+            <div id="filiaisList">
+                <!-- Lista de filiais será carregada via JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
-    // Auto-submit dos filtros
-    // document.querySelector('input[name="busca"]').addEventListener('input', function() {
-    //     clearTimeout(this.searchTimeout);
-    //     this.searchTimeout = setTimeout(() => {
-    //         document.getElementById('filterForm').submit();
-    //     }, 500);
-    // });
+    const toastColorsPerson = {
+        success: { background: "#10b981", icon: "check-circle" },  // verde
+        error: { background: "#ef4444", icon: "times-circle" },    // vermelho
+        warning: { background: "#f59e0b", icon: "exclamation-triangle" }, // amarelo
+        info: { background: "#3b82f6", icon: "info-circle" }       // azul
+    };
+    function showToastPerson(message, type) {
+        const { background, icon } = toastColorsPerson[type] || toastColorsPerson.info;
 
-    // document.querySelector('select[name="tipo"]').addEventListener('change', function() {
-    //     document.getElementById('filterForm').submit();
-    // });
+        // Criar toast simples sem Bootstrap
+        const toastHtml = `
+            <div class="custom-toast toast-${type}" style="
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${background};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 9999;
+                font-size: 0.9rem;
+                max-width: 300px;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            ">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-${icon}"></i>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        background: none;
+                        border: none;
+                        color: white;
+                        margin-left: auto;
+                        cursor: pointer;
+                        padding: 0;
+                        font-size: 1.2rem;
+                    ">×</button>
+                </div>
+            </div>
+        `;
 
-    // document.querySelector('select[name="status"]').addEventListener('change', function() {
-    //     document.getElementById('filterForm').submit();
-    // });
+        document.body.insertAdjacentHTML("beforeend", toastHtml)
+        const toastElement = document.body.lastElementChild
 
-    // Seletor de itens por página
+        // Animar entrada
+        setTimeout(() => {
+        toastElement.style.opacity = "1"
+        toastElement.style.transform = "translateX(0)"
+        }, 100)
+
+        // Remover automaticamente após 3 segundos
+        setTimeout(() => {
+        if (toastElement && toastElement.parentElement) {
+            toastElement.style.opacity = "0"
+            toastElement.style.transform = "translateX(100%)"
+            setTimeout(() => {
+            if (toastElement && toastElement.parentElement) {
+                toastElement.remove()
+            }
+            }, 300)
+        }
+        }, 5000)
+    }
     const perPageEl = document.getElementById('perPage');
 
     if (perPageEl) {
@@ -879,23 +960,9 @@
         });
     }
 
-    // Aplicar máscaras nos campos de preço
+    // AplicAR MÁSCARAS NOS CAMPOS DE PREÇO
     aplicarMascaraMonetaria(document.getElementById('preco'));
     aplicarMascaraMonetaria(document.getElementById('edit_preco'));
-
-    function toggleEstoqueField(tipoSelect, estoqueField) {
-        tipoSelect.addEventListener('change', function() {
-            if (this.value === 'produto') {
-                estoqueField.style.display = 'block';
-            } else {
-                estoqueField.style.display = 'none';
-                estoqueField.querySelector('input').value = '';
-            }
-        });
-    }
-
-    toggleEstoqueField(document.getElementById('tipo'), document.getElementById('estoqueField'));
-    toggleEstoqueField(document.getElementById('edit_tipo'), document.getElementById('editEstoqueField'));
 
     function setupImagePreview(inputId, previewId, imgId) {
         document.getElementById(inputId).addEventListener('change', function(e) {
@@ -927,7 +994,6 @@
         document.getElementById('viewProductType').textContent = row.dataset.tipo === 'produto' ? 'Produto' : 'Serviço';
         document.getElementById('viewProductCategory').textContent = row.querySelector('td:nth-child(3)').textContent;
         document.getElementById('viewProductPrice').textContent = row.querySelector('td:nth-child(4)').textContent;
-        document.getElementById('viewProductStock').textContent = row.querySelector('td:nth-child(5)').textContent;
         document.getElementById('viewProductStatus').textContent = row.dataset.ativo === '1' ? 'Ativo' : 'Inativo';
         document.getElementById('viewProductDescription').textContent = row.dataset.descricao || 'Sem descrição';
         document.getElementById('viewProductSite').textContent = row.dataset.site === '1' ? 'Sim' : 'Não';
@@ -948,7 +1014,6 @@
         document.getElementById('edit_tipo').value = row.dataset.tipo;
         document.getElementById('edit_categoria_id').value = row.dataset.categoriaId;
         document.getElementById('edit_preco').value = `R$ ${parseFloat(row.dataset.preco).toFixed(2).replace('.', ',')}`;
-        document.getElementById('edit_estoque').value = row.dataset.estoque || '';
         document.getElementById('edit_descricao').value = row.dataset.descricao || '';
         document.getElementById('edit_ativo').checked = row.dataset.ativo === '1';
         document.getElementById('edit_site').checked = row.dataset.site === '1';
@@ -964,11 +1029,282 @@
         // Configurar form action
         document.getElementById('editProductForm').action = `/admin/produtos/${id}`;
 
-        // Controlar campo estoque
-        const estoqueField = document.getElementById('editEstoqueField');
-        estoqueField.style.display = row.dataset.tipo === 'produto' ? 'block' : 'none';
-
         new bootstrap.Modal(document.getElementById('editProductModal')).show();
+    }
+
+    function gerenciarFiliais(produtoId) {
+        const row = document.querySelector(`tr[data-produto-id="${produtoId}"]`);
+        if (!row) return;
+
+        // Preencher informações do produto no offcanvas
+        document.getElementById('offcanvasProductName').textContent = row.dataset.nome;
+        document.getElementById('offcanvasProductType').textContent = row.dataset.tipo === 'produto' ? 'Produto' : 'Serviço';
+        
+        const avatar = document.getElementById('offcanvasProductAvatar');
+        avatar.innerHTML = row.dataset.tipo === 'produto' ? '<i class="fas fa-cube"></i>' : '<i class="fas fa-cut"></i>';
+
+        // Carregar filiais do backend
+        carregarFiliais(produtoId, row.dataset.tipo);
+
+        // Mostrar offcanvas
+        new bootstrap.Offcanvas(document.getElementById('filiaisOffcanvas')).show();
+    }
+
+    async function carregarFiliais(produtoId, tipoProduto) {
+        try {
+            const response = await fetch(`/produtos/${produtoId}/filiais`);
+            const data = await response.json();
+            
+            let html = '';
+            
+            // Filiais vinculadas
+            if (data.vinculadas && data.vinculadas.length > 0) {
+                data.vinculadas.forEach(item => {
+                    const statusBadge = item.ativo ? 
+                        '<span class="badge bg-success">Ativo</span>' : 
+                        '<span class="badge bg-secondary">Inativo</span>';
+                    
+                    const estoqueBadge = tipoProduto === 'produto' ? 
+                        `<span class="badge bg-info ms-1">Estoque: ${item.estoque || 0}</span>` : '';
+
+                    html += `
+                        <div class="card mb-3" style="border: 1px solid rgba(59, 130, 246, 0.2);">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">${item.filial.nome}</h6>
+                                        <small class="text-muted">${item.filial.endereco}</small>
+                                        <div class="mt-2">
+                                            ${statusBadge}
+                                            ${estoqueBadge}
+                                        </div>
+                                    </div>
+                                    <div class="btn-group-vertical" style="gap: 0.25rem;">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="editarVinculacao(${produtoId}, ${item.filial.id}, '${tipoProduto}', ${item.estoque || 0}, ${item.ativo})" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="desvincularFilial(${produtoId}, ${item.filial.id})" title="Desvincular">
+                                            <i class="fas fa-unlink"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Filiais disponíveis para vincular
+            if (data.disponiveis && data.disponiveis.length > 0) {
+                html += '<hr><h6 class="mb-3 text-muted">Filiais Disponíveis</h6>';
+                data.disponiveis.forEach(filial => {
+                    html += `
+                        <div class="card mb-2" style="border: 1px solid rgba(156, 163, 175, 0.3);">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">${filial.nome}</h6>
+                                        <small class="text-muted">${filial.endereco}</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-success" onclick="vincularFilial(${produtoId}, ${filial.id}, '${tipoProduto}')" title="Vincular">
+                                        <i class="fas fa-link"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            if (html === '') {
+                html = '<div class="text-center text-muted py-4">Nenhuma filial encontrada</div>';
+            }
+
+            document.getElementById('filiaisList').innerHTML = html;
+        } catch (error) {
+            console.error('Erro ao carregar filiais:', error);
+            document.getElementById('filiaisList').innerHTML = '<div class="alert alert-danger">Erro ao carregar filiais</div>';
+        }
+    }
+
+    async function vincularFilial(produtoId, filialId, tipoProduto) {
+        try {
+            const response = await fetch(`/produtos/${produtoId}/filiais/${filialId}/vincular`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({})
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                // Recarregar lista de filiais
+                carregarFiliais(produtoId, tipoProduto);
+                
+                // Mostrar mensagem de sucesso
+                const toast = document.createElement('div');
+                toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 m-3';
+                toast.style.zIndex = '9999';
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">Produto vinculado à filial com sucesso!</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                new bootstrap.Toast(toast).show();
+                
+                setTimeout(() => toast.remove(), 5000);
+            } else {
+                showToastPerson('Erro ao vincular produto: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao vincular produto:', error);
+            showToastPerson('Erro ao vincular produto', 'error');
+        }
+    }
+
+    async function desvincularFilial(produtoId, filialId) {
+        if (!confirm('Tem certeza que deseja desvincular este produto desta filial?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/produtos/${produtoId}/filiais/${filialId}/desvincular`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                // Recarregar lista de filiais
+                const row = document.querySelector(`tr[data-produto-id="${produtoId}"]`);
+                const tipoProduto = row ? row.dataset.tipo : 'produto';
+                carregarFiliais(produtoId, tipoProduto);
+                
+                // Mostrar mensagem de sucesso
+                const toast = document.createElement('div');
+                toast.className = 'toast align-items-center text-white bg-warning border-0 position-fixed top-0 end-0 m-3';
+                toast.style.zIndex = '9999';
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">Produto desvinculado da filial!</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                new bootstrap.Toast(toast).show();
+                
+                setTimeout(() => toast.remove(), 5000);
+            } else {
+                showToastPerson('Erro ao desvincular produto: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao desvincular produto:', error);
+            showToastPerson('Erro ao desvincular produto', 'error');
+        }
+    }
+
+    function editarVinculacao(produtoId, filialId, tipoProduto, estoqueAtual, ativoAtual) {
+        let modalHtml = `
+            <div class="modal fade" id="editarVinculacaoModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Editar Vinculação</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editarVinculacaoForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" id="editarAtivo" required>
+                                        <option value="1" ${ativoAtual ? 'selected' : ''}>Ativo</option>
+                                        <option value="0" ${!ativoAtual ? 'selected' : ''}>Inativo</option>
+                                    </select>
+                                </div>
+                                ${tipoProduto === 'produto' ? `
+                                    <div class="mb-3">
+                                        <label class="form-label">Estoque</label>
+                                        <input type="number" class="form-control" id="editarEstoque" value="${estoqueAtual}" min="0" required>
+                                    </div>
+                                ` : ''}
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" onclick="salvarVinculacao(${produtoId}, ${filialId}, '${tipoProduto}')">Salvar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Remover modal existente se houver
+        const existingModal = document.getElementById('editarVinculacaoModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Adicionar novo modal
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        new bootstrap.Modal(document.getElementById('editarVinculacaoModal')).show();
+    }
+
+    async function salvarVinculacao(produtoId, filialId, tipoProduto) {
+        const ativo = document.getElementById('editarAtivo').value === '1';
+        const estoque = tipoProduto === 'produto' ? parseInt(document.getElementById('editarEstoque').value) : null;
+
+        try {
+            const response = await fetch(`/produtos/${produtoId}/filiais/${filialId}/atualizar`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    ativo: ativo,
+                    estoque: estoque
+                })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                // Fechar modal
+                bootstrap.Modal.getInstance(document.getElementById('editarVinculacaoModal')).hide();
+                
+                // Recarregar lista de filiais
+                carregarFiliais(produtoId, tipoProduto);
+                
+                // Mostrar mensagem de sucesso
+                const toast = document.createElement('div');
+                toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 m-3';
+                toast.style.zIndex = '9999';
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">Vinculação atualizada com sucesso!</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                new bootstrap.Toast(toast).show();
+                
+                setTimeout(() => toast.remove(), 5000);
+            } else {
+                showToastPerson('Erro ao atualizar vinculação: ' + result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar vinculação:', error);
+            showToastPerson('Erro ao atualizar vinculação', 'error');
+        }
     }
 
     function confirmarExclusao(id, nome) {

@@ -13,7 +13,6 @@ class Produto extends Model
         'nome',
         'descricao',
         'preco',
-        'estoque',
         'categoria_id',
         'ativo',
         'tipo',
@@ -82,5 +81,22 @@ class Produto extends Model
         }
 
         $this->save();
+    }
+
+    public function filiais()
+    {
+        return $this->belongsToMany(Filial::class, 'produto_filial')
+                    ->withPivot('estoque_filial', 'preco_filial', 'ativo')
+                    ->withTimestamps();
+    }
+
+    public function getEstoqueTotalAttribute()
+    {
+        return $this->filiais()->sum('produto_filial.estoque_filial');
+    }
+
+    public function getDisponivelAttribute()
+    {
+        return $this->filiais()->wherePivot('ativo', true)->exists();
     }
 }

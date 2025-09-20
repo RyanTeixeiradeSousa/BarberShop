@@ -55,6 +55,13 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/admin/clientes', App\Http\Controllers\ClienteController::class); 
     Route::resource('/admin/categorias', App\Http\Controllers\CategoriaController::class);  
     Route::resource('/admin/produtos', App\Http\Controllers\ProdutoController::class); 
+    Route::prefix('produtos/{produto}')->name('produtos.')->group(function() {
+        Route::get('filiais', [App\Http\Controllers\ProdutoFilialController::class, 'getFiliais'])->name('filiais');
+        Route::post('filiais/{filial}/vincular', [App\Http\Controllers\ProdutoFilialController::class, 'vincular'])->name('filiais.vincular');
+        Route::put('filiais/{filial}/atualizar', [App\Http\Controllers\ProdutoFilialController::class, 'atualizar'])->name('filiais.atualizar');
+        Route::delete('filiais/{filial}/desvincular', [App\Http\Controllers\ProdutoFilialController::class, 'desvincular'])->name('filiais.desvincular');
+        Route::patch('filiais/{filial}/toggle-status', [App\Http\Controllers\ProdutoFilialController::class, 'toggleStatus'])->name('filiais.toggle-status');
+    });
     Route::resource('/admin/agendamentos', App\Http\Controllers\AgendamentoController::class); 
     Route::resource('/admin/configuracoes', App\Http\Controllers\ConfiguracaoController::class)->parameters(['configuracoes' => 'configuracao']); 
 

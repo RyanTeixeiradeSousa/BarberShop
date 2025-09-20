@@ -47,4 +47,11 @@ class Filial extends Model
     public function getFilials(){
         return db::table('filiais')->where('ativo', true)->get();
     }
+
+    public function produtos()
+    {
+        return $this->belongsToMany(Produto::class, 'produto_filial')
+                    ->withPivot('estoque_filial', 'preco_filial', 'ativo')
+                    ->withTimestamps();
+    }
 }
