@@ -147,8 +147,8 @@ class MovimentacaoFinanceiraController extends Controller
             if ($request->has('produtos') && is_array($request->produtos)) {
                 foreach ($request->produtos as $produto) {
                     $p = Produto::find($produto['id']);
-                    if(!$p->verificarEstoqueComprometido($produto['quantidade'])){
-                        throw new Exception('O produto ' . $p->nome . ' não tem estoque suficiente ou está com saldo comprometido.',1);
+                    if(!$p->verificarEstoqueComprometido($request->filial_id, $produto['quantidade'])){
+                        throw new Exception('O produto ' . $p->nome . ' não tem estoque suficiente ou está com saldo comprometido na filial.',1);
                     } 
                 }
             }
@@ -263,7 +263,7 @@ class MovimentacaoFinanceiraController extends Controller
                 $produtosAssociados = db::table('movimentacao_produto')->where('movimentacao_financeira_id',$financeiro->id)->get();
     
                 foreach ($produtosAssociados as $key => $p) {
-                    Produto::find($p->produto_id)->atualizarEstoque($p->quantidade, 'diminuir');
+                    Produto::find($p->produto_id)->atualizarEstoque($movimentacao->filial_id,$p->quantidade, 'diminuir');
                 }
             }
 
@@ -287,11 +287,10 @@ class MovimentacaoFinanceiraController extends Controller
         try{
             $movimentacao = $financeiro;
 
-            
-            if($movimentacao->tipo == 'entrada'){
+            if($movimentacao->tipo == 'entrada' && $movimentacao->situacao != 'em_aberto'){
                 $produtosAssociados = db::table('movimentacao_produto')->where('movimentacao_financeira_id',$financeiro->id)->get();
                 foreach ($produtosAssociados as $key => $p) {
-                    Produto::find($p->produto_id)->atualizarEstoque($p->quantidade, 'aumentar');
+                    Produto::find($p->produto_id)->atualizarEstoque($movimentacao->filial_id, $p->quantidade, 'aumentar');
                 }
             }
 
@@ -309,6 +308,22 @@ class MovimentacaoFinanceiraController extends Controller
             return redirect()->route('financeiro.index') ->with(['type' => 'success', 'message' => 'Erro ao cancelar movimentação: ' . $e->getMessage()]);
         }
                        
+    }
+
+    public function getProdutosByFilial($filialId)
+    {
+       $produtos = Produto::whereHas('filiais', function ($query) use ($filialId) {
+        $query->where('filial_id', $filialId)
+            ->where('produto_filial.ativo', true);
+          
+})
+->where('produtos.ativo', true)
+->orderBy('nome')
+->get(['id', 'nome', 'preco']);
+
+
+
+        return response()->json($produtos);
     }
 }
 

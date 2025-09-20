@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/admin/financeiro', App\Http\Controllers\MovimentacaoFinanceiraController::class)->parameters(['financeiro' => 'movimentacao']); 
     Route::put('/admin/financeiro/{financeiro}/cancelar', [App\Http\Controllers\MovimentacaoFinanceiraController::class,'cancelar']); 
     Route::put('/admin/financeiro/{financeiro}/baixar', [App\Http\Controllers\MovimentacaoFinanceiraController::class, 'baixar']); 
+    Route::get('/admin/financeiro/produtos-por-filial/{filial}', [App\Http\Controllers\MovimentacaoFinanceiraController::class, 'getProdutosByFilial'])->name('financeiro.produtos-por-filial');
 
 
     Route::post('/agendamentos/{id}/associar', [App\Http\Controllers\AgendamentoController::class, 'associarSlot']);

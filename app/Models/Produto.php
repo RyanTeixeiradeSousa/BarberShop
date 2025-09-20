@@ -42,7 +42,7 @@ class Produto extends Model
         return $this->tipo === 'produto' ? 'Produto' : 'Serviço';
     }
 
-    public function verificarEstoqueComprometido($quantidadeDesejada)
+    public function verificarEstoqueComprometido($filialId, $quantidadeDesejada)
     {
         if ($this->tipo === 'servico') {
             return true; // Serviços não têm estoque
@@ -53,31 +53,43 @@ class Produto extends Model
             ->join('agendamentos as a', 'ap.agendamento_id', '=', 'a.id')
             ->whereIn('a.status', ['agendado', 'em_andamento'])
             ->where('ap.produto_id', $this->id)
+            ->where('a.filial_id', $filialId)
             ->sum('ap.quantidade');
 
         $movimentacao = DB::table('movimentacao_produto as mp')
             ->join('movimentacoes_financeiras as mf', 'mp.movimentacao_financeira_id', '=', 'mf.id')
             ->where('mf.situacao', 'em_aberto')
             ->where('mp.produto_id', $this->id)
+            ->where('mf.filial_id', $filialId)
             ->sum('mp.quantidade');
 
         $comprometido = $agendamento + $movimentacao;
             
-        $estoqueDisponivel = $this->estoque - $comprometido;
+        $estoqueDisponivel = db::table('produto_filial')->where('produto_id', $this->id)->where('filial_id', $filialId)->value('estoque_filial') - $comprometido;
 
         return $quantidadeDesejada <= $estoqueDisponivel;
     }
 
-    public function atualizarEstoque($quantidade, $operacao = 'diminuir')
+    public function atualizarEstoque($filialId, $quantidade, $operacao = 'diminuir')
     {
         if ($this->tipo === 'servico') {
             return; // Serviços não têm estoque
         }
 
         if ($operacao === 'diminuir') {
-            $this->estoque -= $quantidade;
+            DB::table('produto_filial')
+                ->where('produto_id', $this->id)
+                ->where('filial_id', $filialId)
+                ->update([
+                    'estoque_filial' => DB::raw('estoque_filial - ' . (int) $quantidade)
+                ]);
         } elseif ($operacao === 'aumentar') {
-            $this->estoque += $quantidade;
+            DB::table('produto_filial')
+                ->where('produto_id', $this->id)
+                ->where('filial_id', $filialId)
+                ->update([
+                    'estoque_filial' => DB::raw('estoque_filial + ' . (int) $quantidade)
+                ]);
         }
 
         $this->save();

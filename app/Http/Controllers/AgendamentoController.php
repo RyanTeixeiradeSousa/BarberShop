@@ -504,7 +504,7 @@ class AgendamentoController extends Controller
                 }
             }
 
-            Produto::find($produto->id)->atualizarEstoque($produto->pivot->quantidade, 'diminuir');
+            Produto::find($produto->id)->atualizarEstoque($agendamento->filial_id,$produto->pivot->quantidade, 'diminuir');
             $produtos[$produto->id] = [
                 'quantidade' => $produto->pivot->quantidade,
                 'valor_unitario' => $produto->pivot->valor_unitario

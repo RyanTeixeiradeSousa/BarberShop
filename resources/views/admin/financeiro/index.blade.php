@@ -263,9 +263,9 @@
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label for="tipo" class="form-label">Filial *</label>
-                            <select class="form-select" id="filial" name="filial_id" required>
+                            <select class="form-select" id="filial_id" name="filial_id" required>
                                 @foreach ($filialSelect as $key => $filial)
-                                    <option value="{{$filial->id}}" {{$key == 0 ? 'select' : ''}}>{{$filial->nome}}</option>
+                                    <option value="{{$filial->id}}" {{$key == 0 ? 'selected' : ''}}>{{$filial->nome}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -1004,7 +1004,7 @@
 
 @push('scripts')
 <script>
-    let produtoIndex = 1;
+    let produtoIndex = 0;
 
     function aplicarMascaraMonetaria(elemento) {
         if (!elemento) return;
@@ -1085,6 +1085,43 @@
         modal.show();
     }
 
+    function carregarProdutosPorFilial(filialId) {
+        if (!filialId) {
+            // Limpa todos os selects de produto
+            document.querySelectorAll('.produto-select').forEach(select => {
+                select.innerHTML = '<option value="">Selecione um produto</option>';
+            });
+            return;
+        }
+
+        fetch(`/admin/financeiro/produtos-por-filial/${filialId}`)
+            .then(response => response.json())
+            .then(produtos => {
+                const selects = document.querySelectorAll('.produto-select');
+                selects.forEach(select => {
+                    select.innerHTML = '<option value="">Selecione um produto</option>';
+                    produtos.forEach(produto => {
+                        select.innerHTML += `<option value="${produto.id}" data-preco="${produto.preco}">${produto.nome}</option>`;
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar produtos:', error);
+            });
+    }
+
+    function redefinirProdutosSelecionados() {
+        // Remove todos os produtos adicionados
+        const produtosContainer = document.getElementById('produtos-container');
+        produtosContainer.innerHTML = '';
+        
+        // Reseta o índice de produtos
+        produtoIndex = 0;
+        
+        // Recalcula o valor total
+        calcularTotalMovimentacao();
+    }
+
     function carregarProdutosAssociados(produtos) {
         const listaProdutos = document.getElementById('listaProdutos');
         
@@ -1156,51 +1193,70 @@
     function adicionarProduto() {
         const container = document.getElementById('produtos-container');
         const produtoHtml = `
-            <div class="produto-item" data-index="${produtoIndex}">
-                <div class="produto-header">
-                    <h6 class="mb-0 text-primary">
-                        <i class="fas fa-tag me-2"></i>Produto/Serviço #${produtoIndex + 1}
+            <div class="card mb-3" data-index="${produtoIndex}" style="border: 1px solid #60a5fa;">
+                <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);">
+                    <h6 class="mb-0">
+                        <i class="fas fa-tag me-2"></i>Produto ${produtoIndex + 1}
                     </h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removerProduto(${produtoIndex})">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
-                <div class="row align-items-end">
-                    <div class="col-md-5">
-                        <label class="form-label">Produto/Serviço</label>
-                        <select class="form-select produto-select" name="produtos[${produtoIndex}][id]" data-index="${produtoIndex}" required>
-                            <option value="">Selecione...</option>
-                            @foreach($produtos as $produto)
-                                <option value="{{ $produto->id }}" data-preco="{{ $produto->preco }}">{{ $produto->nome }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Quantidade</label>
-                        <input type="number" class="form-control quantidade-input" name="produtos[${produtoIndex}][quantidade]" min="1" value="1" data-index="${produtoIndex}" required>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Valor Unitário</label>
-                        <!-- Removendo readonly para permitir edição manual -->
-                        <input type="text" class="form-control valor-monetario valor-unitario" name="produtos[${produtoIndex}][valor_unitario]" data-index="${produtoIndex}" required>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-outline-danger btn-sm w-100 shadow-sm" onclick="removerProduto(${produtoIndex})">
-                            <i class="fas fa-trash me-1"></i> Remover
-                        </button>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Produto/Serviço</label>
+                            <select class="form-select produto-select" name="produtos[${produtoIndex}][id]" data-index="${produtoIndex}" required>
+                                <option value="">Selecione um produto</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Quantidade</label>
+                            <input type="number" class="form-control quantidade-input" name="produtos[${produtoIndex}][quantidade]" min="1" step="1" value="1" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Valor Unitário</label>
+                            <input type="text" class="form-control valor-unitario" name="produtos[${produtoIndex}][valor_unitario]" placeholder="R$ 0,00" required>
+                        </div>
                     </div>
                 </div>
             </div>
         `;
-        container.insertAdjacentHTML('beforeend', produtoHtml);
         
-        const novosCampos = container.querySelectorAll(`[data-index="${produtoIndex}"] .valor-monetario`);
-        novosCampos.forEach(aplicarMascaraMonetaria);
+        container.insertAdjacentHTML('beforeend', produtoHtml);
         
         const novoProdutoSelect = container.querySelector(`[data-index="${produtoIndex}"] .produto-select`);
         const novaQuantidadeInput = container.querySelector(`[data-index="${produtoIndex}"] .quantidade-input`);
+        const novoValorInput = container.querySelector(`[data-index="${produtoIndex}"] .valor-unitario`);
         
         novoProdutoSelect.addEventListener('change', atualizarValorUnitario);
         novaQuantidadeInput.addEventListener('input', calcularTotalMovimentacao);
+        novoValorInput.addEventListener('input', calcularTotalMovimentacao);
+        
+        const filialSelect = document.getElementById('filial_id');
+        if (filialSelect && filialSelect.value) {
+            carregarProdutosParaSelect(novoProdutoSelect, filialSelect.value);
+        }
         
         produtoIndex++;
+    }
+
+    function carregarProdutosParaSelect(selectElement, filialId) {
+        fetch(`/admin/financeiro/produtos-por-filial/${filialId}`)
+            .then(response => response.json())
+            .then(data => {
+                selectElement.innerHTML = '<option value="">Selecione um produto</option>';
+                data.forEach(produto => {
+                    const option = document.createElement('option');
+                    option.value = produto.id;
+                    option.textContent = `${produto.nome} - R$ ${produto.preco}`;
+                    option.dataset.valor = produto.preco;
+                    selectElement.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar produtos:', error);
+            });
     }
 
     function removerProduto(index) {
@@ -1215,7 +1271,7 @@
         const select = e.target;
         const index = select.dataset.index;
         const selectedOption = select.options[select.selectedIndex];
-        const preco = selectedOption.dataset.preco || '0';
+        const preco = selectedOption.dataset.valor || '0'; // Usando dataset.valor
         
         const valorUnitarioInput = document.querySelector(`[data-index="${index}"] .valor-unitario`);
         if (valorUnitarioInput) {
@@ -1284,23 +1340,21 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const tipoSelectModal = document.getElementById('tipoModal');
-        if (tipoSelectModal) {
-            tipoSelectModal.addEventListener('change', controlarProdutosPorTipo);
-        }
-        
-        document.addEventListener('input', function(e) {
-            if (e.target.classList.contains('valor-unitario')) {
-                calcularTotalMovimentacao();
-            }
+    function aplicarMascaraMonetaria(elemento) {
+        if (!elemento) return;
+        elemento.addEventListener('input', function(e) {
+            let valor = e.target.value.replace(/\D/g, '');
+            valor = (valor / 100).toFixed(2) + '';
+            valor = valor.replace(".", ",");
+            valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+            e.target.value = 'R$ ' + valor;
         });
-    });
+    }
 
     function calcularTotalMovimentacao() {
         let total = 0;
         
-        document.querySelectorAll('.produto-item').forEach(item => {
+        document.querySelectorAll('#produtos-container .card').forEach(item => {
             const valorUnitarioInput = item.querySelector('.valor-unitario');
             const quantidadeInput = item.querySelector('.quantidade-input');
             
@@ -1321,13 +1375,44 @@
         }
     }
 
-    document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('valor-monetario')) {
-            aplicarMascaraMonetaria(e.target);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aplicar máscara nos campos de valor
+        aplicarMascaraMonetaria(document.getElementById('valor'));
+        aplicarMascaraMonetaria(document.getElementById('edit_valor'));
+        aplicarMascaraMonetaria(document.getElementById('baixar_desconto'));
+        aplicarMascaraMonetaria(document.getElementById('baixar_valor_pago'));
+
+        const tipoSelectModal = document.getElementById('tipoModal');
+        if (tipoSelectModal) {
+            tipoSelectModal.addEventListener('change', controlarProdutosPorTipo);
         }
         
-        if (e.target.classList.contains('quantidade-input')) {
-            calcularTotalMovimentacao();
+        const filialSelect = document.getElementById('filial_id');
+        if (filialSelect) {
+            filialSelect.addEventListener('change', function() {
+                const filialId = this.value;
+                if (filialId) {
+                    carregarProdutosPorFilial(filialId);
+                    redefinirProdutosSelecionados();
+                } else {
+                    redefinirProdutosSelecionados();
+                }
+            });
+        }
+        
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('valor-unitario')) {
+                calcularTotalMovimentacao();
+            }
+            
+            if (e.target.classList.contains('quantidade-input')) {
+                calcularTotalMovimentacao();
+            }
+        });
+
+        // Inicializar a exibição de produtos com base na filial selecionada
+        if (filialSelect && filialSelect.value) {
+            carregarProdutosPorFilial(filialSelect.value);
         }
     });
 
