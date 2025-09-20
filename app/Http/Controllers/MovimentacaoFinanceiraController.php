@@ -316,10 +316,10 @@ class MovimentacaoFinanceiraController extends Controller
         $query->where('filial_id', $filialId)
             ->where('produto_filial.ativo', true);
           
-})
-->where('produtos.ativo', true)
-->orderBy('nome')
-->get(['id', 'nome', 'preco']);
+        })
+        ->where('produtos.ativo', true)
+        ->orderBy('nome')
+        ->get(['id', 'nome', 'preco']);
 
 
 

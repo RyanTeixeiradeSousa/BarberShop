@@ -8,8 +8,6 @@ use App\Models\Agendamento;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 
 class SiteController extends Controller
 {
@@ -19,92 +17,25 @@ class SiteController extends Controller
         $servicos = Produto::where('ativo', true)
             ->where('site', true)
             ->where('tipo', 'servico')
+            ->take(8)
             ->get();
 
+
         $produtos = Produto::where('ativo', true)
-        ->where('site', true)
-        ->where('tipo', 'produto')
-        ->select('produtos.*')
-        ->whereRaw('estoque > 
-            (
-                SELECT COALESCE(SUM(ap.quantidade), 0)
-                FROM agendamento_produto ap
-                JOIN agendamentos a ON ap.agendamento_id = a.id
-                WHERE a.status IN (?, ?)
-                    AND ap.produto_id = produtos.id
-            ) +
-            (
-                SELECT COALESCE(SUM(mp.quantidade), 0)
-                FROM movimentacao_produto mp
-                JOIN movimentacoes_financeiras mf ON mp.movimentacao_financeira_id = mf.id
-                WHERE mf.situacao = ?
-                    AND mp.produto_id = produtos.id
-            )
-        ', ['agendado', 'em_andamento',  'em_aberto'])
-        ->get(); // Retira produtos comprometidos
+            ->where('site', true)
+            ->where('tipo', 'produto')
+            ->take(8)
+            ->get();
+
         return view('site.index', compact('configuracoes', 'servicos', 'produtos'));
     }
 
     public function agendamento()
     {
         $configuracoes = $this->getConfiguracoes();
+        $filiais = \App\Models\Filial::where('ativo', true)->where('disponivel_site', true)->get();
 
-        $servicosAtivos = Produto::where('ativo', true)->where('tipo','servico')->where('site', true)->get();
-
-        $produtosAtivosNaoComprometidos = Produto::where('ativo', true)
-        ->where('site', true)
-        ->where('tipo', 'produto')
-        ->select('produtos.*')
-        ->whereRaw('estoque > 
-            (
-                SELECT COALESCE(SUM(ap.quantidade), 0)
-                FROM agendamento_produto ap
-                JOIN agendamentos a ON ap.agendamento_id = a.id
-                WHERE a.status IN (?, ?)
-                    AND ap.produto_id = produtos.id
-            ) +
-            (
-                SELECT COALESCE(SUM(mp.quantidade), 0)
-                FROM movimentacao_produto mp
-                JOIN movimentacoes_financeiras mf ON mp.movimentacao_financeira_id = mf.id
-                WHERE mf.situacao = ?
-                    AND mp.produto_id = produtos.id
-            )
-        ', ['agendado', 'em_andamento', 'em_aberto'])
-        ->get();
-
-        $produtos = $servicosAtivos->merge($produtosAtivosNaoComprometidos);
-
-        return view('site.agendamento', compact('configuracoes', 'produtos'));
-    }
-
-    public function getSlotsDisponiveis(Request $request)
-    {
-        $data = $request->get('data');
-        
-        if (!$data) {
-            return response()->json(['horarios' => []]);
-        }
-
-        $slotsDisponiveis = Agendamento::where('data_agendamento', $data)
-            ->where('status', 'disponivel')
-            ->where('ativo', true)
-            ->orderBy('hora_inicio')
-            ->get(['hora_inicio', 'id']);
-
-        return response()->json([
-            'horarios' => $slotsDisponiveis->map(function($slot) {
-                return [
-                    'id' => $slot->id,
-                    'hora' => \Carbon\Carbon::parse($slot->hora_inicio)->format('H:i')
-                ];
-            })
-        ]);
-    }
-
-    private function getConfiguracoes()
-    {
-        return Configuracao::pluck('valor', 'chave')->toArray();
+        return view('site.agendamento', compact('configuracoes', 'filiais'));
     }
 
     public function finalizarAgendamentoCompleto(Request $request)
@@ -117,7 +48,8 @@ class SiteController extends Controller
             'observacoes' => 'nullable|string|max:500',
             'produtos' => 'nullable|array',
             'produtos.*' => 'exists:produtos,id',
-            'criar_cobranca' => 'nullable|boolean'
+            'criar_cobranca' => 'nullable|boolean',
+            'filial_id' => 'required|exists:filiais,id' // Adicionando filtro por filial
         ]);
 
         try {
@@ -168,6 +100,18 @@ class SiteController extends Controller
 
             $valorTotal = 0;
 
+            if (!empty($request->servicos)) {
+                $produtos = Produto::whereIn('id', $request->servicos)->get();
+                
+                foreach ($produtos as $produto) {
+                    $agendamento->produtos()->attach($produto->id, [
+                        'quantidade' => 1,
+                        'valor_unitario' => $produto->preco
+                    ]);
+                    $valorTotal += $produto->preco;
+                }
+            }
+            
             // Associar produtos selecionados se houver
             if (!empty($request->produtos)) {
                 $produtos = Produto::whereIn('id', $request->produtos)->get();
@@ -180,16 +124,21 @@ class SiteController extends Controller
                     $valorTotal += $produto->preco;
                 }
 
-            }
-
-            if (!empty($request->servicos)) {
-                $servicos = Produto::whereIn('id', $request->servicos)->get();
-                foreach ($servicos as $servico) {
-                    $agendamento->produtos()->attach($servico->id, [
-                        'quantidade' => 1,
-                        'valor_unitario' => $servico->preco
+                // Criar movimento financeiro se solicitado e há produtos
+                if ($request->criar_cobranca && $valorTotal > 0) {
+                    \App\Models\MovimentacaoFinanceira::create([
+                        'filial_id' => $agendamento->filial_id,
+                        'agendamento_id' => $agendamento->id,
+                        'cliente_id' => $cliente->id,
+                        'tipo' => 'entrada',
+                        'categoria_id' => 2, // Categoria de produtos
+                        'descricao' => 'Produtos - ' . $cliente->nome,
+                        'data' => Carbon::now()->format('Y-m-d'),
+                        'valor' => $valorTotal,
+                        'data_vencimento' => $agendamento->data_agendamento,
+                        'situacao' => 'em_aberto',
+                        'ativo' => true
                     ]);
-                    $valorTotal += $servico->preco;
                 }
             }
 
@@ -207,10 +156,140 @@ class SiteController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            dd($e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Erro ao finalizar agendamento: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getSlotsDisponiveis(Request $request)
+    {
+        $data = $request->get('data');
+        $filialId = $request->get('filial_id'); // Adicionando filtro por filial
+        
+        if (!$data) {
+            return response()->json(['horarios' => []]);
+        }
+
+        $query = \App\Models\Agendamento::where('data_agendamento', $data)
+            ->where('status', 'disponivel')
+            ->where('ativo', true);
+
+        if ($filialId) {
+            $query->where('filial_id', $filialId);
+        }
+
+        $slotsDisponiveis = $query->orderBy('hora_inicio')
+            ->get(['hora_inicio', 'id']);
+
+        return response()->json([
+            'horarios' => $slotsDisponiveis->map(function($slot) {
+                return [
+                    'id' => $slot->id,
+                    'hora' => $slot->hora_inicio
+                ];
+            })
+        ]);
+    }
+
+    public function getProdutosSugeridos()
+    {
+        $produtos = Produto::where('ativo', true)
+            ->where('site', true)
+            ->where('tipo', 'produto')
+            ->take(8)
+            ->get(['id', 'nome', 'descricao', 'preco', 'imagem']);
+
+        return response()->json($produtos);
+    }
+
+    public function getFiliais()
+    {
+        $filiais = \App\Models\Filial::where('ativo', true)
+            ->select('id', 'nome', 'endereco', 'telefone')
+            ->get();
+
+        return response()->json($filiais);
+    }
+
+    public function getServicosPorFilial($filialId)
+    {
+        $servicos = \App\Models\Produto::whereHas('filiais', function($query) use ($filialId) {
+                $query->where('filial_id', $filialId)
+                      ->where('produto_filial.ativo', true);
+            })
+            ->where('tipo', 'servico')
+            ->where('site', true)
+            ->select('id', 'nome', 'descricao', 'preco' , 'imagem')
+            ->get();
+
+        return response()->json($servicos);
+    }
+
+    public function getProdutosPorFilial($filialId)
+    {
+        $produtos = \App\Models\Produto::whereHas('filiais', function ($query) use ($filialId) {
+                $query->where('filial_id', $filialId)
+                    ->where('produto_filial.ativo', true)
+                    ->whereRaw("
+                        produto_filial.estoque_filial > (
+                            (
+                                SELECT COALESCE(SUM(ap.quantidade), 0)
+                                FROM agendamento_produto ap
+                                JOIN agendamentos a ON ap.agendamento_id = a.id
+                                WHERE a.status IN ('agendado','em_andamento')
+                                AND ap.produto_id = produtos.id
+                                AND a.filial_id = ?
+                            ) +
+                            (
+                                SELECT COALESCE(SUM(mp.quantidade), 0)
+                                FROM movimentacao_produto mp
+                                JOIN movimentacoes_financeiras mf ON mp.movimentacao_financeira_id = mf.id
+                                WHERE mf.situacao = 'em_aberto'
+                                AND mp.produto_id = produtos.id
+                                AND mf.filial_id = ?
+                            )
+                        )
+                    ", [$filialId, $filialId]);
+            })
+            ->where('tipo', 'produto')
+            ->where('site', true)
+            ->select('id', 'nome', 'descricao', 'preco', 'imagem')
+            ->get();
+
+        return response()->json($produtos);
+    }
+
+    public function getHorariosPorFilial(Request $request)
+    {
+        $filialId = $request->get('filial_id');
+        $data = $request->get('data');
+        
+        if (!$filialId || !$data) {
+            return response()->json(['horarios' => []]);
+        }
+
+        $slotsDisponiveis = \App\Models\Agendamento::where('filial_id', $filialId)
+            ->where('data_agendamento', $data)
+            ->where('status', 'disponivel')
+            ->where('ativo', true)
+            ->orderBy('hora_inicio')
+            ->get(['hora_inicio', 'id']);
+
+        return response()->json([
+            'horarios' => $slotsDisponiveis->map(function($slot) {
+                return [
+                    'id' => $slot->id,
+                    'hora' => $slot->hora_inicio
+                ];
+            })
+        ]);
+    }
+
+    private function getConfiguracoes()
+    {
+        return Configuracao::pluck('valor', 'chave')->toArray();
     }
 }

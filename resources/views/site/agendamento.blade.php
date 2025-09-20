@@ -100,6 +100,68 @@
         display: block;
     }
 
+    /* Adicionando estilos para seleção de filial */
+    .filial-selection {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        text-align: center;
+    }
+
+    .filial-selection h3 {
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+    }
+
+    .filial-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .filial-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .filial-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .filial-card.selected {
+        border-color: var(--secondary-color);
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        transform: translateY(-2px);
+    }
+
+    .filial-icon {
+        font-size: 2rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+
+    .filial-name {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .filial-endereco {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
     /* Seleção de Data e Horário */
     .datetime-selection {
         display: grid;
@@ -817,14 +879,15 @@ function criarAgendamento() {
     const nome = document.getElementById('nome').value.trim();
     const telefone = document.getElementById('telefone').value.trim();
 
-    console.log('[v0] Dados coletados:', { nome, telefone, selectedDate, selectedTime, selectedServices: selectedServices.length });
+    console.log('[v0] Dados coletados:', { nome, telefone, selectedDate, selectedTime, selectedServices: selectedServices.length, selectedFilial });
 
-    if (!nome || !telefone || !selectedDate || !selectedTime || selectedServices.length === 0) {
-        alert('Por favor, preencha todos os campos obrigatórios e selecione data, horário e serviços.');
+    if (!selectedFilial || !nome || !telefone || !selectedDate || !selectedTime || selectedServices.length === 0) {
+        alert('Por favor, preencha todos os campos obrigatórios e selecione filial, data, horário e serviços.');
         return;
     }
 
     const formData = new FormData();
+    formData.append('filial_id', selectedFilial);
     formData.append('slot_id', selectedSlotId);
     formData.append('nome', nome);
     formData.append('telefone', telefone);
@@ -891,12 +954,12 @@ function applyPhoneMask(input) {
     let clientData = {};
     let currentStep = 1;
     let selectedSlotId = null;
+    let selectedFilial = null; // Adicionando variável para filial selecionada
 
     initCalendar();
     
     const today = new Date();
     selectedDate = today.toISOString().split('T')[0];
-    updateTimeSlots(today);
 
     function initCalendar() {
         const calendarGrid = document.querySelector('.calendar-grid');
@@ -1068,7 +1131,7 @@ function applyPhoneMask(input) {
         selectedDate = date.toISOString().split('T')[0];
         
         setTimeout(() => {
-            const timeSection = document.querySelector('#step1 .time-picker');
+            const timeSection = document.querySelector('#step2 .time-picker');
             timeSection.scrollIntoView({ 
                 behavior: 'smooth', 
                 block: 'center',
@@ -1090,18 +1153,24 @@ function applyPhoneMask(input) {
         const timeSlotsContainer = document.querySelector('.time-slots');
         const dateString = date.toISOString().split('T')[0];
         
+        if (!selectedFilial) {
+            timeSlotsContainer.innerHTML = '<p class="no-slots">Selecione uma filial primeiro</p>';
+            return;
+        }
+        
         timeSlotsContainer.innerHTML = '<div class="loading">Carregando horários...</div>';
         
-        fetch(`/api/slots-disponiveis?data=${dateString}`)
+        fetch(`/api/slots-disponiveis?data=${dateString}&filial_id=${selectedFilial}`)
             .then(response => response.json())
             .then(data => {
                 timeSlotsContainer.innerHTML = '';
                 
                 if (data.horarios && data.horarios.length > 0) {
                     data.horarios.forEach(slot => {
+                        console.log('Slot disponível:', slot);
                         const timeButton = document.createElement('button');
                         timeButton.className = 'time-slot';
-                        timeButton.textContent = slot.hora;
+                        timeButton.textContent = new Date(slot.hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });;
                         timeButton.dataset.slotId = slot.id;
                         timeButton.addEventListener('click', () => selectTime(slot.hora, slot.id, timeButton));
                         timeSlotsContainer.appendChild(timeButton);
@@ -1134,6 +1203,121 @@ function applyPhoneMask(input) {
     let selectedServices = [];
     let selectedProducts = [];
 
+    function selectFilial(filialId, filialCard) {
+        // Remover seleção anterior
+        document.querySelectorAll('.filial-card.selected').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        // Selecionar nova filial
+        filialCard.classList.add('selected');
+        selectedFilial = filialId;
+        
+        // Limpar seleções dependentes
+        selectedDate = null;
+        selectedTime = null;
+        selectedSlotId = null;
+        selectedServices = [];
+        selectedProducts = [];
+        
+        // Limpar calendário e horários
+        document.querySelectorAll('.calendar-day.selected').forEach(day => {
+            day.classList.remove('selected');
+        });
+        document.querySelectorAll('.time-slot.selected').forEach(slot => {
+            slot.classList.remove('selected');
+        });
+        
+        // Recarregar serviços e produtos da filial
+        carregarServicosPorFilial(filialId);
+        carregarProdutosPorFilial(filialId);
+        
+        updateStepStatus();
+    }
+
+    function carregarServicosPorFilial(filialId) {
+        const servicosContainer = document.querySelector('.services-swiper');
+        servicosContainer.innerHTML = '<div class="loading">Carregando serviços...</div>';
+        
+        fetch(`/api/servicos-por-filial/${filialId}`)
+            .then(response => response.json())
+            .then(data => {
+                servicosContainer.innerHTML = '';
+                
+                if (data && data.length > 0) {
+                    data.forEach(servico => {
+                        const serviceCard = document.createElement('div');
+                        serviceCard.className = 'service-card servico-card';
+                        serviceCard.dataset.serviceId = servico.id;
+                        serviceCard.dataset.price = servico.preco;
+                        serviceCard.dataset.name = servico.nome.toLowerCase();
+                        
+                        serviceCard.innerHTML = `
+                            <div class="service-image">
+                                ${servico.imagem ? 
+                                    `<img src="${servico.imagem}" alt="${servico.nome}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">` :
+                                    '<i class="fas fa-cut"></i>'
+                                }
+                            </div>
+                            <div class="service-title">${servico.nome}</div>
+                            <div class="service-description">${servico.descricao || 'Serviço profissional de alta qualidade'}</div>
+                            <div class="service-price">R$ ${parseFloat(servico.preco).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                            <div class="service-duration">Duração: ${servico.duracao || 30} min</div>
+                        `;
+                        
+                        servicosContainer.appendChild(serviceCard);
+                    });
+                } else {
+                    servicosContainer.innerHTML = '<p class="no-slots">Nenhum serviço disponível para esta filial</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar serviços:', error);
+                servicosContainer.innerHTML = '<p class="error">Erro ao carregar serviços</p>';
+            });
+    }
+
+    function carregarProdutosPorFilial(filialId) {
+        const produtosContainer = document.querySelector('.produtos-swiper');
+        produtosContainer.innerHTML = '<div class="loading">Carregando produtos...</div>';
+        
+        fetch(`/api/produtos-por-filial/${filialId}`)
+            .then(response => response.json())
+            .then(data => {
+                produtosContainer.innerHTML = '';
+                
+                if (data && data.length > 0) {
+                    data.forEach(produto => {
+                        const productCard = document.createElement('div');
+                        productCard.className = 'produto-card';
+                        productCard.dataset.produtoId = produto.id;
+                        productCard.dataset.price = produto.preco;
+                        productCard.dataset.name = produto.nome.toLowerCase();
+                        
+                        productCard.innerHTML = `
+                            <div class="produto-image">
+                                ${produto.imagem ? 
+                                    `<img src="${produto.imagem}" alt="${produto.nome}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">` :
+                                    '<i class="fas fa-shopping-bag"></i>'
+                                }
+                            </div>
+                            <div class="service-title">${produto.nome}</div>
+                            <div class="service-description">${produto.descricao || 'Produto de qualidade'}</div>
+                            <div class="service-price">R$ ${parseFloat(produto.preco).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                        `;
+                        
+                        produtosContainer.appendChild(productCard);
+                    });
+                } else {
+                    produtosContainer.innerHTML = '<p class="no-slots">Nenhum produto disponível para esta filial</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar produtos:', error);
+                produtosContainer.innerHTML = '<p class="error">Erro ao carregar produtos</p>';
+            });
+    }
+
     function updateServiceCounter() {
         const counter = document.getElementById('serviceCounter');
         if (selectedServices.length > 0) {
@@ -1155,6 +1339,12 @@ function applyPhoneMask(input) {
     }
 
     document.addEventListener('click', function(e) {
+        if (e.target.closest('.filial-card')) {
+            const card = e.target.closest('.filial-card');
+            const filialId = card.dataset.filialId;
+            selectFilial(filialId, card);
+        }
+        
         if (e.target.closest('.service-card')) {
             const card = e.target.closest('.service-card');
             const serviceId = card.dataset.serviceId;
@@ -1211,63 +1401,69 @@ function applyPhoneMask(input) {
     });
     
     function nextStep() {
-        if (currentStep < 4 && canProceed()) {
+        if (currentStep < 5 && canProceed()) { // Alterado para 5 steps
+            // </CHANGE>
+            if (currentStep === 1) {
+                currentDate = new Date(); // Resetar para dia atual
+                selectedDate = new Date(); // Selecionar dia atual
+                renderCalendar(); // Re-renderizar calendário
+                setTimeout(() => {
+                    const section = document.querySelector('#step2 .date-picker');
+                    section.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                }, 200);
+            }
+            
             if (currentStep === 2) {
+                // Após selecionar data/horário, ir para serviços
+                setTimeout(() => {
+                    const section = document.querySelector('.services-swiper');
+                    section.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                }, 200);
+            }
+            
+            if (currentStep === 3) {
                 // Após selecionar serviços, ir para produtos
-                currentStep = 3;
-                
-                updateStepDisplay();
                 setTimeout(() => {
                     const section = document.querySelector('.produtos-swiper');
-                        section.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'center',
-                            inline: 'nearest'
-                        });
+                    section.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'nearest'
+                    });
                 }, 200);
-                return;
             }
             
             if (currentStep === 4) {
+                // Após produtos, ir para dados do cliente
+                setTimeout(() => {
+                    const section = document.querySelector('.client-form');
+                    section.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                }, 200);
+            }
+            
+            if (currentStep === 5) {
                 // Coletar dados do formulário e criar agendamento
                 collectClientData();
                 criarAgendamento();
                 return; // Não avança automaticamente
             }
             
-            if(currentStep === 3){
-                setTimeout(() => {
-                    const section = document.querySelector('.client-form');
-                        section.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'center',
-                            inline: 'nearest'
-                        });
-                }, 200);
-            } 
-            if(currentStep === 1) {
-                setTimeout(() => {
-                    const section = document.querySelector('.services-swiper');
-                        section.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'center',
-                            inline: 'nearest'
-                        });
-                }, 200);
-            }
             currentStep++;
-            
             updateStepDisplay();
-            
         }
     }
-    
-    // function previousStep() {
-    //     if (currentStep > 1) {
-    //         currentStep--;
-    //         updateStepDisplay();
-    //     }
-    // }
 
     function prevStep() {
         if (currentStep > 1) {
@@ -1308,12 +1504,14 @@ function applyPhoneMask(input) {
     function canProceed() {
         switch (currentStep) {
             case 1:
-                return selectedDate && selectedTime;
+                return selectedFilial; // Primeiro step agora é filial
             case 2:
-                return selectedServices.length > 0;
+                return selectedDate && selectedTime;
             case 3:
-                return true; // Produtos são opcionais
+                return selectedServices.length > 0;
             case 4:
+                return true; // Produtos são opcionais
+            case 5:
                 const form = document.querySelector('#clientForm');
                 return form && form.checkValidity();
             default:
@@ -1378,22 +1576,22 @@ window.changeMonthYear = function() {
 };
 
     function scrollServicesLeft() {
-        const container = document.querySelector('#step2 .services-swiper');
+        const container = document.querySelector('#step3 .services-swiper');
         container.scrollBy({ left: -300, behavior: 'smooth' });
     }
 
     function scrollServicesRight() {
-        const container = document.querySelector('#step2 .services-swiper');
+        const container = document.querySelector('#step3 .services-swiper');
         container.scrollBy({ left: 300, behavior: 'smooth' });
     }
 
     function scrollProductsLeft() {
-        const container = document.querySelector('#step3 .produtos-swiper');
+        const container = document.querySelector('#step4 .produtos-swiper');
         container.scrollBy({ left: -300, behavior: 'smooth' });
     }
 
     function scrollProductsRight() {
-        const container = document.querySelector('#step3 .produtos-swiper');
+        const container = document.querySelector('#step4 .produtos-swiper');
         container.scrollBy({ left: 300, behavior: 'smooth' });
     }
 </script>
@@ -1403,32 +1601,71 @@ window.changeMonthYear = function() {
 <div class="agendamento-container">
     <div class="agendamento-header">
         <h1>Agende seu Horário</h1>
-        <p>Escolha a data, horário e serviços desejados. É rápido e fácil!</p>
+        <p>Escolha a filial, data, horário e serviços desejados. É rápido e fácil!</p>
     </div>
     
-    <!-- Steps Indicator -->
+    <!-- Atualizando Steps Indicator para incluir filial como primeiro passo -->
     <div class="agendamento-steps">
         <div class="step active">
             <div class="step-number">1</div>
-            <span>Data e Horário</span>
+            <span>Filial</span>
         </div>
         <div class="step">
             <div class="step-number">2</div>
-            <span>Serviços</span>
+            <span>Data e Horário</span>
         </div>
         <div class="step">
             <div class="step-number">3</div>
-            <span>Produtos</span>
+            <span>Serviços</span>
         </div>
         <div class="step">
             <div class="step-number">4</div>
+            <span>Produtos</span>
+        </div>
+        <div class="step">
+            <div class="step-number">5</div>
             <span>Seus Dados</span>
         </div>
     </div>
     
     <div class="agendamento-content">
-        <!-- Step 1: Data e Horário -->
+        <!-- Step 1: Seleção de Filial -->
         <div class="step-content active" id="step1">
+            <div class="filial-selection">
+                <h3><i class="fas fa-map-marker-alt"></i> Escolha a Filial</h3>
+                <p style="color: #64748b; margin-bottom: 1.5rem;">Selecione a filial onde deseja ser atendido</p>
+                
+                <div class="filial-grid">
+                    @forelse($filiais as $filial)
+                        <div class="filial-card" data-filial-id="{{ $filial->id }}">
+                            <div class="filial-icon">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div class="filial-name">{{ $filial->nome }}</div>
+                            <div class="filial-endereco">{{ $filial->endereco }}</div>
+                        </div>
+                    @empty
+                        <div class="filial-card" data-filial-id="1">
+                            <div class="filial-icon">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div class="filial-name">Filial Centro</div>
+                            <div class="filial-endereco">Rua Principal, 123 - Centro</div>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+            
+            <div class="navigation-buttons">
+                <div></div>
+                <button class="btn-nav btn-next" disabled>
+                    Próximo <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 2: Data e Horário -->
+        <div class="step-content" id="step2">
             <div class="datetime-selection">
                 <div class="date-picker">
                     <h3><i class="fas fa-calendar-alt"></i> Escolha a Data</h3>
@@ -1443,15 +1680,17 @@ window.changeMonthYear = function() {
             </div>
             
             <div class="navigation-buttons">
-                <div></div>
+                <button class="btn-nav btn-prev">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
                 <button class="btn-nav btn-next" disabled>
                     Próximo <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </div>
         
-        <!-- Step 2: Serviços -->
-        <div class="step-content" id="step2">
+        <!-- Step 3: Serviços -->
+        <div class="step-content" id="step3">
             <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">
                 <i class="fas fa-cut"></i> Escolha os Serviços
             </h3>
@@ -1479,65 +1718,7 @@ window.changeMonthYear = function() {
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="services-swiper">
-                    @forelse($produtos as $produto)
-                        @if($produto->tipo == 'servico')
-                            <div class="service-card servico-card" data-service-id="{{ $produto->id }}" data-price="{{ $produto->preco }}" data-name="{{ strtolower($produto->nome) }}">
-                                <div class="service-image">
-                                    @if($produto->imagem)
-                                        <img src="{{ $produto->imagem }}" alt="{{ $produto->nome }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
-                                    @else
-                                        @switch($produto->nome)
-                                            @case('Corte de Cabelo')
-                                            @case('Corte Masculino')
-                                                <i class="fas fa-cut"></i>
-                                                @break
-                                            @case('Barba')
-                                            @case('Aparar Barba')
-                                                <i class="fas fa-user-tie"></i>
-                                                @break
-                                            @case('Bigode')
-                                                <i class="fas fa-mustache"></i>
-                                                @break
-                                            @default
-                                                <i class="fas fa-scissors"></i>
-                                        @endswitch
-                                    @endif
-                                </div>
-                                
-                                <div class="service-title">{{ $produto->nome }}</div>
-                                <div class="service-description">
-                                    {{ $produto->descricao ?: 'Serviço profissional de alta qualidade' }}
-                                </div>
-                                <div class="service-price">R$ {{ number_format($produto->preco, 2, ',', '.') }}</div>
-                                <div class="service-duration">Duração: {{ $configuracoes['duracao_servico'] ?? 30 }} min</div>
-                            </div>
-                        @endif
-                    @empty
-                        <!-- Serviços padrão caso não haja cadastrados -->
-                        {{-- <div class="service-card servico-card" data-service-id="1" data-price="25.00" data-name="corte masculino">
-                            <div class="service-image"><i class="fas fa-cut"></i></div>
-                            <div class="service-title">Corte Masculino</div>
-                            <div class="service-description">Corte profissional personalizado</div>
-                            <div class="service-price">R$ 25,00</div>
-                            <div class="service-duration">Duração: 30 min</div>
-                        </div>
-                        
-                        <div class="service-card servico-card" data-service-id="2" data-price="15.00" data-name="barba">
-                            <div class="service-image"><i class="fas fa-user-tie"></i></div>
-                            <div class="service-title">Barba</div>
-                            <div class="service-description">Aparar e modelar barba</div>
-                            <div class="service-price">R$ 15,00</div>
-                            <div class="service-duration">Duração: 20 min</div>
-                        </div>
-                        
-                        <div class="service-card servico-card" data-service-id="3" data-price="35.00" data-name="corte + barba">
-                            <div class="service-image"><i class="fas fa-scissors"></i></div>
-                            <div class="service-title">Corte + Barba</div>
-                            <div class="service-description">Pacote completo</div>
-                            <div class="service-price">R$ 35,00</div>
-                            <div class="service-duration">Duração: 45 min</div>
-                        </div> --}}
-                    @endforelse
+                    <!-- Serviços serão carregados dinamicamente via JavaScript -->
                 </div>
             </div>
             
@@ -1545,7 +1726,7 @@ window.changeMonthYear = function() {
             <div class="selection-counter" id="serviceCounter"></div>
             
             <div class="navigation-buttons">
-                <button class="btn-nav btn-prev" onclick="">
+                <button class="btn-nav btn-prev">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
                 <button class="btn-nav btn-next" disabled>
@@ -1554,8 +1735,8 @@ window.changeMonthYear = function() {
             </div>
         </div>
         
-        <!-- Step 3: Produtos Sugeridos -->
-        <div class="step-content" id="step3">
+        <!-- Step 4: Produtos Sugeridos -->
+        <div class="step-content" id="step4">
             <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">
                 <i class="fas fa-shopping-bag"></i> Produtos Recomendados
             </h3>
@@ -1587,37 +1768,7 @@ window.changeMonthYear = function() {
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="produtos-swiper" id="produtosSugeridos">
-                    @forelse($produtos as $produto)
-                        @if($produto->tipo == 'produto')
-                            <div class="produto-card" data-produto-id="{{ $produto->id }}" data-price="{{ $produto->preco }}" data-name="{{ strtolower($produto->nome) }}">
-                                <div class="produto-image">
-                                    @if($produto->imagem)
-                                        <img src="{{ $produto->imagem }}" alt="{{ $produto->nome }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
-                                    @else
-                                        <i class="fas fa-shopping-bag"></i>
-                                    @endif
-                                </div>
-                                <div class="service-title">{{ $produto->nome }}</div>
-                                <div class="service-description">{{ $produto->descricao ?: 'Produto de qualidade' }}</div>
-                                <div class="service-price">R$ {{ number_format($produto->preco, 2, ',', '.') }}</div>
-                            </div>
-                        @endif
-                    @empty
-                        <!-- Produtos padrão caso não haja cadastrados -->
-                        {{-- <div class="produto-card" data-produto-id="1" data-price="15.00" data-name="pomada modeladora">
-                            <div class="produto-image"><i class="fas fa-shopping-bag"></i></div>
-                            <div class="service-title">Pomada Modeladora</div>
-                            <div class="service-description">Pomada para modelar cabelo</div>
-                            <div class="service-price">R$ 15,00</div>
-                        </div>
-                        
-                        <div class="produto-card" data-produto-id="2" data-price="12.00" data-name="spray fixador">
-                            <div class="produto-image"><i class="fas fa-spray-can"></i></div>
-                            <div class="service-title">Spray Fixador</div>
-                            <div class="service-description">Spray para fixar penteado</div>
-                            <div class="service-price">R$ 12,00</div>
-                        </div> --}}
-                    @endforelse
+                    <!-- Produtos serão carregados dinamicamente via JavaScript -->
                 </div>
             </div>
             
@@ -1632,7 +1783,7 @@ window.changeMonthYear = function() {
             </div>
             
             <div class="navigation-buttons">
-                <button class="btn-nav btn-prev" onclick="">
+                <button class="btn-nav btn-prev">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
                 <button class="btn-nav btn-next">
@@ -1641,8 +1792,8 @@ window.changeMonthYear = function() {
             </div>
         </div>
         
-        <!-- Step 4: Dados do Cliente -->
-        <div class="step-content" id="step4">
+        <!-- Step 5: Dados do Cliente -->
+        <div class="step-content" id="step5">
             <div class="client-form">
                 <h3 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">
                     <i class="fas fa-user"></i> Seus Dados
@@ -1672,7 +1823,7 @@ window.changeMonthYear = function() {
             </div>
             
             <div class="navigation-buttons">
-                <button class="btn-nav btn-prev" onclick="">
+                <button class="btn-nav btn-prev">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
                 <!-- Corrigindo botão de finalizar para chamar função correta -->
