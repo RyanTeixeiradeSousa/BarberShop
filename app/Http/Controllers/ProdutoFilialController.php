@@ -13,7 +13,7 @@ class ProdutoFilialController extends Controller
         $filiaisVinculadas = $produto->filiais()->get();
         $todasFiliais = Filial::where('ativo', true)->get();
         $idsVinculadas = $filiaisVinculadas->pluck('id')->toArray();
-        
+       
         $vinculadas = $filiaisVinculadas->map(function ($filial) {
             return [
                 'filial' => [
@@ -24,6 +24,26 @@ class ProdutoFilialController extends Controller
                 'estoque' => $filial->pivot->estoque_filial,
                 'preco_filial' => $filial->pivot->preco_filial,
                 'ativo' => $filial->pivot->ativo,
+                'comprometido' => Produto::with('categoria')
+                            ->selectRaw("(
+                                (
+                                    SELECT COALESCE(SUM(ap.quantidade), 0)
+                                    FROM agendamento_produto ap
+                                    JOIN agendamentos a ON ap.agendamento_id = a.id
+
+                                    WHERE a.status IN (?, ?)
+                                    AND ap.produto_id = {$filial->pivot->produto_id}
+                                    AND a.filial_id = {$filial->pivot->filial_id}
+                                ) +
+                                (
+                                    SELECT COALESCE(SUM(mp.quantidade), 0)
+                                    FROM movimentacao_produto mp
+                                    JOIN movimentacoes_financeiras mf ON mp.movimentacao_financeira_id = mf.id
+                                    WHERE mf.situacao = ?
+                                    AND mp.produto_id = {$filial->pivot->produto_id}
+                                    AND mf.filial_id = {$filial->pivot->filial_id}
+                                )
+                            ) AS comprometido", ['agendado', 'em_andamento', 'em_aberto'])->value('comprometido'),
             ];
         });
 

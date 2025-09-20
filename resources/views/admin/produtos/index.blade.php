@@ -1065,7 +1065,7 @@
                         '<span class="badge bg-secondary">Inativo</span>';
                     
                     const estoqueBadge = tipoProduto === 'produto' ? 
-                        `<span class="badge bg-info ms-1">Estoque: ${item.estoque || 0}</span>` : '';
+                        `<span class="badge bg-info ms-1">Estoque: ${item.estoque || 0}</span> <span class="badge bg-danger ms-1">Comprometido: ${item.comprometido || 0}</span>` : '';
 
                     html += `
                         <div class="card mb-3" style="border: 1px solid rgba(59, 130, 246, 0.2);">
