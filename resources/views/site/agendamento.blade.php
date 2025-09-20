@@ -1150,6 +1150,7 @@ function applyPhoneMask(input) {
     }
 
     function updateTimeSlots(date) {
+        console.log(date)
         const timeSlotsContainer = document.querySelector('.time-slots');
         const dateString = date.toISOString().split('T')[0];
         
@@ -1208,7 +1209,6 @@ function applyPhoneMask(input) {
         document.querySelectorAll('.filial-card.selected').forEach(card => {
             card.classList.remove('selected');
         });
-        
         // Selecionar nova filial
         filialCard.classList.add('selected');
         selectedFilial = filialId;
@@ -1231,6 +1231,8 @@ function applyPhoneMask(input) {
         // Recarregar serviços e produtos da filial
         carregarServicosPorFilial(filialId);
         carregarProdutosPorFilial(filialId);
+        updateTimeSlots(new Date()); 
+
         
         updateStepStatus();
     }
