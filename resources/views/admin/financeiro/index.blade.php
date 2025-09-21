@@ -547,7 +547,7 @@
                             <div class="mb-3">
                                 <label for="edit_observacoes" class="form-label">Observações</label>
                                  <!-- CHANGE> Mantendo campo editável -->
-                                <textarea class="form-control" id="edit_observacoes" name="observacoes" rows="3"></textarea>
+                                <textarea class="form-control" id="edit_observacoes" name="observacoes" rows="9"></textarea>
                             </div>
                              <!-- CHANGE> Ocultando campo ativo com display none e sempre checked -->
                             <div class="form-check" style="display: none;">

@@ -387,6 +387,13 @@ class AgendamentoController extends Controller
 
     public function iniciarAtendimento(Agendamento $agendamento)
     {
+        if($agendamento->barbeiro_id == null || $agendamento->cliente_id == null){
+            return response()->json([
+                'success' => false,
+                'message' => 'Não é possível iniciar o atendimento. Barbeiro ou cliente não estão associados.'
+            ]);
+        }
+
         if ($agendamento->status === 'agendado') {
              $agendamento->update([
                 'status' => 'em_andamento',
@@ -464,6 +471,7 @@ class AgendamentoController extends Controller
             'data' => now()->format('Y-m-d'),
             'data_vencimento' => now()->format('Y-m-d'),
             'cliente_id' => $agendamento->cliente_id,
+            'filial_id' => $agendamento->filial_id,
             'agendamento_id' => $agendamento->id,
             'situacao' => 'pago',
             'forma_pagamento_id' => $request->forma_pagamento_id,
@@ -472,8 +480,9 @@ class AgendamentoController extends Controller
             'valor_pago' => $request->valor_pago_decimal,
             'ativo' => true
         ]);
-
+        
         $valorComissao = 0;
+        $valorProdutosDoMovimentoParaComissao = (float) 0.00;
         $comissaoPorServico = [];
         $comissao = false;
         $observacaoComissao = "Comissão referente ao atendimento. \nBarbeiro: " . $agendamento->barbeiro->nome . " - Cliente: " . $agendamento->cliente->nome . "\n";
@@ -482,6 +491,7 @@ class AgendamentoController extends Controller
         foreach ($agendamento->produtos as $produto) {
 
             if($produto->tipo == 'servico'){
+                $valorProdutosDoMovimentoParaComissao += ($produto->pivot->quantidade * $produto->pivot->valor_unitario);
                 $comissaoServico = DB::table('barbeiro_servico_comissoes')
                 ->where(
                     'barbeiro_id', $agendamento->barbeiro_id
@@ -511,6 +521,8 @@ class AgendamentoController extends Controller
             ];
         }
         
+        
+
         // Busca se tem comissão na filial porque não tem serviço específico // No Else é com base no serviço
         if(count($comissaoPorServico) <= 0){ 
             
@@ -528,7 +540,13 @@ class AgendamentoController extends Controller
 
                 // Calcular valor da comissão se for percentual; No else é fixo
                 if($comissaoFilial && $comissaoFilial->tipo_comissao == 'percentual'){
-                    $valorComissao = floor((($movimentacao->valor * ($comissaoFilial->valor_comissao / 100))) * 100) / 100;   
+                    $valorComissao = floor(
+                        (
+                            (
+                                ($valorProdutosDoMovimentoParaComissao)
+                                * ($comissaoFilial->valor_comissao / 100)
+                            )
+                        ) * 100) / 100;   
                 } 
                 if($comissaoFilial && $comissaoFilial->tipo_comissao == 'valor_fixo'){
                     $valorComissao = $comissaoFilial->valor_comissao ?? 0;
@@ -551,7 +569,8 @@ class AgendamentoController extends Controller
 
                 $comissao = true;
         }
-  
+
+        // Gerar associação de produtos e serviços na movimentação
         $movimentacao->produtos()->sync($produtos);
         
         if($comissao){
@@ -583,4 +602,42 @@ class AgendamentoController extends Controller
         ->select('barbeiros.*')
         ->get();
     }   
+
+    public function getBarbeirosPorFilial($filialId)
+    {
+        // Por enquanto, retornando todos os barbeiros ativos
+        // Futuramente pode ser filtrado por filial quando implementado
+        $barbeiros = db::table('barbeiros')
+        ->join('barbeiro_filial', 'barbeiros.id', '=', 'barbeiro_filial.barbeiro_id')
+        ->where('barbeiros.ativo', true)
+        ->where('barbeiro_filial.filial_id', $filialId)->select('barbeiros.*')->get();
+
+        return response()->json([
+            'barbeiros' => $barbeiros
+        ]);
+    }
+
+    public function atualizarBarbeiro(Request $request, Agendamento $agendamento)
+    {
+        $request->validate([
+            'barbeiro_id' => 'required|exists:barbeiros,id'
+        ]);
+
+        if ($agendamento->status !== 'agendado') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Apenas agendamentos com status "agendado" podem ter o barbeiro alterado.'
+            ]);
+        }
+
+        // Atualizar barbeiro do agendamento
+        $agendamento->update([
+            'barbeiro_id' => $request->barbeiro_id
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Barbeiro atualizado com sucesso!'
+        ]);
+    }
 }

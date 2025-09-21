@@ -123,23 +123,6 @@ class SiteController extends Controller
                     ]);
                     $valorTotal += $produto->preco;
                 }
-
-                // Criar movimento financeiro se solicitado e há produtos
-                if ($request->criar_cobranca && $valorTotal > 0) {
-                    \App\Models\MovimentacaoFinanceira::create([
-                        'filial_id' => $agendamento->filial_id,
-                        'agendamento_id' => $agendamento->id,
-                        'cliente_id' => $cliente->id,
-                        'tipo' => 'entrada',
-                        'categoria_id' => 2, // Categoria de produtos
-                        'descricao' => 'Produtos - ' . $cliente->nome,
-                        'data' => Carbon::now()->format('Y-m-d'),
-                        'valor' => $valorTotal,
-                        'data_vencimento' => $agendamento->data_agendamento,
-                        'situacao' => 'em_aberto',
-                        'ativo' => true
-                    ]);
-                }
             }
 
             return response()->json([

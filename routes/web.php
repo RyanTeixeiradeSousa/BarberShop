@@ -62,7 +62,8 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::resource('/admin/agendamentos', App\Http\Controllers\AgendamentoController::class); 
     Route::resource('/admin/configuracoes', App\Http\Controllers\ConfiguracaoController::class)->parameters(['configuracoes' => 'configuracao']); 
-
+    Route::get('admin/agendamentos/barbeiros-filial/{filial}', [App\Http\Controllers\AgendamentoController::class, 'getBarbeirosPorFilial'])->name('admin.agendamentos.barbeiros-filial');
+    Route::post('admin/agendamentos/{agendamento}/atualizar-barbeiro', [App\Http\Controllers\AgendamentoController::class, 'atualizarBarbeiro'])->name('admin.agendamentos.atualizar-barbeiro');
     // Financeiro
     Route::resource('/admin/categorias-financeiras', App\Http\Controllers\CategoriaFinanceiraController::class)->parameters(['categorias-financeiras' => 'categoriaFinanceira']); 
     Route::resource('/admin/formas-pagamento', App\Http\Controllers\FormaPagamentoController::class)->parameters(['formas-pagamento' => 'formaPagamento']); 

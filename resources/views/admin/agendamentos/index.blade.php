@@ -107,6 +107,7 @@
         </div>
     </div>
 
+    <!-- Card de Filtros -->
     <div class="card-custom mb-4">
         <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid rgba(59, 130, 246, 0.2); cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#filtrosCollapse">
             <h6 class="m-0 font-weight-bold" style="color: #1f2937;">
@@ -131,7 +132,6 @@
                                     <option value="em_andamento" {{ request('status') == 'em_andamento' ? 'selected' : '' }}>Em Andamento</option>
                                     <option value="concluido" {{ request('status') == 'concluido' ? 'selected' : '' }}>Concluído</option>
                                     <option value="cancelado" {{ request('status') == 'cancelado' ? 'selected' : '' }}>Cancelado</option>
-                                    <option value="atual" {{ request('status') == 'atual' ? 'selected' : '' }}>Atual</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
@@ -160,9 +160,11 @@
         </div>
     </div>
 
+    <!-- Card dos Agendamentos -->
     <div class="card-custom">
         <div class="card-body">
             @if(isset($agendamentos) && $agendamentos->count() > 0)
+                <!-- Informações da Paginação -->
                 <div class="card-custom mb-4">
                     <div class="card-body">
                         <div class="pagination-controls">
@@ -184,6 +186,7 @@
                     </div>
                 </div>
 
+                <!-- Cards de Agendamentos -->
                 <div class="row">
                     @foreach($agendamentos as $agendamento)
                     <div class="col-xl-4 col-lg-6 mb-4">
@@ -218,7 +221,7 @@
                                     @if($agendamento->produtos->count() > 0)
                                         @foreach($agendamento->produtos as $produto)
                                             <div class="service-item mb-2">
-                                                <h6 class="service-name mb-1">{{ $produto->nome }}</h6>
+                                                <h6 class="service-name">{{ $produto->nome }}</h6>
                                                 <div class="d-flex justify-content-between">
                                                     <small class="text-muted">Qtd: {{ $produto->pivot->quantidade }}</small>
                                                     <small class="text-success fw-bold">R$ {{ number_format($produto->pivot->valor_unitario, 2, ',', '.') }}</small>
@@ -256,19 +259,19 @@
                                             <button type="button" class="btn btn-outline-primary btn-sm w-100" 
                                                     onclick="iniciarAtendimento({{ $agendamento->id }})"
                                                     title="Iniciar Atendimento">
-                                                <i class="fas fa-play"></i> Iniciar
+                                                <i class="fas fa-play"></i> Iniciar Atendimento
                                             </button>
                                         @elseif($agendamento->status === 'em_andamento')
                                             <button type="button" class="btn btn-outline-success btn-sm w-100" 
                                                     onclick="finalizarAtendimentoDireto({{ $agendamento->id }})"
                                                     title="Finalizar Atendimento">
-                                                <i class="fas fa-check"></i> Finalizar
+                                                <i class="fas fa-check"></i> Finalizar Atendimento
                                             </button>
                                         @elseif($agendamento->status === 'disponivel')
                                             <button type="button" class="btn btn-outline-success btn-sm w-100" 
                                                     onclick="associarSlot({{ $agendamento->id }})"
                                                     data-bs-toggle="modal" data-bs-target="#associarModal">
-                                                <i class="fas fa-user-plus"></i> Associar
+                                                <i class="fas fa-user-plus"></i> Associar Cliente
                                             </button>
                                         @endif
                                     </div>
@@ -502,8 +505,40 @@
                                     <span id="view-filial" class="fw-bold"></span>
                                 </div>
                                 <div class="info-item">
-                                    <label>Barbeiro(a):</label>
+                                    <label>Barbeiro:</label>
                                     <span id="view-barbeiro" class="fw-bold"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+
+                {{-- Card Barbeiro - só aparece se status for "agendado" --}}
+                <div class="row g-4 mt-2" id="barbeiro-section" style="display: none;">
+                    <div class="col-12">
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-user-tie text-primary me-2"></i>
+                                <h6 class="mb-0">Barbeiro Responsável</h6>
+                            </div>
+                            <div class="info-card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <select class="form-select" id="view-barbeiro-select">
+                                            <option value="">Selecione um barbeiro</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="button" class="btn btn-primary-custom btn-sm" onclick="atualizarBarbeiro()">
+                                            <i class="fas fa-save me-1"></i> Salvar Barbeiro
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Selecione o barbeiro que irá realizar este atendimento
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -543,7 +578,6 @@
             <div class="modal-footer bg-light">
                 <div class="d-flex gap-2 w-100 justify-content-between">
                     <div>
-                         {{-- Removendo botões de ação do modal pois agora estão nos cards --}}
                          {{-- Botão Cancelar Atendimento - só aparece se status for "agendado" --}}
                         <button type="button" class="btn btn-outline-warning" id="btn-cancelar-atendimento" style="display: none;" onclick="cancelarAtendimento()">
                             <i class="fas fa-times me-1"></i> Cancelar Atendimento
@@ -756,7 +790,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">Finalizar Atendimento</button>
+                    <button type="submit" class="btn btn-success" id="btnFinalizarAtendimento">Finalizar Atendimento</button>
                 </div>
             </form>
         </div>
@@ -799,11 +833,11 @@
         border: 2px solid rgba(59, 130, 246, 0.2);
         border-radius: 12px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        /* transition: all 0.05s ease; */
+        transition: all 0.15s ease;
     }
 
     .card-custom:hover {
-        /* transform: translateY(-2px); */
+        transform: translateY(-2px);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
         border-color: rgba(59, 130, 246, 0.5);
     }
@@ -975,7 +1009,7 @@
     }
 
     .card-agendamento:hover {
-        /* transform: translateY(-5px); */
+        transform: translateY(-5px);
         box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
         border-color: rgba(59, 130, 246, 0.4);
     }
@@ -1300,6 +1334,7 @@
 
 @push('scripts')
 <script>
+    let servicoIndex = 1;
     let agendamentoAtual = null;
 
     // Auto-submit dos filtros
@@ -1315,15 +1350,19 @@
     // });
 
     // Seletor de itens por página
-    document.getElementById('perPage').addEventListener('change', function() {
-        const url = new URL(window.location);
-        url.searchParams.set('per_page', this.value);
-        url.searchParams.delete('page');
-        window.location.href = url.toString();
-    });
+    var perPage = document.getElementById('perPage')
+
+    if(perPage){
+        perPage.addEventListener('change', function() {
+            const url = new URL(window.location);
+            url.searchParams.set('per_page', this.value);
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        });
+    }
 
     function iniciarAtendimento(id) {
-        if (confirm('Deseja iniciar este atendimento?')) {
+        if (confirm('Tem certeza que deseja iniciar este atendimento?')) {
             fetch(`/admin/agendamentos/${id}/iniciar`, {
                 method: 'POST',
                 headers: {
@@ -1347,21 +1386,17 @@
         }
     }
 
-    function finalizarAtendimentoDireto(id) {
-        // Buscar dados do agendamento primeiro
-        fetch(`/admin/agendamentos/${id}`)
-            .then(response => response.json())
-            .then(data => {
-                agendamentoAtual = data;
-                abrirModalFinalizacao();
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert('Erro ao carregar dados do agendamento');
-            });
+    function clearModalBackdrop() {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => backdrop.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
     }
 
     function viewAgendamento(id) {
+        clearModalBackdrop(); // Limpar qualquer backdrop residual
+        
             fetch(`/admin/agendamentos/${id}`)
                 .then(response => response.json())
                 .then(data => {
@@ -1371,11 +1406,11 @@
                         'view-cliente': data.cliente ? data.cliente.nome : 'Slot Livre',
                         'view-status': `<span class="badge bg-${data.status_color}">${data.status_label}</span>`,
                         'view-data': new Date(data.data_agendamento).toLocaleDateString('pt-BR'),
-                        'view-horario': `${data.hora_inicio} - ${data.hora_fim}`,
+                        'view-horario': `${new Date(data.hora_inicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - ${new Date(data.hora_fim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
                         'view-valor': data.valor_total ? `R$ ${parseFloat(data.valor_total).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : 'N/A',
                         'view-observacoes': data.observacoes || 'Nenhuma observação registrada',
-                        'view-barbeiro': data.barbeiro.nome || 'Não informado',
-                        'view-filial': data.filial.nome || 'Não informado'
+                        'view-filial': data.filial.nome || 'Não informado',
+                        'view-barbeiro': data.barbeiro.nome || 'Não informado'
                     };
                     
                     Object.entries(elements).forEach(([id, content]) => {
@@ -1405,11 +1440,30 @@
                         servicosContainer.innerHTML = '<div class="text-center text-muted py-3"><i class="fas fa-info-circle me-2"></i>Nenhum serviço associado a este agendamento</div>';
                     }
                     
-                    // Configurar botões baseado no status
+                const barbeiroSection = document.getElementById('barbeiro-section');
                     const btnCancelar = document.getElementById('btn-cancelar-atendimento');
-                    if (btnCancelar) {
-                        btnCancelar.style.display = data.status === 'agendado' ? 'inline-block' : 'none';
+                
+                if (data.status === 'agendado') {
+                    console.log(data)
+                    if (barbeiroSection) {
+                        barbeiroSection.style.display = 'block';
+                        // Carregar barbeiros da filial
+                        carregarBarbeirosDaFilial(data.filial.id, data.barbeiro.id);
                     }
+                    if (btnCancelar) {
+                        btnCancelar.style.display = 'inline-block';
+                    }
+                } else {
+                    if (barbeiroSection) {
+                        barbeiroSection.style.display = 'none';
+                    }
+                    if (btnCancelar) {
+                        btnCancelar.style.display = 'none';
+                    }
+                }
+                
+                // Armazenar ID do agendamento para uso nas funções
+                window.currentAgendamentoId = id;
                     
                     const modal = new bootstrap.Modal(document.getElementById('viewModal'));
                     modal.show();
@@ -1418,87 +1472,79 @@
                     console.error('Erro ao carregar agendamento:', error);
                     alert('Erro ao carregar dados do agendamento');
                 });
-        }
-
-    function configurarBotoesStatus(status) {
-        const btnCancelar = document.getElementById('btn-cancelar-atendimento');
-        const btnMudarStatus = document.getElementById('btn-mudar-status');
-        const btnStatusText = document.getElementById('btn-status-text');
-        
-        // Resetar visibilidade
-        btnCancelar.style.display = 'none';
-        btnMudarStatus.style.display = 'none';
-        
-        if (status === 'agendado') {
-            btnCancelar.style.display = 'inline-block';
-            btnMudarStatus.style.display = 'inline-block';
-            btnStatusText.textContent = 'Iniciar Atendimento';
-            btnMudarStatus.className = 'btn btn-success';
-            btnMudarStatus.innerHTML = '<i class="fas fa-play me-1"></i> <span id="btn-status-text">Iniciar Atendimento</span>';
-        } else if (status === 'em_andamento') {
-            btnMudarStatus.style.display = 'inline-block';
-            btnStatusText.textContent = 'Finalizar Atendimento';
-            btnMudarStatus.className = 'btn btn-primary';
-            btnMudarStatus.innerHTML = '<i class="fas fa-check me-1"></i> <span id="btn-status-text">Finalizar Atendimento</span>';
-        }
     }
 
-    function cancelarAtendimento() {
-        if (!agendamentoAtual) return;
+    function carregarBarbeirosDaFilial(filialId, barbeiroAtualId = null) {
+        fetch(`/admin/agendamentos/barbeiros-filial/${filialId}`)
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('view-barbeiro-select');
+                select.innerHTML = '<option value="">Selecione um barbeiro</option>';
+                
+                data.barbeiros.forEach(barbeiro => {
+                    console.log(barbeiroAtualId);
+                    console.log(barbeiro.id);
+                    const option = document.createElement('option');
+                    option.value = barbeiro.id;
+                    option.textContent = barbeiro.nome;
+                    if (barbeiroAtualId && barbeiro.id == barbeiroAtualId) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar barbeiros:', error);
+            });
+    }
+
+    function atualizarBarbeiro() {
+        const barbeiroId = document.getElementById('view-barbeiro-select').value;
+        const agendamentoId = window.currentAgendamentoId;
         
-        if (confirm('Tem certeza que deseja cancelar este atendimento? O cliente e serviços serão desassociados.')) {
-            fetch(`/admin/agendamentos/${agendamentoAtual.id}/cancelar`, {
+        if (!barbeiroId) {
+            alert('Por favor, selecione um barbeiro');
+            return;
+        }
+        
+        fetch(`/admin/agendamentos/${agendamentoId}/atualizar-barbeiro`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
+            },
+            body: JSON.stringify({
+                barbeiro_id: barbeiroId
+            })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Atendimento cancelado com sucesso!');
-                    location.reload();
+                alert('Barbeiro atualizado com sucesso!');
+                // Opcional: recarregar a página ou atualizar a tabela
+                    // location.reload();
                 } else {
-                    alert('Erro ao cancelar atendimento: ' + data.message);
+                alert('Erro ao atualizar barbeiro: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao cancelar atendimento');
+                alert('Erro ao atualizar barbeiro');
             });
-        }
     }
 
-    function mudarStatus() {
-        if (!agendamentoAtual) return;
-        
-        if (agendamentoAtual.status === 'agendado') {
-            // Mudar para "em andamento"
-            fetch(`/admin/agendamentos/${agendamentoAtual.id}/iniciar`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
+    function finalizarAtendimentoDireto(id) {
+        // Buscar dados do agendamento primeiro
+        fetch(`/admin/agendamentos/${id}`)
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    alert('Atendimento iniciado!');
-                    location.reload();
-                } else {
-                    alert('Erro ao iniciar atendimento: ' + data.message);
-                }
+                agendamentoAtual = data;
+                abrirModalFinalizacao();
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao iniciar atendimento');
+                alert('Erro ao carregar dados do agendamento');
             });
-        } else if (agendamentoAtual.status === 'em_andamento') {
-            // Abrir modal de finalização
-            abrirModalFinalizacao();
-        }
     }
 
     function abrirModalFinalizacao() {
@@ -1563,31 +1609,23 @@
                 document.getElementById('desconto_decimal').value = desconto.replace(/\./g, '').replace(',', '.');
             });
         }
-
-    });
-
-    function deleteAgendamento(id, nome) {
-        document.getElementById('deleteForm').action = `/admin/agendamentos/${id}`;
-        document.getElementById('delete-agendamento-name').textContent = nome;
-    }
-    
-    let servicoIndex = 1;
     
     document.getElementById('add-servico')?.addEventListener('click', function() {
         const container = document.getElementById('servicos-container');
         const servicoDiv = document.createElement('div');
         servicoDiv.className = 'servico-item border rounded p-3 mb-3';
+            
+            let optionsHtml = '<option value="">Selecione um serviço</option>';
+            @foreach($produtos as $produto)
+            optionsHtml += `<option value="{{ $produto->id }}" data-preco="{{ $produto->preco }}">{{ $produto->nome }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}</option>`;
+            @endforeach
+            
         servicoDiv.innerHTML = `
             <div class="row">
                 <div class="col-md-6">
                     <label class="form-label">Serviço</label>
                     <select class="form-select servico-select" name="servicos[${servicoIndex}][produto_id]" required>
-                        <option value="">Selecione um serviço</option>
-                        @foreach($produtos as $produto)
-                        <option value="{{ $produto->id }}" data-preco="{{ $produto->preco }}">
-                            {{ $produto->nome }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}
-                        </option>
-                        @endforeach
+                            ${optionsHtml}
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -1607,12 +1645,46 @@
     });
     
     document.addEventListener('click', function(e) {
-        if (e.target.closest('.remove-servico')) {
+            if (e.target.classList.contains('remove-servico')) {
             e.target.closest('.servico-item').remove();
             updateRemoveButtons();
         }
+        });
     });
+
+    function deleteAgendamento(id, nome) {
+        
+        document.getElementById('deleteForm').action = `/admin/agendamentos/${id}`;
+        document.getElementById('delete-agendamento-name').textContent = nome;
+    }
     
+    function cancelarAtendimento() {
+        if (!agendamentoAtual) return;
+        
+        if (confirm('Tem certeza que deseja cancelar este atendimento? O cliente e serviços serão desassociados.')) {
+            fetch(`/admin/agendamentos/${agendamentoAtual.id}/cancelar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Atendimento cancelado com sucesso!');
+                    location.reload();
+                } else {
+                    alert('Erro ao cancelar atendimento: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao cancelar atendimento');
+            });
+        }
+    }
+
     function updateRemoveButtons() {
         const items = document.querySelectorAll('.servico-item');
         const showRemove = items.length > 1;
@@ -1657,8 +1729,9 @@
             document.body.style.paddingRight = '';
         }
 
+
         // Event listeners para todos os modais
-        const modals = ['createModal', 'associarModal', 'viewModal', 'finalizarModal', 'excluirModal', 'gerarLoteModal'];
+        const modals = ['createModal', 'associarModal', 'viewModal', 'finalizarModal', 'deleteModal', 'gerarLoteModal', 'selecionarBarbeiroModal'];
         
         modals.forEach(modalId => {
             const modalElement = document.getElementById(modalId);
@@ -1669,68 +1742,10 @@
             }
         });
 
-        window.viewAgendamento = function(id) {
-            clearModalBackdrop(); // Limpar qualquer backdrop residual
-            
-            fetch(`/admin/agendamentos/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    agendamentoAtual = data;
-                    console.log(data)
-                    const elements = {
-                        'view-cliente': data.cliente ? data.cliente.nome : 'Slot Livre',
-                        'view-status': `<span class="badge bg-${data.status_color}">${data.status_label}</span>`,
-                        'view-data': new Date(data.data_agendamento).toLocaleDateString('pt-BR'),
-                        'view-horario': `${new Date(data.hora_inicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - ${new Date(data.hora_fim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
-                        'view-valor': data.valor_total ? `R$ ${parseFloat(data.valor_total).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : 'N/A',
-                        'view-observacoes': data.observacoes || 'Nenhuma observação registrada',
-                        'view-barbeiro': data.barbeiro.nome || 'Não informado',
-                        'view-filial': data.filial.nome || 'Não informado'
-                    };
-                    
-                    Object.entries(elements).forEach(([id, content]) => {
-                        const element = document.getElementById(id);
-                        if (element) {
-                            if (id === 'view-status') {
-                                element.innerHTML = content;
-                            } else {
-                                element.textContent = content;
-                            }
-                        }
-                    });
-                    
-                    const servicosContainer = document.getElementById('view-servicos');
-                    if (data.produtos && data.produtos.length > 0) {
-                        const servicosHtml = data.produtos.map(produto => `
-                            <div class="service-card">
-                                <h6>${produto.nome}</h6>
-                                <div class="service-details">
-                                    <span class="service-quantity">Qtd: ${produto.pivot.quantidade}</span>
-                                    <span class="service-price">R$ ${parseFloat(produto.pivot.valor_unitario).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-                                </div>
-                            </div>
-                        `).join('');
-                        servicosContainer.innerHTML = servicosHtml;
-                    } else {
-                        servicosContainer.innerHTML = '<div class="text-center text-muted py-3"><i class="fas fa-info-circle me-2"></i>Nenhum serviço associado a este agendamento</div>';
-                    }
-                    
-                    // Configurar botões baseado no status
-                    const btnCancelar = document.getElementById('btn-cancelar-atendimento');
-                    if (btnCancelar) {
-                        btnCancelar.style.display = data.status === 'agendado' ? 'inline-block' : 'none';
-                    }
-                    
-                    const modal = new bootstrap.Modal(document.getElementById('viewModal'));
-                    modal.show();
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar agendamento:', error);
-                    alert('Erro ao carregar dados do agendamento');
-                });
-        }
 
         window.finalizarAtendimento = function() {
+           
+
             const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewModal'));
             if (viewModal) {
                 viewModal.hide();
@@ -1747,6 +1762,12 @@
             }
         }
 
+    });
+
+    document.getElementById('btnFinalizarAtendimento').addEventListener('click', function() {
+        this.disabled = true;
+        this.innerText = "Finalizando..."; // opcional, muda o texto
+        this.form.submit(); // garante que o form seja enviado
     });
     
 </script>
