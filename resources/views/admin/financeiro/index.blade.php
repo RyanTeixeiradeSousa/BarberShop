@@ -74,7 +74,7 @@
                     </div>
                     <div class="ms-3">
                         <h4 class="mb-0">{{ $totalMovimentacoes }}</h4>
-                        <p class="text-muted mb-0">Total Mov</p>
+                        <p class="text-muted mb-0">Total Movimentações</p>
                     </div>
                 </div>
             </div>
@@ -1125,6 +1125,7 @@
     function carregarProdutosAssociados(produtos) {
         const listaProdutos = document.getElementById('listaProdutos');
         
+         // Limpar lista antes de adicionar novos produtos
         if (produtos.length === 0) {
             listaProdutos.innerHTML = `
                 <div class="alert alert-info">
@@ -1141,7 +1142,7 @@
                 <div class="card mb-3" style="border: 1px solid #60a5fa;">
                     <div class="card-header" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);">
                         <h6 class="mb-0">
-                            <i class="fas fa-tag me-2"></i>Produto ${index + 1}
+                            <i class="fas fa-tag me-2"></i>${produto.tipo === 'produto' ? 'Produto' : 'Serviço'}
                         </h6>
                     </div>
                     <div class="card-body">

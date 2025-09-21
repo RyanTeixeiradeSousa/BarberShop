@@ -21,7 +21,7 @@ class AgendamentoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Agendamento::with(['cliente', 'produtos']);
+        $query = Agendamento::with(['cliente', 'produtos', 'barbeiro', 'filial']);
 
         
         if ($request->filled('busca') && $request->status != 'atual') {

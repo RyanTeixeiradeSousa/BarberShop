@@ -242,6 +242,15 @@
                                         <i class="fas fa-clock text-primary me-2"></i>
                                         <span>{{ $agendamento->hora_inicio->format('H:i') }} - {{ $agendamento->hora_fim->format('H:i') }}</span>
                                     </div>
+                                    {{-- CHANGE> Adicionando informações de barbeiro e filial nos cards --}}
+                                    <div class="detail-item">
+                                        <i class="fas fa-map-marker-alt text-info me-2"></i>
+                                        <span>{{ $agendamento->filial->nome ?? 'Filial não definida' }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-user-tie text-warning me-2"></i>
+                                        <span class="{{ $agendamento->barbeiro->nome ?? 'text-muted' }}">{{ $agendamento->barbeiro->nome ?? 'Nenhum barbeiro associado' }}</span>
+                                    </div>
                                     @if($agendamento->valor_total)
                                     <div class="detail-item">
                                         <i class="fas fa-dollar-sign text-success me-2"></i>

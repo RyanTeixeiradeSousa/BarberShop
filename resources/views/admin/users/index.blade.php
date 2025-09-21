@@ -298,7 +298,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-check">
+                    <div class="form-check d-none">
                         <input class="form-check-input" type="checkbox" id="redefinir_senha_login" name="redefinir_senha_login" value="1">
                         <label class="form-check-label" for="redefinir_senha_login">
                             Forçar redefinição de senha no próximo login
@@ -376,7 +376,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-check">
+                    <div class="form-check d-none">
                         <input class="form-check-input" type="checkbox" id="edit_redefinir_senha_login" name="redefinir_senha_login" value="1">
                         <label class="form-check-label" for="edit_redefinir_senha_login">
                             Forçar redefinição de senha no próximo login
