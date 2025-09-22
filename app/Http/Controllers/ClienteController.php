@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ClienteController extends Controller
 {
@@ -226,5 +227,109 @@ class ClienteController extends Controller
             return redirect()->route('clientes.index')->with(['type' => 'error' , 'message'=> 'Ocorreu um erro interno no servidor.', 'errors' => $e->getMessage()]);
 
         }
+    }
+
+    public function detalhes(Cliente $cliente)
+    {
+        // Timeline de agendamentos
+        $agendamentos = DB::table('agendamentos')
+            ->join('filiais', 'agendamentos.filial_id', '=', 'filiais.id')
+            ->join('barbeiros', 'agendamentos.barbeiro_id', '=', 'barbeiros.id')
+            ->leftJoin('agendamento_produto', 'agendamentos.id', '=', 'agendamento_produto.agendamento_id')
+            ->leftJoin('produtos', 'agendamento_produto.produto_id', '=', 'produtos.id')
+            ->where('agendamentos.cliente_id', $cliente->id)
+            ->select(
+                'agendamentos.*',
+                'filiais.nome as filial_nome',
+                'filiais.endereco as filial_endereco',
+                'barbeiros.nome as barbeiro_nome',
+                DB::raw('GROUP_CONCAT(DISTINCT CASE WHEN produtos.tipo = "servico" THEN produtos.nome END) as servicos_nomes'),
+                DB::raw('GROUP_CONCAT(DISTINCT CASE WHEN produtos.tipo = "produto" THEN produtos.nome END) as produtos_nomes'),
+                DB::raw('SUM(agendamento_produto.quantidade * agendamento_produto.valor_unitario) as valor_total')
+            )
+            ->groupBy('agendamentos.id', 'filiais.nome', 'filiais.endereco', 'barbeiros.nome')
+            ->orderBy('agendamentos.data_agendamento', 'desc')
+            ->orderBy('agendamentos.hora_inicio', 'desc')
+            ->limit(20)
+            ->get();
+
+        // Estatísticas gerais
+        $totalAgendamentos = Agendamento::where('cliente_id', $cliente->id)->count();
+        $agendamentosFinalizados = Agendamento::where('cliente_id', $cliente->id)
+            ->where('status', 'concluido')
+            ->count();
+        $agendamentosCancelados = Agendamento::where('cliente_id', $cliente->id)
+            ->where('status', 'cancelado')
+            ->count();
+
+        // Produtos mais comprados
+        $produtosMaisComprados = DB::table('agendamento_produto')
+            ->join('agendamentos', 'agendamento_produto.agendamento_id', '=', 'agendamentos.id')
+            ->join('produtos', 'agendamento_produto.produto_id', '=', 'produtos.id')
+            ->where('agendamentos.cliente_id', $cliente->id)
+            ->where('agendamentos.status', 'concluido')
+            ->where('produtos.tipo', 'produto')
+            ->select('produtos.nome', 'produtos.tipo', DB::raw('SUM(agendamento_produto.quantidade) as quantidade'), DB::raw('SUM(agendamento_produto.valor_unitario * agendamento_produto.quantidade) as total_gasto'))
+            ->groupBy('produtos.id', 'produtos.nome', 'produtos.tipo')
+            ->orderBy('quantidade', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Serviços mais utilizados
+        $servicosMaisUtilizados = DB::table('agendamento_produto')
+            ->join('agendamentos', 'agendamento_produto.agendamento_id', '=', 'agendamentos.id')
+            ->join('produtos', 'agendamento_produto.produto_id', '=', 'produtos.id')
+            ->where('agendamentos.cliente_id', $cliente->id)
+            ->where('agendamentos.status', 'concluido')
+            ->where('produtos.tipo', 'servico')
+            ->select('produtos.nome', DB::raw('SUM(agendamento_produto.quantidade) as quantidade'), DB::raw('SUM(agendamento_produto.valor_unitario * agendamento_produto.quantidade) as total_gasto'))
+            ->groupBy('produtos.id', 'produtos.nome')
+            ->orderBy('quantidade', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Valor total gasto
+        $valorTotalGasto = MovimentacaoFinanceira::where('cliente_id', $cliente->id)
+            ->where('tipo', 'entrada')
+            ->where('situacao', 'pago')
+            ->sum(DB::raw('valor - desconto'));
+
+        // Filiais mais frequentadas
+        $filiaisMaisFrequentadas = DB::table('agendamentos')
+            ->join('filiais', 'agendamentos.filial_id', '=', 'filiais.id')
+            ->where('agendamentos.cliente_id', $cliente->id)
+            ->where('agendamentos.status', 'concluido')
+            ->select('filiais.nome', 'filiais.endereco', DB::raw('COUNT(*) as quantidade'))
+            ->groupBy('filiais.id', 'filiais.nome', 'filiais.endereco')
+            ->orderBy('quantidade', 'desc')
+            ->get();
+
+        // Último agendamento
+        $ultimoAgendamento = DB::table('agendamentos')
+            ->join('filiais', 'agendamentos.filial_id', '=', 'filiais.id')
+            ->join('barbeiros', 'agendamentos.barbeiro_id', '=', 'barbeiros.id')
+            ->where('agendamentos.cliente_id', $cliente->id)
+            ->select(
+                'agendamentos.*',
+                'filiais.nome as filial_nome',
+                'filiais.endereco as filial_endereco',
+                'barbeiros.nome as barbeiro_nome'
+            )
+            ->orderBy('agendamentos.data_agendamento', 'desc')
+            ->orderBy('agendamentos.hora_inicio', 'desc')
+            ->first();
+
+        return view('admin.clientes.detalhes', compact(
+            'cliente',
+            'agendamentos',
+            'totalAgendamentos',
+            'agendamentosFinalizados',
+            'agendamentosCancelados',
+            'produtosMaisComprados',
+            'servicosMaisUtilizados',
+            'valorTotalGasto',
+            'filiaisMaisFrequentadas',
+            'ultimoAgendamento'
+        ));
     }
 }

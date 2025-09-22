@@ -215,6 +215,9 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-success" onclick="verDetalhesCliente({{ $cliente->id }})" title="Detalhes">
+                                            <i class="fas fa-chart-line"></i>
+                                        </button>
                                         <button type="button" class="btn btn-sm btn-outline-info" onclick="visualizarCliente({{ $cliente->id }})" title="Visualizar">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -461,6 +464,19 @@
         font-family: 'Inter', sans-serif;
     }
 
+    .btn-outline-success {
+        border-color: #10b981;
+        color: #10b981;
+        background: var(--card-bg);
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-success:hover {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: #059669;
+        color: #059669;
+    }
+    
     .container-fluid {
         background: transparent;
     }
@@ -908,6 +924,10 @@
         document.getElementById('clienteNomeExcluir').textContent = nome;
         document.getElementById('excluirClienteForm').action = `/admin/clientes/${id}`;
         new bootstrap.Modal(document.getElementById('excluirClienteModal')).show();
+    }
+
+    function verDetalhesCliente(id) {
+        window.location.href = `/admin/clientes/${id}/detalhes`;
     }
 </script>
 @endpush

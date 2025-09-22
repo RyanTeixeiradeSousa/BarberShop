@@ -52,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('comissoes/remover-servico/{id}', [App\Http\Controllers\ComissaoController::class, 'removerComissaoServico'])->name('comissoes.remover-servico');
     
     Route::resource('/admin/clientes', App\Http\Controllers\ClienteController::class); 
+    Route::get('/admin/clientes/{cliente}/detalhes', [App\Http\Controllers\ClienteController::class, 'detalhes'])->name('clientes.detalhes');
     Route::resource('/admin/categorias', App\Http\Controllers\CategoriaController::class);  
     Route::resource('/admin/produtos', App\Http\Controllers\ProdutoController::class); 
     Route::prefix('produtos/{produto}')->name('produtos.')->group(function() {
