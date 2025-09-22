@@ -24,7 +24,7 @@
     <nav class="sidebar-nav">
         <!-- Dashboard -->
         <div class="nav-item">
-            <a href="{{route('dashboard')}}" class="nav-link {{ request()->routeIs('dashboard', 'dashboard') ? 'active' : '' }}" title="Dashboard">
+            <a href="{{route('dashboard')}}" class="nav-link {{ request()->routeIs('dashboard', 'dashboard') ? '' : '' }}" title="Dashboard">
                 <i class="fas fa-home"></i>
                 <span class="nav-text">Dashboard</span>
             </a>
@@ -40,19 +40,19 @@
             </button>
             <div class="nav-submenu" id="org-menu">
                 <div class="nav-item">
-                    <a href="{{route('filiais.index')}}" class="nav-link {{ request()->routeIs('filiais.index', 'filiais.index') ? 'active' : '' }}" title="Filiais">
+                    <a href="{{route('filiais.index')}}" class="nav-link {{ request()->routeIs('filiais.index', 'filiais.index') ? '' : '' }}" title="Filiais">
                         <i class="fas fa-store"></i>
                         <span class="nav-text">Filiais</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('users.index')}}" class="nav-link {{ request()->routeIs('users.index', 'users.index') ? 'active' : '' }}" title="Usuários">
+                    <a href="{{route('users.index')}}" class="nav-link {{ request()->routeIs('users.index', 'users.index') ? '' : '' }}" title="Usuários">
                         <i class="fas fa-user-shield"></i>
                         <span class="nav-text">Usuários</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('configuracoes.index')}}" class="nav-link {{ request()->routeIs('configuracoes.index', 'configuracoes.index') ? 'active' : '' }}" title="Configurações">
+                    <a href="{{route('configuracoes.index')}}" class="nav-link {{ request()->routeIs('configuracoes.index', 'configuracoes.index') ? '' : '' }}" title="Configurações">
                         <i class="fas fa-cog" style="margin-right: 5px;"></i>
                         <span class="nav-text">Configurações</span>
                     </a>
@@ -83,19 +83,19 @@
             </button>
             <div class="nav-submenu" id="clients-menu">
                 <div class="nav-item">
-                    <a href="{{route('clientes.index')}}" class="nav-link {{ request()->routeIs('clientes.index', 'clientes.index') ? 'active' : '' }}" title="Gerenciar Clientes">
+                    <a href="{{route('clientes.index')}}" class="nav-link {{ request()->routeIs('clientes.index', 'clientes.index') ? '' : '' }}" title="Gerenciar Clientes">
                         <i class="fas fa-user-friends"></i>
                         <span class="nav-text">Clientes</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('fornecedores.index')}}" class="nav-link {{ request()->routeIs('fornecedores.index', 'fornecedores.index') ? 'active' : '' }}" title="Gerenciar Fornecedores">
+                    <a href="{{route('fornecedores.index')}}" class="nav-link {{ request()->routeIs('fornecedores.index', 'fornecedores.index') ? '' : '' }}" title="Gerenciar Fornecedores">
                         <i class="fas fa-truck"></i>
                         <span class="nav-text">Fornecedores</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('barbeiros.index')}}" class="nav-link {{ request()->routeIs('barbeiros.index', 'barbeiros.index') ? 'active' : '' }}" title="Gerenciar Barbeiros">
+                    <a href="{{route('barbeiros.index')}}" class="nav-link {{ request()->routeIs('barbeiros.index', 'barbeiros.index') ? '' : '' }}" title="Gerenciar Barbeiros">
                         <i class="fas fa-scissors"></i>
                         <span class="nav-text">Barbeiros</span>
                     </a>
@@ -114,13 +114,13 @@
             </button>
             <div class="nav-submenu" id="services-menu">
                 <div class="nav-item">
-                    <a href="{{route('categorias.index')}}" class="nav-link {{ request()->routeIs('categorias.index', 'categorias.index') ? 'active' : '' }}" title="Categorias">
+                    <a href="{{route('categorias.index')}}" class="nav-link {{ request()->routeIs('categorias.index', 'categorias.index') ? '' : '' }}" title="Categorias">
                         <i class="fas fa-layer-group"></i>
                         <span class="nav-text">Categorias</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('produtos.index')}}" class="nav-link {{ request()->routeIs('produtos.index', 'produtos.index') ? 'active' : '' }}" title="Gerenciar Produtos/Serviços">
+                    <a href="{{route('produtos.index')}}" class="nav-link {{ request()->routeIs('produtos.index', 'produtos.index') ? '' : '' }}" title="Gerenciar Produtos/Serviços">
                         <i class="fas fa-cart-shopping"></i>
                         <span class="nav-text">Gerenciar Produtos/Serviços</span>
                     </a>
@@ -145,19 +145,19 @@
             </button>
             <div class="nav-submenu" id="financial-menu">
                 <div class="nav-item">
-                    <a href="{{route('categorias-financeiras.index')}}" class="nav-link {{ request()->routeIs('categorias-financeiras.index', 'categorias-financeiras.index') ? 'active' : '' }}" title="Categorias">
+                    <a href="{{route('categorias-financeiras.index')}}" class="nav-link {{ request()->routeIs('categorias-financeiras.index', 'categorias-financeiras.index') ? '' : '' }}" title="Categorias">
                         <i class="fas fa-tags"></i>
                         <span class="nav-text">Categorias</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('formas-pagamento.index')}}" class="nav-link {{ request()->routeIs('formas-pagamento.index', 'formas-pagamento.index') ? 'active' : '' }}" title="Formas de Pagamento">
+                    <a href="{{route('formas-pagamento.index')}}" class="nav-link {{ request()->routeIs('formas-pagamento.index', 'formas-pagamento.index') ? '' : '' }}" title="Formas de Pagamento">
                         <i class="fas fa-wallet"></i>
                         <span class="nav-text">Formas de Pagamento</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('financeiro.index')}}" class="nav-link {{ request()->routeIs('financeiro.index', 'financeiros.index') ? 'active' : '' }}" title="Movimentações Financeiras">
+                    <a href="{{route('financeiro.index')}}" class="nav-link {{ request()->routeIs('financeiro.index', 'financeiros.index') ? '' : '' }}" title="Movimentações Financeiras">
                         <i class="fas fa-arrows-rotate"></i>
                         <span class="nav-text">Movimentações Financeiras</span>
                     </a>
@@ -167,7 +167,7 @@
 
         <!-- Agendamentos -->
         <div class="nav-item">
-            <a href="{{route('agendamentos.index')}}" class="nav-link {{ request()->routeIs('agendamentos.index', 'agendamentos.index') ? 'active' : '' }}" title="Agendamentos">
+            <a href="{{route('agendamentos.index')}}" class="nav-link {{ request()->routeIs('agendamentos.index', 'agendamentos.index') ? '' : '' }}" title="Agendamentos">
                 <i class="fas fa-calendar-alt" style="margin-right: 5px;"></i>
                 <span class="nav-text">Agendamentos</span>
                 {{-- <span class="nav-badge-primary">5</span> --}}
