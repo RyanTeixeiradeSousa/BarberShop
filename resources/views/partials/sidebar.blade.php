@@ -24,36 +24,78 @@
     <nav class="sidebar-nav">
         <!-- Dashboard -->
         <div class="nav-item">
-            <a href="{{route('dashboard')}}" class="nav-link" title="Dashboard">
+            <a href="{{route('dashboard')}}" class="nav-link {{ request()->routeIs('dashboard', 'dashboard') ? 'active' : '' }}" title="Dashboard">
                 <i class="fas fa-home"></i>
                 <span class="nav-text">Dashboard</span>
             </a>
+        </div>
+
+        <div class="nav-category">
+            <button class="nav-category-toggle" data-target="org-menu" title="Administração">
+                <div class="nav-category-header">
+                    <i class="fas fa-building me-2"></i>
+                    <span class="nav-text ml-2">Administração</span>
+                </div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </button>
+            <div class="nav-submenu" id="org-menu">
+                <div class="nav-item">
+                    <a href="{{route('filiais.index')}}" class="nav-link {{ request()->routeIs('filiais.index', 'filiais.index') ? 'active' : '' }}" title="Filiais">
+                        <i class="fas fa-store"></i>
+                        <span class="nav-text">Filiais</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{route('users.index')}}" class="nav-link {{ request()->routeIs('users.index', 'users.index') ? 'active' : '' }}" title="Usuários">
+                        <i class="fas fa-user-shield"></i>
+                        <span class="nav-text">Usuários</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{route('configuracoes.index')}}" class="nav-link {{ request()->routeIs('configuracoes.index', 'configuracoes.index') ? 'active' : '' }}" title="Configurações">
+                        <i class="fas fa-cog" style="margin-right: 5px;"></i>
+                        <span class="nav-text">Configurações</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" title="Relatórios">
+                        <i class="fas fa-file-invoice" style="margin-right: 5px;"></i>
+                        <span class="nav-text me-2">Relatórios</span> <span class="badge bg-info">Em breve</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" title="Treinamentos">
+                        <i class="fas fa-tv" style="margin-right: 5px;"></i>
+                        <span class="nav-text me-2">Treinamentos</span> <span class="badge bg-info">Em breve</span>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- Categoria: Clientes -->
         <div class="nav-category">
             <button class="nav-category-toggle" data-target="clients-menu" title="Pessoas">
                 <div class="nav-category-header">
-                    <i class="fas fa-users me-2"></i>
-                    <span class="nav-text">Pessoas</span>
+                    <i class="fas fa-user me-2"></i>
+                    <span class="nav-text ml-2">Gestão de Pessoas</span>
                 </div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </button>
             <div class="nav-submenu" id="clients-menu">
                 <div class="nav-item">
-                    <a href="{{route('clientes.index')}}" class="nav-link " title="Gerenciar Clientes">
+                    <a href="{{route('clientes.index')}}" class="nav-link {{ request()->routeIs('clientes.index', 'clientes.index') ? 'active' : '' }}" title="Gerenciar Clientes">
                         <i class="fas fa-user-friends"></i>
                         <span class="nav-text">Clientes</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('fornecedores.index')}}" class="nav-link" title="Gerenciar Fornecedores">
+                    <a href="{{route('fornecedores.index')}}" class="nav-link {{ request()->routeIs('fornecedores.index', 'fornecedores.index') ? 'active' : '' }}" title="Gerenciar Fornecedores">
                         <i class="fas fa-truck"></i>
                         <span class="nav-text">Fornecedores</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('barbeiros.index')}}" class="nav-link" title="Gerenciar Barbeiros">
+                    <a href="{{route('barbeiros.index')}}" class="nav-link {{ request()->routeIs('barbeiros.index', 'barbeiros.index') ? 'active' : '' }}" title="Gerenciar Barbeiros">
                         <i class="fas fa-scissors"></i>
                         <span class="nav-text">Barbeiros</span>
                     </a>
@@ -72,13 +114,13 @@
             </button>
             <div class="nav-submenu" id="services-menu">
                 <div class="nav-item">
-                    <a href="{{route('categorias.index')}}" class="nav-link " title="Categorias">
+                    <a href="{{route('categorias.index')}}" class="nav-link {{ request()->routeIs('categorias.index', 'categorias.index') ? 'active' : '' }}" title="Categorias">
                         <i class="fas fa-layer-group"></i>
                         <span class="nav-text">Categorias</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('produtos.index')}}" class="nav-link " title="Gerenciar Produtos/Serviços">
+                    <a href="{{route('produtos.index')}}" class="nav-link {{ request()->routeIs('produtos.index', 'produtos.index') ? 'active' : '' }}" title="Gerenciar Produtos/Serviços">
                         <i class="fas fa-cart-shopping"></i>
                         <span class="nav-text">Gerenciar Produtos/Serviços</span>
                     </a>
@@ -97,25 +139,25 @@
             <button class="nav-category-toggle" data-target="financial-menu" title="Financeiro">
                 <div class="nav-category-header">
                     <i class="fa-solid fa-hand-holding-dollar me-2"></i>
-                    <span class="nav-text ml-2">Financeiro</span>
+                    <span class="nav-text ml-2">Gestão Financeira</span>
                 </div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </button>
             <div class="nav-submenu" id="financial-menu">
                 <div class="nav-item">
-                    <a href="{{route('categorias-financeiras.index')}}" class="nav-link " title="Categorias">
+                    <a href="{{route('categorias-financeiras.index')}}" class="nav-link {{ request()->routeIs('categorias-financeiras.index', 'categorias-financeiras.index') ? 'active' : '' }}" title="Categorias">
                         <i class="fas fa-tags"></i>
                         <span class="nav-text">Categorias</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('formas-pagamento.index')}}" class="nav-link " title="Formas de Pagamento">
+                    <a href="{{route('formas-pagamento.index')}}" class="nav-link {{ request()->routeIs('formas-pagamento.index', 'formas-pagamento.index') ? 'active' : '' }}" title="Formas de Pagamento">
                         <i class="fas fa-wallet"></i>
                         <span class="nav-text">Formas de Pagamento</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{route('financeiro.index')}}" class="nav-link " title="Movimentações Financeiras">
+                    <a href="{{route('financeiro.index')}}" class="nav-link {{ request()->routeIs('financeiro.index', 'financeiros.index') ? 'active' : '' }}" title="Movimentações Financeiras">
                         <i class="fas fa-arrows-rotate"></i>
                         <span class="nav-text">Movimentações Financeiras</span>
                     </a>
@@ -125,61 +167,10 @@
 
         <!-- Agendamentos -->
         <div class="nav-item">
-            <a href="{{route('agendamentos.index')}}" class="nav-link " title="Agendamentos">
+            <a href="{{route('agendamentos.index')}}" class="nav-link {{ request()->routeIs('agendamentos.index', 'agendamentos.index') ? 'active' : '' }}" title="Agendamentos">
                 <i class="fas fa-calendar-alt" style="margin-right: 5px;"></i>
                 <span class="nav-text">Agendamentos</span>
                 {{-- <span class="nav-badge-primary">5</span> --}}
-            </a>
-        </div>
-
-        <div class="nav-category">
-            <button class="nav-category-toggle" data-target="org-menu" title="Organização">
-                <div class="nav-category-header">
-                    <i class="fas fa-building me-2"></i>
-                    <span class="nav-text ml-2">Organização</span>
-                </div>
-                <i class="fas fa-chevron-down toggle-icon"></i>
-            </button>
-            <div class="nav-submenu" id="org-menu">
-                <div class="nav-item">
-                    <a href="{{route('filiais.index')}}" class="nav-link " title="Filiais">
-                        <i class="fas fa-store"></i>
-                        <span class="nav-text">Filiais</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="nav-category">
-            <button class="nav-category-toggle" data-target="security-menu" title="Segurança">
-                <div class="nav-category-header">
-                    <i class="fas fa-shield me-2"></i>
-                    <span class="nav-text ml-2">Segurança</span>
-                </div>
-                <i class="fas fa-chevron-down toggle-icon"></i>
-            </button>
-            <div class="nav-submenu" id="security-menu">
-                <div class="nav-item">
-                    <a href="{{route('users.index')}}" class="nav-link " title="Usuários">
-                        <i class="fas fa-user-shield"></i>
-                        <span class="nav-text">Usuários</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="nav-item">
-            <a href="{{route('perfilindex')}}" class="nav-link" title="Configurações">
-                <i class="fas fa-address-card" style="margin-right: 5px;"></i>
-                <span class="nav-text">Meu Perfil</span>
-            </a>
-        </div>
-
-        <!-- Configurações -->
-        <div class="nav-item">
-            <a href="{{route('configuracoes.index')}}" class="nav-link" title="Configurações">
-                <i class="fas fa-cog" style="margin-right: 5px;"></i>
-                <span class="nav-text">Configurações</span>
             </a>
         </div>
 

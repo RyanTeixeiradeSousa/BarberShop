@@ -65,7 +65,7 @@
             </div>
             
             <!-- Perfil adaptado para barbeiro/admin -->
-            <div class="user-profile" onclick="logout()">
+            <div class="user-profile">
                 @php
                     $nome = auth()->user()->nome ?? 'AB';
                     $partes = explode(' ', $nome);
