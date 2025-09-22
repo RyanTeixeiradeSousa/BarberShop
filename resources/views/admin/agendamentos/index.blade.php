@@ -1625,9 +1625,6 @@
         servicoDiv.className = 'servico-item border rounded p-3 mb-3';
             
             let optionsHtml = '<option value="">Selecione um serviço</option>';
-            @foreach($produtos as $produto)
-            optionsHtml += `<option value="{{ $produto->id }}" data-preco="{{ $produto->preco }}">{{ $produto->nome }} - R$ {{ number_format($produto->preco, 2, ',', '.') }}</option>`;
-            @endforeach
             
         servicoDiv.innerHTML = `
             <div class="row">
@@ -1649,6 +1646,27 @@
             </div>
         `;
         container.appendChild(servicoDiv);
+            
+            const agendamentoId = document.getElementById('associarForm').action.split('/').slice(-2, -1)[0];
+            if (agendamentoId) {
+                fetch(`/admin/agendamentos/servicos/${agendamentoId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let servicosHtml = '<option value="">Selecione um serviço</option>';
+                        data.forEach(servico => {
+                            servicosHtml += `<option value="${servico.id}" data-preco="${servico.preco}">
+                                ${servico.nome} - R$ ${parseFloat(servico.preco).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                            </option>`;
+                        });
+
+                        const newSelect = servicoDiv.querySelector('.servico-select');
+                        newSelect.innerHTML = servicosHtml;
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar serviços:', error);
+                    });
+            }
+            
         servicoIndex++;
         updateRemoveButtons();
     });
@@ -1724,6 +1742,26 @@
             .catch(error => {
                 console.error('Erro ao carregar barbeiros:', error);
                 alert('Erro ao carregar possíveis barbeiros do agendamento');
+            });
+
+        const servicoSelects = document.querySelectorAll('.servico-select');
+        fetch(`/admin/agendamentos/servicos/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                let servicosHtml = '<option value="">Selecione um serviço</option>';
+                data.forEach(servico => {
+                    servicosHtml += `<option value="${servico.id}" data-preco="${servico.preco}">
+                        ${servico.nome} - R$ ${parseFloat(servico.preco).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                    </option>`;
+                });
+
+                servicoSelects.forEach(select => {
+                    select.innerHTML = servicosHtml;
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar serviços:', error);
+                alert('Erro ao carregar serviços da filial');
             });
     }
     

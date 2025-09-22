@@ -640,4 +640,21 @@ class AgendamentoController extends Controller
             'message' => 'Barbeiro atualizado com sucesso!'
         ]);
     }
+
+    public function getServicosPorAgendamento(Agendamento $agendamento)
+    {
+        // Buscar serviços da filial do agendamento
+        $filialId = $agendamento->filial_id ?? 1; // Assumindo filial padrão por enquanto
+        
+        // Por enquanto, retornando todos os produtos/serviços ativos
+        // Futuramente pode ser filtrado por filial quando implementado
+        $servicos = db::table('produtos')
+            ->join('produto_filial', 'produtos.id', '=', 'produto_filial.produto_id')
+            ->where('produtos.ativo', true)
+            ->where('produtos.tipo', 'servico')
+            ->where('produto_filial.filial_id', $filialId)
+            ->get(['produtos.id', 'produtos.nome', 'produtos.preco']);
+
+        return response()->json($servicos);
+    }
 }
