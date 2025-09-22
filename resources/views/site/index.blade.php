@@ -28,7 +28,7 @@
             background-image: linear-gradient(135deg, rgba(218,228,233, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%), 
                               url('{{ $configuracoes['site_foto_principal'] }}');
         @else
-            background-image: linear-gradient(135deg, rgba(218,228,233, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%), 
+            background-image: linear-gradient(135deg, rgba(21, 128, 61, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%), 
                               url('/placeholder.svg?height=1080&width=1920');
         @endif
         background-size: cover;
@@ -46,6 +46,10 @@
         font-weight: 800;
         margin-bottom: 1.5rem;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        /* Adicionando quebra de palavra para títulos longos */
+        word-wrap: break-word;
+        hyphens: auto;
+        line-height: 1.1;
     }
 
     .hero-subtitle {
@@ -55,6 +59,9 @@
         max-width: 800px;
         margin-left: auto;
         margin-right: auto;
+        /* Melhorando legibilidade em mobile */
+        line-height: 1.4;
+        padding: 0 1rem;
     }
 
     /* Buttons */
@@ -69,17 +76,20 @@
         transition: all 0.3s ease;
         font-size: 1.1rem;
         border: 2px solid transparent;
+        /* Garantindo que botões não quebrem o layout */
+        white-space: nowrap;
+        min-width: fit-content;
     }
 
     .btn-primary {
         background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
         color: white;
-        box-shadow: 0 10px 25px rgba(218,228,233, 0.3);
+        box-shadow: 0 10px 25px rgba(21, 128, 61, 0.3);
     }
 
     .btn-primary:hover {
         transform: translateY(-3px);
-        box-shadow: 0 20px 40px rgba(218,228,233, 0.4);
+        box-shadow: 0 20px 40px rgba(21, 128, 61, 0.4);
     }
 
     .btn-outline {
@@ -394,6 +404,54 @@
         .btn {
             padding: 1rem 2rem;
             font-size: 1rem;
+        }
+
+        /* Melhorando layout dos botões no hero em mobile */
+        .hero-content {
+            padding: 0 1rem;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 4vw, 1.4rem);
+            margin-bottom: 2rem;
+            padding: 0 0.5rem;
+        }
+    }
+
+    /* Adicionando breakpoint específico para mobile pequeno */
+    @media (max-width: 480px) {
+        .hero-content h1 {
+            font-size: clamp(2rem, 12vw, 3rem);
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(0.9rem, 5vw, 1.2rem);
+            padding: 0 0.25rem;
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            font-size: 0.9rem;
+            gap: 0.5rem;
+        }
+
+        /* Melhorando layout dos botões em telas muito pequenas */
+        .hero-content > div {
+            flex-direction: column !important;
+            gap: 1rem !important;
+            align-items: center;
+        }
+
+        .btn {
+            width: 100%;
+            max-width: 280px;
+            justify-content: center;
         }
     }
 

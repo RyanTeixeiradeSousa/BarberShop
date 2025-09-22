@@ -776,10 +776,18 @@
                 <div class="col-lg-4 mb-4">
                     <h5 style="color: var(--accent-green); margin-bottom: 1rem;">Redes Sociais</h5>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
+                        @if(!empty($configuracoes['linkedin_link']) ?? false)
+                         <a href="#"><i class="fab fa-linkedin"></i></a>
+                        @endif
+                        @if (!empty($configuracoes['instagram_link']) ?? false)
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                        @endif
+                        @if (!empty($configuracoes['facebook_link']) ?? false)
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                        @endif
+                        @if (!empty($configuracoes['twitter_link']) ?? false)
+                            <a href="#"><i class="fab fa-twitter"></i></a>  
+                        @endif
                     </div>
                 </div>
             </div>
