@@ -2,10 +2,13 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>@yield('title', $configuracoes['site_nome'] ?? 'BarberShop')</title>
     <meta name="description" content="@yield('description', 'Agende seu horário na melhor barbearia da cidade')">
-    
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait"> <!-- QQ/UC Browser -->
+    <meta name="orientation" content="portrait">
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
