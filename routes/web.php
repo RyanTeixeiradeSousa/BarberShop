@@ -19,7 +19,8 @@ Route::get('/site', function(){
 
 Route::get('/agendamento', [App\Http\Controllers\SiteController::class, 'agendamento'])->name('site.agendamento');
 Route::get('/api/slots-disponiveis', [App\Http\Controllers\SiteController::class, 'getSlotsDisponiveis'])->name('api.slots-disponiveis');
-
+Route::get('/api/servicos-por-filial/{filialId}', [App\Http\Controllers\SiteController::class, 'getServicosPorFilial'])->name('api.servicos-por-filial');
+Route::get('/api/produtos-por-filial/{filialId}', [App\Http\Controllers\SiteController::class, 'getProdutosPorFilial'])->name('api.produtos-por-filial');
 Route::post('/api/finalizar-agendamento-completo', [App\Http\Controllers\SiteController::class, 'finalizarAgendamentoCompleto'])->name('api.finalizar-agendamento-completo');
 // Admin
 Route::get('/admin/login', [App\Http\Controllers\AuthController::class, 'index'])->name('login');
@@ -87,8 +88,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/admin/users', App\Http\Controllers\UserController::class);
     Route::get('/admin/perfil', [App\Http\Controllers\UserController::class, 'perfilIndex'])->name('perfilindex');
 
-    Route::get('/api/filiais', [App\Http\Controllers\SiteController::class, 'getFiliais'])->name('api.filiais');
-    Route::get('/api/servicos-por-filial/{filialId}', [App\Http\Controllers\SiteController::class, 'getServicosPorFilial'])->name('api.servicos-por-filial');
-    Route::get('/api/produtos-por-filial/{filialId}', [App\Http\Controllers\SiteController::class, 'getProdutosPorFilial'])->name('api.produtos-por-filial');
-    Route::get('/api/horarios-por-filial', [App\Http\Controllers\SiteController::class, 'getHorariosPorFilial'])->name('api.horarios-por-filial');
+    // Route::get('/api/filiais', [App\Http\Controllers\SiteController::class, 'getFiliais'])->name('api.filiais');
+    
+    // Route::get('/api/horarios-por-filial', [App\Http\Controllers\SiteController::class, 'getHorariosPorFilial'])->name('api.horarios-por-filial');
 });
