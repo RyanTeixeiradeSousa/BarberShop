@@ -99,6 +99,7 @@ function initializeSidebar() {
 function initializeThemeToggle() {
   const themeToggle = document.getElementById("darkModeToggle")
   const body = document.body
+  localStorage.setItem("barbershop-theme", "light") // Definir tema claro como padrão
 
   if (!themeToggle) return
 
@@ -160,7 +161,6 @@ function initializeThemeToggle() {
     })
   }
 
-  localStorage.setItem("barbershop-theme", "light") // Definir tema claro como padrão
 
 }
 
