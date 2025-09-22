@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeThemeToggle()
 })
 
+localStorage.setItem("barbershop-theme", "light") // Definir tema claro como padrão
+
 function initializeSidebar() {
   const sidebar = document.getElementById("sidebar")
   const sidebarToggle = document.getElementById("sidebarToggle")
