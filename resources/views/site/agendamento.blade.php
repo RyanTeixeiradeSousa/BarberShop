@@ -55,7 +55,8 @@
     }
 
     .step.active {
-        background: var(--secondary-color);
+        /* Changed from secondary to primary color for active step */
+        background: var(--primary-color);
         color: white;
         transform: scale(1.05);
     }
@@ -100,66 +101,51 @@
         display: block;
     }
 
-    /* Adicionando estilos para seleção de filial */
-    .filial-selection {
-        background: white;
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        max-width: 600px;
-        margin: 0 auto 2rem;
-        text-align: center;
-    }
-
-    .filial-selection h3 {
-        color: var(--primary-color);
-        margin-bottom: 1.5rem;
-        font-size: 1.5rem;
-    }
-
-    .filial-grid {
+    /* Seleção de Filial */
+    .filiais-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: 1fr; /* Uma coluna por padrão para mobile */
         gap: 1rem;
-        margin-top: 1.5rem;
+        margin-bottom: 2rem;
+        max-width: 100%; /* Limitar largura máxima */
     }
 
     .filial-card {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
+        background: white;
+        border-radius: 15px;
         padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         cursor: pointer;
         transition: all 0.3s ease;
-        text-align: center;
-    }
-
-    .filial-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden; /* Prevenir overflow */
+        max-width: 100%; /* Limitar largura máxima */
+        box-sizing: border-box; /* Incluir padding na largura */
+        text-align: center; /* Centralizar conteúdo */
     }
 
     .filial-card.selected {
-        border-color: var(--secondary-color);
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        transform: translateY(-2px);
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, #fff 0%, #f0f9ff 100%);
     }
 
     .filial-icon {
-        font-size: 2rem;
-        color: var(--secondary-color);
+        font-size: 2.5rem;
+        color: var(--primary-color);
         margin-bottom: 1rem;
     }
 
     .filial-name {
+        font-size: 1.25rem;
         font-weight: 600;
         color: var(--primary-color);
         margin-bottom: 0.5rem;
     }
 
     .filial-endereco {
-        font-size: 0.875rem;
         color: #64748b;
+        font-size: 0.9rem;
     }
 
     /* Seleção de Data e Horário */
@@ -215,19 +201,22 @@
     }
 
     .calendar-nav select:hover {
-        border-color: var(--secondary-color);
+        /* Changed from secondary to primary color for hover state */
+        border-color: var(--primary-color);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
         transform: translateY(-1px);
     }
 
     .calendar-nav select:focus {
         outline: none;
-        border-color: var(--secondary-color);
+        /* Changed from secondary to primary color for focus state */
+        border-color: var(--primary-color);
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
     .calendar-nav button {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        /* Changed from secondary to primary color for button background */
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%);
         color: white;
         border: none;
         border-radius: 10px;
@@ -285,13 +274,14 @@
     }
 
     .calendar-day:hover {
-        background: var(--secondary-color);
+        /* Changed from secondary to primary color for hover state */
+        background: var(--primary-color);
         color: white;
         transform: scale(1.1);
     }
 
     .calendar-day.selected {
-        background: var(--secondary-color);
+        background: var(--primary-color);
         color: white;
     }
 
@@ -329,22 +319,22 @@
     }
 
     .time-slot:hover {
-        border-color: var(--secondary-color);
-        background: var(--secondary-color);
+        border-color: var(--primary-color);
+        background: var(--primary-color);
         color: white;
         transform: translateY(-2px);
     }
 
     .time-slot.selected {
-        border-color: var(--secondary-color);
-        background: var(--secondary-color);
+        border-color: var(--primary-color);
+        background: var(--primary-color);
         color: white;
     }
 
     .time-slot.unavailable {
         background: #fee2e2;
         border-color: #fecaca;
-        color: #dc2626;
+        color: #dc3545;
         cursor: not-allowed;
     }
 
@@ -392,7 +382,7 @@
     }
 
     .service-card.selected {
-        border-color: var(--secondary-color);
+        border-color: var(--primary-color);
         background: linear-gradient(135deg, #fff 0%, #f0f9ff 100%);
     }
 
@@ -405,7 +395,8 @@
 
     .service-icon {
         font-size: 2.5rem;
-        color: var(--secondary-color);
+        /* Changed from secondary to primary color for service icon */
+        color: var(--primary-color);
         margin-bottom: 1rem;
     }
 
@@ -419,8 +410,8 @@
     }
 
     .service-card.selected .service-checkbox {
-        background: var(--secondary-color);
-        border-color: var(--secondary-color);
+        background: var(--primary-color);
+        border-color: var(--primary-color);
     }
 
     .service-card.selected .service-checkbox::after {
@@ -450,7 +441,8 @@
     .service-price {
         font-size: 1.5rem;
         font-weight: 700;
-        color: var(--secondary-color);
+        /* Changed from secondary to primary color for service price */
+        color: var(--primary-color);
     }
 
     .service-duration {
@@ -495,7 +487,8 @@
     .form-group input:focus,
     .form-group textarea:focus {
         outline: none;
-        border-color: var(--secondary-color);
+        /* Changed from secondary to primary color for form focus */
+        border-color: var(--primary-color);
     }
 
     /* Resumo */
@@ -568,7 +561,8 @@
     }
 
     .btn-next {
-        background: var(--secondary-color);
+        /* Changed from secondary to primary color for next button */
+        background: var(--primary-color);
         color: white;
     }
 
@@ -610,6 +604,11 @@
         .step {
             padding: 0.75rem 1.5rem;
             font-size: 1rem;
+        }
+        
+        .filiais-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
         
         .datetime-selection {
@@ -767,7 +766,7 @@
     }
 
     .service-card.selected, .produto-card.selected {
-        border-color: var(--secondary-color);
+        border-color: var(--primary-color);
         background: linear-gradient(135deg, #fff 0%, #f0f9ff 100%);
         transform: scale(1.02);
     }
@@ -776,7 +775,7 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        background: var(--secondary-color);
+        background: var(--primary-color);
         color: white;
         border-radius: 50px;
         padding: 0.75rem 1.5rem;
@@ -873,93 +872,57 @@
 
 @push('scripts')
 <script>
-function criarAgendamento() {
-    console.log('[v0] Iniciando criação do agendamento');
-
-    const nome = document.getElementById('nome').value.trim();
-    const telefone = document.getElementById('telefone').value.trim();
-
-    console.log('[v0] Dados coletados:', { nome, telefone, selectedDate, selectedTime, selectedServices: selectedServices.length, selectedFilial });
-
-    if (!selectedFilial || !nome || !telefone || !selectedDate || !selectedTime || selectedServices.length === 0) {
-        alert('Por favor, preencha todos os campos obrigatórios e selecione filial, data, horário e serviços.');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('filial_id', selectedFilial);
-    formData.append('slot_id', selectedSlotId);
-    formData.append('nome', nome);
-    formData.append('telefone', telefone);
-    formData.append('email', document.getElementById('email').value);
-    formData.append('observacoes', document.getElementById('observacoes').value);
-
-    selectedServices.forEach(service => {
-        formData.append('servicos[]', service.id);
-    });
-
-    // Adicionar produtos selecionados se houver
-    selectedProducts.forEach(product => {
-        formData.append('produtos[]', product.id);
-    });
-
-    // Verificar se deve criar cobrança
-    const criarCobranca = document.getElementById('criarMovimentoFinanceiro') && 
-                            document.getElementById('criarMovimentoFinanceiro').checked;
-    formData.append('criar_cobranca', criarCobranca ? '1' : '0');
-
-    console.log('[v0] Enviando dados para API');
-
-    fetch('/api/finalizar-agendamento-completo', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
-    .then(response => {
-        console.log('[v0] Resposta recebida:', response.status);
-        return response.json();
-    })
-    .then(data => {
-        console.log('[v0] Dados da resposta:', data);
-        if (data.success) {
-            alert('Agendamento realizado com sucesso!');
-            window.location.href = '/';
-        } else {
-            alert('Erro ao realizar agendamento: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('[v0] Erro na requisição:', error);
-        alert('Erro ao realizar agendamento. Tente novamente.');
-    });
-}
-
-function applyPhoneMask(input) {
-    let value = input.value.replace(/\D/g, '');
-
-    if (value.length <= 10) {
-        value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-    } else {
-        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    }
-
-    input.value = value;
-}
-
     let currentDate = new Date();
     let selectedDate = null;
     let selectedTime = null;
+    let selectedFilial = null;
     let clientData = {};
     let currentStep = 1;
     let selectedSlotId = null;
-    let selectedFilial = null; // Adicionando variável para filial selecionada
+    let selectedServices = [];
+    let selectedProducts = [];
+document.addEventListener('DOMContentLoaded', function() {
 
-    initCalendar();
+    // initCalendar(); // Chamada removida, será inicializada dentro de selectFilial
+    initTimeSlots();
     
-    const today = new Date();
-    selectedDate = today.toISOString().split('T')[0];
+    // Função para atualizar o calendário e carregar horários
+    function updateCalendarAndSlots(filialId) {
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        selectedDate = todayStr; // Seleciona o dia atual por padrão
+        
+        // Atualizar o header do calendário e renderizar
+        updateCalendarHeader();
+        renderCalendar();
+        
+        // Carregar horários para o dia atual e filial selecionada
+        loadTimeSlots(todayStr, filialId);
+    }
+
+    function selectFilial(filialId, filialCard) {
+        // Remover seleção anterior
+        document.querySelectorAll('.filial-card.selected').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        // Selecionar nova filial
+        filialCard.classList.add('selected');
+        selectedFilial = filialId;
+        
+        // Carregar serviços e produtos da filial
+        carregarServicosPorFilial(filialId);
+        carregarProdutosPorFilial(filialId);
+        
+        updateCalendarAndSlots(filialId);
+        
+        updateStepStatus();
+        
+        // Auto-advance para próximo step após selecionar filial
+        setTimeout(() => {
+            nextStep();
+        }, 500);
+    }
 
     function initCalendar() {
         const calendarGrid = document.querySelector('.calendar-grid');
@@ -1080,6 +1043,7 @@ function applyPhoneMask(input) {
             const dayButton = document.createElement('button');
             dayButton.className = 'calendar-day';
             dayButton.textContent = day;
+            dayButton.dataset.day = day;
             
             const dayDate = new Date(currentYear, currentMonth, day);
             const isToday = dayDate.toDateString() === today.toDateString();
@@ -1094,13 +1058,13 @@ function applyPhoneMask(input) {
             
             if (isToday && !isPast) {
                 dayButton.style.cssText += `
-                    border: 2px solid var(--secondary-color);
+                    border: 2px solid var(--primary-color);
                     font-weight: 700;
                     background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
                 `;
             }
             
-            if (selectedDate && dayDate.toDateString() === selectedDate.toDateString()) {
+            if (selectedDate && dayDate.toDateString() === new Date(selectedDate).toDateString()) {
                 dayButton.classList.add('selected');
             }
             
@@ -1128,62 +1092,63 @@ function applyPhoneMask(input) {
         
         // Selecionar nova data
         button.classList.add('selected');
-        selectedDate = date.toISOString().split('T')[0];
-        
-        setTimeout(() => {
-            const timeSection = document.querySelector('#step2 .time-picker');
-            timeSection.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center',
-                inline: 'nearest'
-            });
-        }, 300);
-        
-        // Atualizar horários disponíveis
-        updateTimeSlots(date);
+        selectedDate = date;
+        loadTimeSlots(date, selectedFilial);
         updateStepStatus();
     }
-    
+
     function initTimeSlots() {
         const timeSlotsContainer = document.querySelector('.time-slots');
         timeSlotsContainer.innerHTML = '<div class="loading">Carregando horários...</div>';
     }
 
-    function updateTimeSlots(date) {
-        console.log(date)
+    // Renomeada para loadTimeSlots para clareza
+    function loadTimeSlots(date, filialId) {
         const timeSlotsContainer = document.querySelector('.time-slots');
-        const dateString = date.toISOString().split('T')[0];
+        let dateString;
+        if (typeof date === 'string') {
+            dateString = date;
+        } else {
+            dateString = date.toISOString().split('T')[0];
+        }
         
-        if (!selectedFilial) {
+        if (!filialId) {
             timeSlotsContainer.innerHTML = '<p class="no-slots">Selecione uma filial primeiro</p>';
             return;
         }
         
         timeSlotsContainer.innerHTML = '<div class="loading">Carregando horários...</div>';
         
-        fetch(`/api/slots-disponiveis?data=${dateString}&filial_id=${selectedFilial}`)
+        fetch(`/api/slots-disponiveis?data=${dateString}&filial_id=${filialId}`)
             .then(response => response.json())
             .then(data => {
-                timeSlotsContainer.innerHTML = '';
-                
-                if (data.horarios && data.horarios.length > 0) {
-                    data.horarios.forEach(slot => {
-                        console.log('Slot disponível:', slot);
-                        const timeButton = document.createElement('button');
-                        timeButton.className = 'time-slot';
-                        timeButton.textContent = new Date(slot.hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });;
-                        timeButton.dataset.slotId = slot.id;
-                        timeButton.addEventListener('click', () => selectTime(slot.hora, slot.id, timeButton));
-                        timeSlotsContainer.appendChild(timeButton);
-                    });
-                } else {
-                    timeSlotsContainer.innerHTML = '<p class="no-slots">Nenhum horário disponível para esta data</p>';
-                }
+                    renderTimeSlots(data.horarios);
             })
             .catch(error => {
                 console.error('Erro ao carregar horários:', error);
-                timeSlotsContainer.innerHTML = '<p class="error">Erro ao carregar horários</p>';
+                timeSlotsContainer.innerHTML = '<p class="no-slots">Erro ao carregar horários</p>';
             });
+    }
+
+    // Função para renderizar os horários disponíveis
+    function renderTimeSlots(slots) {
+        const timeSlotsContainer = document.querySelector('.time-slots');
+        timeSlotsContainer.innerHTML = ''; // Limpa o container antes de adicionar novos slots
+        
+        if (slots && slots.length > 0) {
+            slots.forEach(slot => {
+                const timeButton = document.createElement('button');
+                timeButton.className = 'time-slot';
+                // Formata a hora para HH:MM
+                const horaFormatada = new Date(slot.hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                timeButton.textContent = horaFormatada;
+                timeButton.dataset.slotId = slot.id;
+                timeButton.addEventListener('click', () => selectTime(slot.hora, slot.id, timeButton));
+                timeSlotsContainer.appendChild(timeButton);
+            });
+        } else {
+            timeSlotsContainer.innerHTML = '<p class="no-slots">Nenhum horário disponível para esta data</p>';
+        }
     }
     
     function selectTime(time, slotId, button) {
@@ -1201,41 +1166,7 @@ function applyPhoneMask(input) {
         updateStepStatus();
     }
     
-    let selectedServices = [];
-    let selectedProducts = [];
-
-    function selectFilial(filialId, filialCard) {
-        // Remover seleção anterior
-        document.querySelectorAll('.filial-card.selected').forEach(card => {
-            card.classList.remove('selected');
-        });
-        // Selecionar nova filial
-        filialCard.classList.add('selected');
-        selectedFilial = filialId;
-        
-        // Limpar seleções dependentes
-        selectedDate = null;
-        selectedTime = null;
-        selectedSlotId = null;
-        selectedServices = [];
-        selectedProducts = [];
-        
-        // Limpar calendário e horários
-        document.querySelectorAll('.calendar-day.selected').forEach(day => {
-            day.classList.remove('selected');
-        });
-        document.querySelectorAll('.time-slot.selected').forEach(slot => {
-            slot.classList.remove('selected');
-        });
-        
-        // Recarregar serviços e produtos da filial
-        carregarServicosPorFilial(filialId);
-        carregarProdutosPorFilial(filialId);
-        updateTimeSlots(new Date()); 
-
-        
-        updateStepStatus();
-    }
+    
 
     function carregarServicosPorFilial(filialId) {
         const servicosContainer = document.querySelector('.services-swiper');
@@ -1340,6 +1271,7 @@ function applyPhoneMask(input) {
         }
     }
 
+    // Event listeners
     document.addEventListener('click', function(e) {
         if (e.target.closest('.filial-card')) {
             const card = e.target.closest('.filial-card');
@@ -1404,11 +1336,13 @@ function applyPhoneMask(input) {
     
     function nextStep() {
         if (currentStep < 5 && canProceed()) { // Alterado para 5 steps
-            // </CHANGE>
             if (currentStep === 1) {
-                currentDate = new Date(); // Resetar para dia atual
-                selectedDate = new Date(); // Selecionar dia atual
-                renderCalendar(); // Re-renderizar calendário
+                // Resetar data para o dia atual ao avançar da filial
+                const today = new Date();
+                selectedDate = today;
+                updateCalendarHeader(); // Atualiza o header do calendário
+                renderCalendar(); // Re-renderiza o calendário para destacar o dia atual
+                
                 setTimeout(() => {
                     const section = document.querySelector('#step2 .date-picker');
                     section.scrollIntoView({ 
@@ -1527,18 +1461,20 @@ function applyPhoneMask(input) {
         clientData = Object.fromEntries(formData.entries());
     }
 
+    // Máscara de telefone
     document.getElementById('telefone').addEventListener('input', function(e) {
         applyPhoneMask(e.target);
     });
 
+    // Validação do formulário
     const formClient = document.getElementById('clientForm');
-
     formClient.querySelectorAll('input').forEach(input => {
         input.addEventListener('input', function () {
             updateStepStatus();
         });
     });
 
+    // Busca de produtos
     document.getElementById('searchProducts').addEventListener('input', function(e) {
         const searchTerm = e.target.value.toLowerCase();
         const productCards = document.querySelectorAll('.produto-card');
@@ -1553,6 +1489,7 @@ function applyPhoneMask(input) {
         });
     });
 
+    // Busca de serviços
     document.getElementById('searchServices').addEventListener('input', function(e) {
         const searchTerm = e.target.value.toLowerCase();
         const serviceCards = document.querySelectorAll('.servico-card');
@@ -1567,6 +1504,88 @@ function applyPhoneMask(input) {
         });
     });
 
+    // Inicializar o calendário ao carregar a página
+    initCalendar();
+
+    // Definir funções globais para navegação do calendário
+    window.changeMonth = changeMonth;
+    window.changeMonthYear = changeMonthYear;
+});
+
+function criarAgendamento() {
+    console.log('[v0] Iniciando criação do agendamento');
+
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+
+    console.log('[v0] Dados coletados:', { nome, telefone, selectedDate, selectedTime, selectedServices: selectedServices.length, selectedFilial });
+
+    if (!selectedFilial || !nome || !telefone || !selectedDate || !selectedTime || selectedServices.length === 0) {
+        alert('Por favor, preencha todos os campos obrigatórios e selecione filial, data, horário e serviços.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('filial_id', selectedFilial);
+    formData.append('slot_id', selectedSlotId);
+    formData.append('nome', nome);
+    formData.append('telefone', telefone);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('observacoes', document.getElementById('observacoes').value);
+
+    selectedServices.forEach(service => {
+        formData.append('servicos[]', service.id);
+    });
+
+    // Adicionar produtos selecionados se houver
+    selectedProducts.forEach(product => {
+        formData.append('produtos[]', product.id);
+    });
+
+    // Verificar se deve criar cobrança
+    const criarCobranca = document.getElementById('criarMovimentoFinanceiro') && 
+                            document.getElementById('criarMovimentoFinanceiro').checked;
+    formData.append('criar_cobranca', criarCobranca ? '1' : '0');
+
+    console.log('[v0] Enviando dados para API');
+
+    fetch('/api/finalizar-agendamento-completo', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => {
+        console.log('[v0] Resposta recebida:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('[v0] Dados da resposta:', data);
+        if (data.success) {
+            alert('Agendamento realizado com sucesso!');
+            window.location.href = '/';
+        } else {
+            alert('Erro ao realizar agendamento: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('[v0] Erro na requisição:', error);
+        alert('Erro ao realizar agendamento. Tente novamente.');
+    });
+}
+
+function applyPhoneMask(input) {
+    let value = input.value.replace(/\D/g, '');
+
+    if (value.length <= 10) {
+        value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    } else {
+        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    }
+
+    input.value = value;
+}
 
 // Função global para navegação do calendário
 window.changeMonth = function(direction) {
@@ -1606,7 +1625,7 @@ window.changeMonthYear = function() {
         <p>Escolha a filial, data, horário e serviços desejados. É rápido e fácil!</p>
     </div>
     
-    <!-- Atualizando Steps Indicator para incluir filial como primeiro passo -->
+    <!-- Steps Indicator -->
     <div class="agendamento-steps">
         <div class="step active">
             <div class="step-number">1</div>
@@ -1633,29 +1652,29 @@ window.changeMonthYear = function() {
     <div class="agendamento-content">
         <!-- Step 1: Seleção de Filial -->
         <div class="step-content active" id="step1">
-            <div class="filial-selection">
-                <h3><i class="fas fa-map-marker-alt"></i> Escolha a Filial</h3>
-                <p style="color: #64748b; margin-bottom: 1.5rem;">Selecione a filial onde deseja ser atendido</p>
-                
-                <div class="filial-grid">
-                    @forelse($filiais as $filial)
-                        <div class="filial-card" data-filial-id="{{ $filial->id }}">
-                            <div class="filial-icon">
-                                <i class="fas fa-store"></i>
-                            </div>
-                            <div class="filial-name">{{ $filial->nome }}</div>
-                            <div class="filial-endereco">{{ $filial->endereco }}</div>
+            <h3 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">
+                <i class="fas fa-map-marker-alt"></i> Escolha a Filial
+            </h3>
+            
+            <!-- Restaurando cards das filiais para formato original -->
+            <div class="filiais-grid">
+                @forelse($filiais as $filial)
+                    <div class="filial-card" data-filial-id="{{ $filial->id }}">
+                        <div class="filial-icon">
+                            <i class="fas fa-store"></i>
                         </div>
-                    @empty
-                        <div class="filial-card" data-filial-id="1">
-                            <div class="filial-icon">
-                                <i class="fas fa-store"></i>
-                            </div>
-                            <div class="filial-name">Filial Centro</div>
-                            <div class="filial-endereco">Rua Principal, 123 - Centro</div>
+                        <div class="filial-name">{{ $filial->nome }}</div>
+                        <div class="filial-endereco">{{ $filial->endereco }}</div>
+                    </div>
+                @empty
+                    <div class="filial-card" data-filial-id="1">
+                        <div class="filial-icon">
+                            <i class="fas fa-store"></i>
                         </div>
-                    @endforelse
-                </div>
+                        <div class="filial-name">Filial Centro</div>
+                        <div class="filial-endereco">Rua Principal, 123 - Centro</div>
+                    </div>
+                @endforelse
             </div>
             
             <div class="navigation-buttons">
