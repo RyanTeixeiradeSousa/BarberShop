@@ -57,7 +57,7 @@ class BarbeiroController extends Controller
                 'telefone'        => 'required|string|max:15',
                 'data_nascimento' => 'nullable|date|before:today',
                 'rg'              => 'nullable|string|max:20',
-                'endereco'        => 'nullable|string',
+                'endereco'        => 'required|string',
             ], [
                 'nome.required'            => 'O campo nome é obrigatório.',
                 'cpf.required'             => 'O CPF é obrigatório.',
@@ -66,6 +66,7 @@ class BarbeiroController extends Controller
                 'email.unique'             => 'Este e-mail já está cadastrado.',
                 'telefone.required'        => 'O telefone é obrigatório.',
                 'data_nascimento.before'   => 'A data de nascimento deve ser anterior a hoje.',
+                'endereco.required'   => 'O endereço é obrigatório.',
             ]);
             
             if ($validator->fails()) {

@@ -292,8 +292,8 @@
                             <input type="date" class="form-control" id="data_nascimento" name="data_nascimento">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="endereco" class="form-label">Endereço</label>
-                            <input type="text" class="form-control" id="endereco" name="endereco">
+                            <label for="endereco" class="form-label">Endereço *</label>
+                            <input type="text" class="form-control" id="endereco" required name="endereco">
                         </div>
                     </div>
                     <div class="row">
