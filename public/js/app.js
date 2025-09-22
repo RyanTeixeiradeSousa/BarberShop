@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeThemeToggle()
 })
 
-localStorage.setItem("barbershop-theme", "light") // Definir tema claro como padrão
 
 function initializeSidebar() {
   const sidebar = document.getElementById("sidebar")
@@ -160,6 +159,9 @@ function initializeThemeToggle() {
       }
     })
   }
+
+  localStorage.setItem("barbershop-theme", "light") // Definir tema claro como padrão
+
 }
 
 function logout() {
