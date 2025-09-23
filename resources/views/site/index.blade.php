@@ -591,9 +591,6 @@
                 <p>
                     {{ $configuracoes['site_historia'] ?? 'Há mais de duas décadas, nossa barbearia tem sido sinônimo de qualidade e tradição. Começamos como um pequeno negócio familiar e crescemos para nos tornar referência na cidade.' }}
                 </p>
-                <p>
-                    Ao longo dos anos, mantivemos nosso compromisso com a excelência, combinando técnicas tradicionais com as mais modernas tendências do mercado. Cada cliente que passa por aqui recebe um atendimento personalizado e de qualidade superior.
-                </p>
                 <a href="{{ route('site.agendamento') }}" class="btn btn-primary">
                     <i class="fas fa-calendar-check"></i>
                     Faça Parte da Nossa História
@@ -668,7 +665,7 @@
                     <i class="fas fa-handshake"></i>
                 </div>
                 <h3>Tradição e Confiança</h3>
-                <p>Mais de 20 anos de tradição e milhares de clientes satisfeitos comprovam nossa dedicação e qualidade no atendimento.</p>
+                <p>Clientes satisfeitos comprovam nossa dedicação e qualidade no atendimento.</p>
             </div>
         </div>
     </div>
