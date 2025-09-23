@@ -475,7 +475,7 @@
     <div class="hero-content">
         <h1>{{ $configuracoes['site_nome'] ?? 'BarberShop Premium' }}</h1>
         <p class="hero-subtitle">
-            {{ $configuracoes['site_slogan'] ?? 'Tradição, qualidade e estilo em cada corte. Experimente o melhor da barbearia moderna com profissionais especializados.' }}
+            {{ $configuracoes['site_slogan'] ?? 'Tradição, qualidade e estilo em cada corte. Experimente o melhor da barbearia.' }}
         </p>
         <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
             <a href="{{ route('site.agendamento') }}" class="btn btn-primary">
