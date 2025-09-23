@@ -184,7 +184,7 @@
                                     </span>
                                 </td>
                                 <td>{{ $movimentacao->descricao }}</td>
-                                <td><span class="badge bg-info">{{ $movimentacao->tipo == 'saida' ? $movimentacao->fornecedor->nome : $movimentacao->cliente->nome ?? '-' }}</span></td>
+                                <td><span class="badge bg-info">{{ $movimentacao->tipo == 'saida' ? $movimentacao->fornecedor->nome ?? '' : $movimentacao->cliente->nome ?? '-' }}</span></td>
                                 <td>{{ $movimentacao->categoriaFinanceira->nome ?? '-' }}</td>
                                 <td>
                                     <span class="badge bg-{{ $movimentacao->situacao == 'pago' ? 'success' : ($movimentacao->situacao == 'cancelado' ? 'danger' : 'warning') }}">
