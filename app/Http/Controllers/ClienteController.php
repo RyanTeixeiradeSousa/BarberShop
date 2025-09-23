@@ -239,19 +239,22 @@ class ClienteController extends Controller
             ->leftJoin('produtos', 'agendamento_produto.produto_id', '=', 'produtos.id')
             ->where('agendamentos.cliente_id', $cliente->id)
             ->select(
-                'agendamentos.*',
+                'agendamentos.id',
+                'agendamentos.data_agendamento',
+                'agendamentos.hora_inicio',
                 'filiais.nome as filial_nome',
                 'filiais.endereco as filial_endereco',
                 'barbeiros.nome as barbeiro_nome',
-                DB::raw('GROUP_CONCAT(DISTINCT CASE WHEN produtos.tipo = "servico" THEN produtos.nome END) as servicos_nomes'),
-                DB::raw('GROUP_CONCAT(DISTINCT CASE WHEN produtos.tipo = "produto" THEN produtos.nome END) as produtos_nomes'),
-                DB::raw('SUM(agendamento_produto.quantidade * agendamento_produto.valor_unitario) as valor_total')
+                DB::raw('GROUP_CONCAT(DISTINCT CASE WHEN produtos.tipo = "servico" THEN produtos.nome END SEPARATOR ", ") as servicos_nomes'),
+                DB::raw('GROUP_CONCAT(DISTINCT CASE WHEN produtos.tipo = "produto" THEN produtos.nome END SEPARATOR ", ") as produtos_nomes'),
+                DB::raw('COALESCE(SUM(agendamento_produto.quantidade * agendamento_produto.valor_unitario), 0) as valor_total')
             )
             ->groupBy('agendamentos.id', 'filiais.nome', 'filiais.endereco', 'barbeiros.nome')
             ->orderBy('agendamentos.data_agendamento', 'desc')
             ->orderBy('agendamentos.hora_inicio', 'desc')
             ->limit(20)
             ->get();
+
 
         // Estatísticas gerais
         $totalAgendamentos = Agendamento::where('cliente_id', $cliente->id)->count();
