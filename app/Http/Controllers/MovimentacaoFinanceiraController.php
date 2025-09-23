@@ -97,7 +97,8 @@ class MovimentacaoFinanceiraController extends Controller
         $produtos = $servicosAtivos->merge($produtosAtivosNaoComprometidos);
 
         $agendamentos = Agendamento::with('cliente')->orderBy('data_agendamento', 'desc')->get();
-
+            dd($movimentacoes);
+        
         return view('admin.financeiro.index', compact(
             'movimentacoes', 
             'totalEntradas', 
