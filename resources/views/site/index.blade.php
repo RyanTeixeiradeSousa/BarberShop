@@ -714,7 +714,7 @@
                     <i class="fas fa-clock"></i>
                 </div>
                 <div class="contact-text">
-                    {{ $configuracoes['site_horario'] ?? 'Seg-Sex: 8h-18h | Sáb: 8h-16h' }}
+                    {{ $configuracoes['site_horario_funcionamento'] ?? 'Seg-Sex: 8h-18h | Sáb: 8h-16h' }}
                 </div>
             </div>
         </div>
