@@ -1229,11 +1229,11 @@
         transition: all 0.3s ease;
     }
 
-    .info-card:hover {
+    /* .info-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         border-color: rgba(59, 130, 246, 0.3);
-    }
+    } */
 
     .info-card-header {
         background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -1815,6 +1815,84 @@
         this.disabled = true;
         this.innerText = "Finalizando..."; // opcional, muda o texto
         this.form.submit(); // garante que o form seja enviado
+    });
+    // Select de filiais
+    const filialSelects = document.querySelectorAll('#filial, #filialLote');
+    filialSelects.forEach(select => {
+        new SearchableSelect(select, {
+            placeholder: "Digite para buscar filial...",
+            noResultsText: "Nenhuma filial encontrada"
+        });
+    });
+
+    // Select de clientes
+    const clienteSelect = document.getElementById('associar-cliente_id');
+    if (clienteSelect) {
+        new SearchableSelect(clienteSelect, {
+            placeholder: "Digite para buscar cliente...",
+            noResultsText: "Nenhum cliente encontrado",
+            searchMinLength: 2
+        });
+    }
+
+    // Select de serviços/produtos
+    const servicoSelects = document.querySelectorAll('.servico-select');
+    servicoSelects.forEach(select => {
+        new SearchableSelect(select, {
+            placeholder: "Digite para buscar serviço...",
+            noResultsText: "Nenhum serviço encontrado"
+        });
+    });
+
+    const barbeiroSelects = document.querySelectorAll('#associar-barbeiro_id');
+    barbeiroSelects.forEach(select => {
+        new SearchableSelect(select, {
+            placeholder: "Digite para buscar serviço...",
+            noResultsText: "Nenhum barbeiro encontrado"
+        });
+    });
+
+    const barbeiroSelectsView = document.querySelectorAll('#view-barbeiro-select');
+    barbeiroSelectsView.forEach(select => {
+        new SearchableSelect(select, {
+            placeholder: "Digite para buscar serviço...",
+            noResultsText: "Nenhum barbeiro encontrado"
+        });
+    });
+
+    
+
+    // Select de formas de pagamento
+    const formaPagamentoSelect = document.getElementById('forma_pagamento_id');
+    if (formaPagamentoSelect) {
+        new SearchableSelect(formaPagamentoSelect, {
+            placeholder: "Digite para buscar forma de pagamento...",
+            noResultsText: "Nenhuma forma de pagamento encontrada"
+        });
+    }
+
+    // Aplicar busca em novos selects de serviços quando adicionados dinamicamente
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1) {
+                    const newServiceSelects = node.querySelectorAll('.servico-select');
+                    newServiceSelects.forEach(select => {
+                        if (!select.closest('.searchable-select-wrapper')) {
+                            new SearchableSelect(select, {
+                                placeholder: "Digite para buscar serviço...",
+                                noResultsText: "Nenhum serviço encontrado"
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
     });
     
 </script>

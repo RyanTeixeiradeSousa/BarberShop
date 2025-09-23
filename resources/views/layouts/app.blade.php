@@ -19,7 +19,8 @@
   <link rel="stylesheet" href="{{asset('css/app.css')}}">
   <link rel="stylesheet" href="{{asset('css/header.css')}}">
   <link rel="stylesheet" href="{{asset('css/sidebar.css')}}">
-  
+  <link rel="stylesheet" href="{{ asset('css/searchable-select.css') }}">
+
   @stack('styles')
 </head>
 <body>
@@ -41,7 +42,8 @@
   <script src="{{asset('js/app.js')}}"></script>
   <script src="{{asset('js/header.js')}}"></script>
   <script src="{{asset('js/sidebar.js')}}"></script>
-  
+  <script src="{{ asset('js/searchable-select.js') }}"></script>
+
   @stack('scripts')
 </body>
 </html>

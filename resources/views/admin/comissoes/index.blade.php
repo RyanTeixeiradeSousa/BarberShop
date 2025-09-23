@@ -135,7 +135,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label class="form-label">Serviço</label>
-                            <select name="produto_id" class="form-select" required>
+                            <select name="produto_id" class="form-select servicoSelect" required>
                                 <option value="">Selecione um serviço</option>
                                 @foreach($produtos as $produto)
                                     <option value="{{ $produto->id }}">{{ $produto->nome }}</option>
@@ -800,6 +800,15 @@ function removerComissaoServico(id) {
         });
     }
 }
+
+// Select de filiais
+const servicoSelect = document.querySelectorAll('.servicoSelect');
+servicoSelect.forEach(select => {
+        new SearchableSelect(select, {
+            placeholder: "Digite para buscar o serviço...",
+            noResultsText: "Nenhum seviço encontrada"
+        });
+    });
 </script>
 @endpush
 @endsection
