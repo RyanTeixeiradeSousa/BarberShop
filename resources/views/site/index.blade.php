@@ -475,7 +475,7 @@
     <div class="hero-content">
         <h1>{{ $configuracoes['site_nome'] ?? 'BarberShop Premium' }}</h1>
         <p class="hero-subtitle">
-            {{ $configuracoes['site_slogan'] ?? 'Tradição, qualidade e estilo em cada corte. Experimente o melhor da barbearia moderna com profissionais especializados.' }}
+            {{ $configuracoes['site_slogan'] ?? 'Tradição, qualidade e estilo em cada corte. Experimente o melhor da barbearia.' }}
         </p>
         <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
             <a href="{{ route('site.agendamento') }}" class="btn btn-primary">
@@ -591,9 +591,6 @@
                 <p>
                     {{ $configuracoes['site_historia'] ?? 'Há mais de duas décadas, nossa barbearia tem sido sinônimo de qualidade e tradição. Começamos como um pequeno negócio familiar e crescemos para nos tornar referência na cidade.' }}
                 </p>
-                <p>
-                    Ao longo dos anos, mantivemos nosso compromisso com a excelência, combinando técnicas tradicionais com as mais modernas tendências do mercado. Cada cliente que passa por aqui recebe um atendimento personalizado e de qualidade superior.
-                </p>
                 <a href="{{ route('site.agendamento') }}" class="btn btn-primary">
                     <i class="fas fa-calendar-check"></i>
                     Faça Parte da Nossa História
@@ -668,7 +665,7 @@
                     <i class="fas fa-handshake"></i>
                 </div>
                 <h3>Tradição e Confiança</h3>
-                <p>Mais de 20 anos de tradição e milhares de clientes satisfeitos comprovam nossa dedicação e qualidade no atendimento.</p>
+                <p>Clientes satisfeitos comprovam nossa dedicação e qualidade no atendimento.</p>
             </div>
         </div>
     </div>
@@ -717,7 +714,7 @@
                     <i class="fas fa-clock"></i>
                 </div>
                 <div class="contact-text">
-                    {{ $configuracoes['site_horario'] ?? 'Seg-Sex: 8h-18h | Sáb: 8h-16h' }}
+                    {{ $configuracoes['site_horario_funcionamento'] ?? 'Seg-Sex: 8h-18h | Sáb: 8h-16h' }}
                 </div>
             </div>
         </div>
