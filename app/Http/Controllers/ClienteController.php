@@ -239,6 +239,7 @@ class ClienteController extends Controller
             ->leftJoin('produtos', 'agendamento_produto.produto_id', '=', 'produtos.id')
             ->where('agendamentos.cliente_id', $cliente->id)
             ->select(
+                'agendamentos.status',
                 'agendamentos.id',
                 'agendamentos.data_agendamento',
                 'agendamentos.hora_inicio',

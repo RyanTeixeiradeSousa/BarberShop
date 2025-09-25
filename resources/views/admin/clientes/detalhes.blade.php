@@ -123,7 +123,7 @@
                     @if($cliente->endereco)
                     <div class="info-item">
                         <label>Endereço:</label>
-                        <span>{{ $cliente->endereco }}</span>
+                        <span>{{ $cliente->endereco ?? 'Não informado' }}</span>
                     </div>
                     @endif
                 </div>
@@ -141,9 +141,9 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6>{{ $filial->nome }}</h6>
-                                <small class="text-muted">{{ $filial->endereco }}</small>
+                                <small class="text-muted">{{ $filial->endereco ?? 'Não informado' }}</small>
                             </div>
-                            <span class="badge bg-primary">{{ $filial->quantidade }}x</span>
+                            <span class="badge bg-primary">{{ $filial->quantidade ?? 0 }}x</span>
                         </div>
                     </div>
                     @endforeach
@@ -162,6 +162,7 @@
                     @if($agendamentos->count() > 0)
                     <div class="timeline">
                         @foreach($agendamentos as $agendamento)
+                        {{-- {{dd($agendamento)}} --}}
                         <div class="timeline-item">
                             <div class="timeline-marker bg-{{ $agendamento->status == 'concluido' ? 'success' : ($agendamento->status == 'cancelado' ? 'danger' : 'warning') }}">
                                 <i class="fas fa-{{ $agendamento->status == 'concluido' ? 'check' : ($agendamento->status == 'cancelado' ? 'times' : 'clock') }}"></i>

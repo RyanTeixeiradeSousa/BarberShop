@@ -11,7 +11,8 @@ class CategoriaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Categoria::query();
+        $query = Categoria::with('produtos')
+        ->withCount('produtos');
 
         // Filtro de busca
         if ($request->filled('busca')) {
