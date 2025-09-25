@@ -739,6 +739,7 @@
 
     .service-card, .produto-card {
         min-width: 280px;
+        max-width: 280px;
         flex-shrink: 0;
         background: white;
         border-radius: 15px;
