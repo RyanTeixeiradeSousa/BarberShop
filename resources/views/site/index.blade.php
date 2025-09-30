@@ -20,6 +20,33 @@
         --primary-foreground: #ffffff;
     }
 
+    /* WhatsApp Float */
+    .whatsapp-float {
+        position: fixed;
+        width: 60px;
+        height: 60px;
+        bottom: 40px;
+        right: 40px;
+        background-color: #25d366;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 1.8rem;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        z-index: 100;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .whatsapp-float:hover {
+        background-color: #128c7e;
+        transform: scale(1.1);
+        color: white;
+    }
+
     /* Hero Section */
     .hero {
         min-height: 100vh;
@@ -470,6 +497,11 @@
 @endpush
 
 @section('content')
+
+<a href="https://wa.me/{{preg_replace('/\D/', '', $configuracoes['site_telefone'])}}?text=Olá, tudo bem? Estou entrando em contato depois de conhecer o site da barbearia. Gostaria de saber mais sobre os serviços e valores, se vocês também oferecem produtos para venda e como funciona o agendamento." class="whatsapp-float" target="_blank">
+    <i class="fa-brands fa-whatsapp"></i>
+</a>
+
 <!-- Hero Section -->
 <section class="hero" id="inicio">
     <div class="hero-content">
