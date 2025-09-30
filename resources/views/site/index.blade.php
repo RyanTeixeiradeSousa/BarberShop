@@ -498,7 +498,7 @@
 
 @section('content')
 
-<a href="https://wa.me/{{preg_replace('/\D/', '', $configuracoes['site_telefone'])}}?text=Olá, tudo bem? Estou entrando em contato depois de conhecer o site da barbearia. Gostaria de saber mais sobre os serviços e valores, se vocês também oferecem produtos para venda e como funciona o agendamento." class="whatsapp-float" target="_blank">
+<a href="https://wa.me/{{'55' . preg_replace('/\D/', '', $configuracoes['site_telefone'])}}?text=Olá, tudo bem? Estou entrando em contato depois de conhecer o site da barbearia. Gostaria de saber mais sobre os serviços e valores, se vocês também oferecem produtos para venda e como funciona o agendamento." class="whatsapp-float" target="_blank">
     <i class="fa-brands fa-whatsapp"></i>
 </a>
 
