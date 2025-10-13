@@ -15,15 +15,6 @@
             </h2>
             <p class="mb-0" style="color: var(--text-muted);">Gere relatórios detalhados para análise do seu negócio</p>
         </div>
-        <div class="col-md-4 text-end">
-            <div class="d-flex gap-2 justify-content-end">
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#historicoRelatoriosModal">
-                    <i class="fas fa-history me-1"></i>
-                    Histórico
-                </button>
-                <!-- Removido botão de Relatório Personalizado -->
-            </div>
-        </div>
     </div>
 
     <!-- Filtros e Busca -->
@@ -35,13 +26,13 @@
         </div>
         <div class="card-body">
             <div class="row align-items-center">
-                <div class="col-md-6">
+                <div class="col-md-6 mb-1">
                     <div class="search-container">
                         <i class="fas fa-search search-icon"></i>
                         <input type="text" class="form-control search-input" id="searchReports" placeholder="Buscar relatórios por nome ou categoria...">
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 mb-1">
                     <select class="form-select" id="categoryFilter">
                         <option value="">Todas as categorias</option>
                         <option value="financeiro">Financeiro</option>
@@ -51,7 +42,7 @@
                         <option value="produtos">Produtos</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 mb-1">
                     <select class="form-select" id="complexityFilter">
                         <option value="">Todos os tipos</option>
                         <option value="simples">Simples</option>
@@ -133,9 +124,7 @@
                         <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('faturamento-mensal')">
                             <i class="fas fa-play"></i> Gerar
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="previewReport('faturamento-mensal')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                       
                     </div>
                 </div>
 
@@ -158,9 +147,7 @@
                         <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('comissoes-barbeiros')">
                             <i class="fas fa-play"></i> Gerar
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="previewReport('comissoes-barbeiros')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                       
                     </div>
                 </div>
 
@@ -183,9 +170,7 @@
                         <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('formas-pagamento')">
                             <i class="fas fa-play"></i> Gerar
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="previewReport('formas-pagamento')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                       
                     </div>
                 </div>
 
@@ -209,9 +194,7 @@
                         <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('novos-clientes')">
                             <i class="fas fa-play"></i> Gerar
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="previewReport('novos-clientes')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        
                     </div>
                 </div>
 
@@ -234,9 +217,7 @@
                         <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('aniversariantes')">
                             <i class="fas fa-play"></i> Gerar
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="previewReport('aniversariantes')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                       
                     </div>
                 </div>
 
@@ -259,9 +240,7 @@
                         <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('perfil-clientes')">
                             <i class="fas fa-play"></i> Gerar
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="previewReport('perfil-clientes')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                       
                     </div>
                 </div>
 
@@ -285,9 +264,7 @@
                         <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('taxa-ocupacao')">
                             <i class="fas fa-play"></i> Gerar
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="previewReport('taxa-ocupacao')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        
                     </div>
                 </div>
 
@@ -310,9 +287,7 @@
                         <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('cancelamentos')">
                             <i class="fas fa-play"></i> Gerar
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="previewReport('cancelamentos')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                       
                     </div>
                 </div>
 
@@ -336,9 +311,7 @@
                         <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('performance-barbeiros')">
                             <i class="fas fa-play"></i> Gerar
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="previewReport('performance-barbeiros')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        
                     </div>
                 </div>
 
@@ -362,9 +335,7 @@
                         <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('produtos-vendidos')">
                             <i class="fas fa-play"></i> Gerar
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="previewReport('produtos-vendidos')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        
                     </div>
                 </div>
 
@@ -376,48 +347,6 @@
                     <i class="fas fa-search fa-3x text-muted mb-3"></i>
                     <h5 class="text-muted">Nenhum relatório encontrado</h5>
                     <p class="text-muted">Tente ajustar os filtros ou buscar por outros termos.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Histórico de Relatórios -->
-<div class="modal fade" id="historicoRelatoriosModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
-            <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
-                <h5 class="modal-title">
-                    <i class="fas fa-history me-2"></i>Histórico de Relatórios
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Relatório</th>
-                                <th>Data/Hora</th>
-                                <th>Usuário</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Faturamento Mensal</td>
-                                <td>15/01/2024 14:30</td>
-                                <td>Admin</td>
-                                <td><span class="badge bg-success">Concluído</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -438,16 +367,18 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="faturamentoMensalForm">
+             
+            <form action="{{ route('admin.relatorios.faturamento-mensal') }}" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data Inicial</label>
-                            <input type="date" class="form-control" name="data_inicial" required>
+                            <input type="date" class="form-control" name="data_inicio" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data Final</label>
-                            <input type="date" class="form-control" name="data_final" required>
+                            <input type="date" class="form-control" name="data_fim" required>
                         </div>
                     </div>
                     <div class="row">
@@ -463,13 +394,13 @@
                             <label class="form-label">Forma de Pagamento</label>
                             <select class="form-select" name="forma_pagamento">
                                 <option value="">Todas as formas</option>
-                                <option value="dinheiro">Dinheiro</option>
-                                <option value="cartao">Cartão</option>
-                                <option value="pix">PIX</option>
+                                @foreach ($formaPagamento as $forma)
+                                    <option value="{{$forma->id}}">{{$forma->nome}}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label class="form-label">Formato do Relatório</label>
                         <div class="row">
                             <div class="col-md-4">
@@ -491,15 +422,15 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="generateReportWithParams('faturamento-mensal')">
-                    <i class="fas fa-play me-1"></i>Gerar Relatório
-                </button>
-            </div>
+                    </div> --}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -514,8 +445,10 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="comissoesBarbeirosForm">
+             
+            <form action="" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data Inicial</label>
@@ -530,7 +463,6 @@
                         <label class="form-label">Barbeiro</label>
                         <select class="form-select searchable-select" name="barbeiro_id" data-searchable="true">
                             <option value="">Todos os barbeiros</option>
-                            <!-- Populando com dados reais do banco -->
                             @foreach($barbeiros as $barbeiro)
                                 <option value="{{ $barbeiro->id }}">{{ $barbeiro->nome }}</option>
                             @endforeach
@@ -554,14 +486,14 @@
                             </select>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="generateReportWithParams('comissoes-barbeiros')">
-                    <i class="fas fa-play me-1"></i>Gerar Relatório
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -576,8 +508,9 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="formasPagamentoForm">
+            <form action="" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data Inicial</label>
@@ -628,14 +561,14 @@
                             <option value="excel">Excel</option>
                         </select>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="generateReportWithParams('formas-pagamento')">
-                    <i class="fas fa-play me-1"></i>Gerar Relatório
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -650,8 +583,9 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="novosClientesForm">
+            <form action="" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data Inicial</label>
@@ -678,14 +612,14 @@
                             <option value="csv">CSV</option>
                         </select>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="generateReportWithParams('novos-clientes')">
-                    <i class="fas fa-play me-1"></i>Gerar Relatório
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -700,8 +634,9 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="aniversariantesForm">
+            <form action="" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Mês</label>
@@ -760,14 +695,14 @@
                             <option value="csv">CSV</option>
                         </select>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="generateReportWithParams('aniversariantes')">
-                    <i class="fas fa-play me-1"></i>Gerar Relatório
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -782,8 +717,9 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="perfilClientesForm">
+            <form action="" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data Inicial</label>
@@ -855,14 +791,14 @@
                             <option value="excel">Excel</option>
                         </select>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="generateReportWithParams('perfil-clientes')">
-                    <i class="fas fa-play me-1"></i>Gerar Relatório
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -877,8 +813,10 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="taxaOcupacaoForm">
+             
+            <form action="" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data Inicial</label>
@@ -894,7 +832,6 @@
                             <label class="form-label">Barbeiro</label>
                             <select class="form-select searchable-select" name="barbeiro_id" data-searchable="true">
                                 <option value="">Todos os barbeiros</option>
-                                <!-- Populando com dados reais do banco -->
                                 @foreach($barbeiros as $barbeiro)
                                     <option value="{{ $barbeiro->id }}">{{ $barbeiro->nome }}</option>
                                 @endforeach
@@ -954,14 +891,14 @@
                             <option value="excel">Excel</option>
                         </select>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="generateReportWithParams('taxa-ocupacao')">
-                    <i class="fas fa-play me-1"></i>Gerar Relatório
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -976,8 +913,9 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="cancelamentosForm">
+            <form action="" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data Inicial</label>
@@ -1003,7 +941,6 @@
                             <label class="form-label">Barbeiro</label>
                             <select class="form-select searchable-select" name="barbeiro_id" data-searchable="true">
                                 <option value="">Todos os barbeiros</option>
-                                <!-- Populando com dados reais do banco -->
                                 @foreach($barbeiros as $barbeiro)
                                     <option value="{{ $barbeiro->id }}">{{ $barbeiro->nome }}</option>
                                 @endforeach
@@ -1033,14 +970,14 @@
                             <option value="csv">CSV</option>
                         </select>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="generateReportWithParams('cancelamentos')">
-                    <i class="fas fa-play me-1"></i>Gerar Relatório
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -1055,8 +992,9 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="performanceBarbeirosForm">
+            <form action="" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data Inicial</label>
@@ -1072,7 +1010,6 @@
                             <label class="form-label">Barbeiro</label>
                             <select class="form-select searchable-select" name="barbeiro_id" data-searchable="true">
                                 <option value="">Todos os barbeiros</option>
-                                <!-- Populando com dados reais do banco -->
                                 @foreach($barbeiros as $barbeiro)
                                     <option value="{{ $barbeiro->id }}">{{ $barbeiro->nome }}</option>
                                 @endforeach
@@ -1128,14 +1065,14 @@
                             <option value="excel">Excel</option>
                         </select>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="generateReportWithParams('performance-barbeiros')">
-                    <i class="fas fa-play me-1"></i>Gerar Relatório
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -1150,8 +1087,9 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="produtosVendidosForm">
+            <form action="" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Data Inicial</label>
@@ -1215,14 +1153,14 @@
                             <option value="csv">CSV</option>
                         </select>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="generateReportWithParams('produtos-vendidos')">
-                    <i class="fas fa-play me-1"></i>Gerar Relatório
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -1230,7 +1168,7 @@
 @push('styles')
 <style>
     body {
-        background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%);
+        /* background: linear-gradient(135deg, #0a0a0a 0%, #1e293b 100%); */
         font-family: 'Inter', sans-serif;
     }
 
@@ -1570,7 +1508,6 @@
         const emptyState = document.getElementById('emptyState');
         const reportsGrid = document.getElementById('reportsGrid');
 
-        // Função para filtrar relatórios
         function filterReports() {
             const searchTerm = searchInput.value.toLowerCase();
             const selectedCategory = categoryFilter.value || getActiveCategoryFromSidebar();
@@ -1664,240 +1601,7 @@
         }
     }
 
-    function generateReportWithParams(reportType) {
-        const modalMap = {
-            'faturamento-mensal': 'faturamentoMensalForm',
-            'comissoes-barbeiros': 'comissoesBarbeirosForm',
-            'formas-pagamento': 'formasPagamentoForm',
-            'novos-clientes': 'novosClientesForm',
-            'aniversariantes': 'aniversariantesForm',
-            'perfil-clientes': 'perfilClientesForm',
-            'taxa-ocupacao': 'taxaOcupacaoForm',
-            'cancelamentos': 'cancelamentosForm',
-            'performance-barbeiros': 'performanceBarbeirosForm',
-            'produtos-vendidos': 'produtosVendidosForm'
-        };
-
-        const formId = modalMap[reportType];
-        if (formId) {
-            const form = document.getElementById(formId);
-            const formData = new FormData(form);
-            
-            // Validar campos obrigatórios
-            const requiredFields = form.querySelectorAll('[required]');
-            let isValid = true;
-            
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    field.classList.add('is-invalid');
-                    isValid = false;
-                } else {
-                    field.classList.remove('is-invalid');
-                }
-            });
-
-            if (!isValid) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Campos obrigatórios',
-                    text: 'Por favor, preencha todos os campos obrigatórios.',
-                    background: 'var(--card-bg)',
-                    color: 'var(--text-primary)'
-                });
-                return;
-            }
-
-            // Converter FormData para objeto
-            const params = {};
-            for (let [key, value] of formData.entries()) {
-                if (params[key]) {
-                    if (Array.isArray(params[key])) {
-                        params[key].push(value);
-                    } else {
-                        params[key] = [params[key], value];
-                    }
-                } else {
-                    params[key] = value;
-                }
-            }
-
-            console.log('[v0] Gerando relatório com parâmetros:', reportType, params);
-            
-            // Mostrar loading
-            Swal.fire({
-                title: 'Gerando Relatório',
-                text: 'Por favor, aguarde...',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false,
-                background: 'var(--card-bg)',
-                color: 'var(--text-primary)',
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            // Fazer requisição para o controller
-            fetch(`/admin/relatorios/${reportType}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(params)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/pdf')) {
-                    return response.blob();
-                } else {
-                    return response.json();
-                }
-            })
-            .then(data => {
-                Swal.close();
-                
-                if (data instanceof Blob) {
-                    // É um PDF - fazer download
-                    const url = window.URL.createObjectURL(data);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = `relatorio-${reportType}-${new Date().toISOString().split('T')[0]}.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                    
-                    // Fechar modal
-                    const modal = bootstrap.Modal.getInstance(form.closest('.modal'));
-                    modal.hide();
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Relatório Gerado!',
-                        text: 'O download do relatório foi iniciado.',
-                        background: 'var(--card-bg)',
-                        color: 'var(--text-primary)'
-                    });
-                } else if (data.success) {
-                    // Resposta JSON de sucesso
-                    const modal = bootstrap.Modal.getInstance(form.closest('.modal'));
-                    modal.hide();
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Relatório Gerado!',
-                        text: data.message || 'Relatório gerado com sucesso!',
-                        background: 'var(--card-bg)',
-                        color: 'var(--text-primary)'
-                    });
-                    
-                    if (data.download_url) {
-                        // Se houver URL de download, abrir em nova aba
-                        window.open(data.download_url, '_blank');
-                    }
-                } else {
-                    throw new Error(data.message || 'Erro ao gerar relatório');
-                }
-            })
-            .catch(error => {
-                console.error('[v0] Erro ao gerar relatório:', error);
-                Swal.close();
-                
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erro ao Gerar Relatório',
-                    text: error.message || 'Ocorreu um erro inesperado. Tente novamente.',
-                    background: 'var(--card-bg)',
-                    color: 'var(--text-primary)'
-                });
-            });
-        }
-    }
-
-    function previewReport(reportType) {
-        console.log('[v0] Visualizando preview do relatório:', reportType);
-        
-        // Mostrar loading
-        Swal.fire({
-            title: 'Carregando Preview',
-            text: 'Gerando visualização do relatório...',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            showConfirmButton: false,
-            background: 'var(--card-bg)',
-            color: 'var(--text-primary)',
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
-        // Fazer requisição para preview
-        fetch(`/admin/relatorios/${reportType}/preview`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            Swal.close();
-            
-            if (data.success) {
-                // Mostrar modal com preview
-                Swal.fire({
-                    title: `Preview: ${data.title}`,
-                    html: `
-                        <div class="text-start">
-                            <p><strong>Descrição:</strong> ${data.description}</p>
-                            <p><strong>Campos disponíveis:</strong></p>
-                            <ul class="list-unstyled">
-                                ${data.fields.map(field => `<li>• ${field}</li>`).join('')}
-                            </ul>
-                            <p><strong>Parâmetros necessários:</strong></p>
-                            <ul class="list-unstyled">
-                                ${data.parameters.map(param => `<li>• ${param}</li>`).join('')}
-                            </ul>
-                        </div>
-                    `,
-                    width: '600px',
-                    background: 'var(--card-bg)',
-                    color: 'var(--text-primary)',
-                    showCancelButton: true,
-                    confirmButtonText: 'Gerar Relatório',
-                    cancelButtonText: 'Fechar',
-                    confirmButtonColor: '#3b82f6'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        openReportModal(reportType);
-                    }
-                });
-            } else {
-                throw new Error(data.message || 'Erro ao carregar preview');
-            }
-        })
-        .catch(error => {
-            console.error('[v0] Erro ao carregar preview:', error);
-            Swal.close();
-            
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro ao Carregar Preview',
-                text: error.message || 'Não foi possível carregar o preview do relatório.',
-                background: 'var(--card-bg)',
-                color: 'var(--text-primary)'
-            });
-        });
-    }
-
-    // Funções mantidas para compatibilidade
+    // Função mantida para compatibilidade
     function generateReport(reportType) {
         openReportModal(reportType);
     }

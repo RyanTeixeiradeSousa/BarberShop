@@ -91,14 +91,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/admin/relatorios',  [App\Http\Controllers\RelatorioController::class, 'index'])->name('relatorios.index');
 
-    Route::prefix('relatorios')->name('relatorios.')->group(function() {
-        Route::get('/', [RelatorioController::class, 'index'])->name('index');
-        Route::post('/faturamento-mensal', [RelatorioController::class, 'faturamentoMensal'])->name('faturamento-mensal');
-        Route::post('/comissoes-barbeiros', [RelatorioController::class, 'comissoesBarbeiros'])->name('comissoes-barbeiros');
-        Route::post('/novos-clientes', [RelatorioController::class, 'novosClientes'])->name('novos-clientes');
-        Route::post('/aniversariantes', [RelatorioController::class, 'aniversariantes'])->name('aniversariantes');
-        Route::post('/taxa-ocupacao', [RelatorioController::class, 'taxaOcupacao'])->name('taxa-ocupacao');
-        Route::post('/performance-barbeiros', [RelatorioController::class, 'performanceBarbeiros'])->name('performance-barbeiros');
-        Route::post('/perfil-clientes', [RelatorioController::class, 'perfilClientes'])->name('perfil-clientes');
+    Route::prefix('relatorios')->group(function() {
+        Route::get('/', [App\Http\Controllers\RelatorioController::class, 'index'])->name('index');
+        Route::post('/faturamento-mensal', [App\Http\Controllers\RelatorioController::class, 'faturamentoMensal'])->name('admin.relatorios.faturamento-mensal');
+        // Route::post('/comissoes-barbeiros', [App\Http\Controllers\RelatorioController::class, 'comissoesBarbeiros'])->name('comissoes-barbeiros');
+        // Route::post('/novos-clientes', [App\Http\Controllers\RelatorioController::class, 'novosClientes'])->name('novos-clientes');
+        // Route::post('/aniversariantes', [App\Http\Controllers\RelatorioController::class, 'aniversariantes'])->name('aniversariantes');
+        // Route::post('/taxa-ocupacao', [App\Http\Controllers\RelatorioController::class, 'taxaOcupacao'])->name('taxa-ocupacao');
+        // Route::post('/performance-barbeiros', [App\Http\Controllers\RelatorioController::class, 'performanceBarbeiros'])->name('performance-barbeiros');
+        // Route::post('/perfil-clientes', [App\Http\Controllers\RelatorioController::class, 'perfilClientes'])->name('perfil-clientes');
     });
 });
