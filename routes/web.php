@@ -89,7 +89,16 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/admin/users', App\Http\Controllers\UserController::class);
     Route::get('/admin/perfil', [App\Http\Controllers\UserController::class, 'perfilIndex'])->name('perfilindex');
 
-    // Route::get('/api/filiais', [App\Http\Controllers\SiteController::class, 'getFiliais'])->name('api.filiais');
-    
-    // Route::get('/api/horarios-por-filial', [App\Http\Controllers\SiteController::class, 'getHorariosPorFilial'])->name('api.horarios-por-filial');
+    Route::get('/admin/relatorios',  [App\Http\Controllers\RelatorioController::class, 'index'])->name('relatorios.index');
+
+    Route::prefix('relatorios')->group(function() {
+        Route::get('/', [App\Http\Controllers\RelatorioController::class, 'index'])->name('index');
+        Route::post('/faturamento-mensal', [App\Http\Controllers\RelatorioController::class, 'faturamentoMensal'])->name('admin.relatorios.faturamento-mensal');
+        // Route::post('/comissoes-barbeiros', [App\Http\Controllers\RelatorioController::class, 'comissoesBarbeiros'])->name('comissoes-barbeiros');
+        // Route::post('/novos-clientes', [App\Http\Controllers\RelatorioController::class, 'novosClientes'])->name('novos-clientes');
+        // Route::post('/aniversariantes', [App\Http\Controllers\RelatorioController::class, 'aniversariantes'])->name('aniversariantes');
+        // Route::post('/taxa-ocupacao', [App\Http\Controllers\RelatorioController::class, 'taxaOcupacao'])->name('taxa-ocupacao');
+        // Route::post('/performance-barbeiros', [App\Http\Controllers\RelatorioController::class, 'performanceBarbeiros'])->name('performance-barbeiros');
+        // Route::post('/perfil-clientes', [App\Http\Controllers\RelatorioController::class, 'perfilClientes'])->name('perfil-clientes');
+    });
 });
