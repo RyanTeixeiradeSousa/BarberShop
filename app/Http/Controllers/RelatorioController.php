@@ -91,7 +91,7 @@ class RelatorioController extends Controller
                 'movimentacoes' => $faturamento
             ];
     
-            $pdf = Pdf::loadView('admin.relatorios.pdf.faturamento-mensal', $data);
+            $pdf = Pdf::loadView('admin.relatorios.pdf.faturamento-mensal', compact('data'));
             return $pdf->download('faturamento-mensal-' . date('Y-m-d') . '.pdf');
 
         } catch(Exception $e){
