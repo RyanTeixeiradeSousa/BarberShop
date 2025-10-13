@@ -61,10 +61,10 @@ class RelatorioController extends Controller
             
             // Faturamento por dia
             $faturamentoPorDia = $faturamento->groupBy(function($item) {
-                return Carbon::parse($item->data_vencimento)->format('Y-m-d');
+                return Carbon::parse($item->data_pagamento)->format('Y-m-d');
             })->map(function($group) {
                 return [
-                    'data' => Carbon::parse($group->first()->data_vencimento)->format('d/m/Y'),
+                    'data' => Carbon::parse($group->first()->data_pagamento)->format('d/m/Y'),
                     'valor' => $group->sum('valor'),
                     'transacoes' => $group->count()
                 ];
@@ -95,7 +95,8 @@ class RelatorioController extends Controller
             return $pdf->download('faturamento-mensal-' . date('Y-m-d') . '.pdf');
 
         } catch(Exception $e){
-            dd($e->getMessage());
+            return view('admin.relatorios.index')->with(['message' => 'Erro ao carregar relatório', 'type' => 'error']);
+
         }
         
 
