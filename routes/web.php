@@ -90,15 +90,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/perfil', [App\Http\Controllers\UserController::class, 'perfilIndex'])->name('perfilindex');
 
     Route::get('/admin/relatorios',  [App\Http\Controllers\RelatorioController::class, 'index'])->name('relatorios.index');
+    Route::get('/admin/treinamentos',  function(){
+        return view('admin.treinamentos.index');
+    })->name('treinamentos.index');
 
     Route::prefix('relatorios')->group(function() {
         Route::get('/', [App\Http\Controllers\RelatorioController::class, 'index'])->name('index');
         Route::post('/faturamento-mensal', [App\Http\Controllers\RelatorioController::class, 'faturamentoMensal'])->name('admin.relatorios.faturamento-mensal');
+        Route::post('/despesas', [App\Http\Controllers\RelatorioController::class, 'despesas'])->name('admin.relatorios.despesas');
         // Route::post('/comissoes-barbeiros', [App\Http\Controllers\RelatorioController::class, 'comissoesBarbeiros'])->name('comissoes-barbeiros');
         // Route::post('/novos-clientes', [App\Http\Controllers\RelatorioController::class, 'novosClientes'])->name('novos-clientes');
-        // Route::post('/aniversariantes', [App\Http\Controllers\RelatorioController::class, 'aniversariantes'])->name('aniversariantes');
+        Route::post('/aniversariantes', [App\Http\Controllers\RelatorioController::class, 'aniversariantes'])->name('admin.relatorios.aniversariantes');
         // Route::post('/taxa-ocupacao', [App\Http\Controllers\RelatorioController::class, 'taxaOcupacao'])->name('taxa-ocupacao');
         // Route::post('/performance-barbeiros', [App\Http\Controllers\RelatorioController::class, 'performanceBarbeiros'])->name('performance-barbeiros');
         // Route::post('/perfil-clientes', [App\Http\Controllers\RelatorioController::class, 'perfilClientes'])->name('perfil-clientes');
+        Route::post('/analise-clientes', [App\Http\Controllers\RelatorioController::class, 'analiseClientes'])->name('admin.relatorios.analise-clientes');
+        Route::post('/produtos-mais-vendidos', [App\Http\Controllers\RelatorioController::class, 'produtosMaisVendidos'])->name('admin.relatorios.produtos-mais-vendidos');
+        Route::post('/servicos-realizados', [App\Http\Controllers\RelatorioController::class, 'servicosRealizados'])->name('admin.relatorios.servicos-realizados');
     });
 });

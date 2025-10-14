@@ -68,32 +68,32 @@
                         <div class="category-item active" data-category="">
                             <i class="fas fa-th-large"></i>
                             <span>Todos os Relatórios</span>
-                            <span class="badge">24</span>
+                            <span class="badge">6</span>
                         </div>
                         <div class="category-item" data-category="financeiro">
                             <i class="fas fa-dollar-sign"></i>
                             <span>Financeiro</span>
-                            <span class="badge">8</span>
+                            <span class="badge">2</span>
                         </div>
                         <div class="category-item" data-category="clientes">
                             <i class="fas fa-users"></i>
                             <span>Clientes</span>
-                            <span class="badge">6</span>
+                            <span class="badge">2</span>
                         </div>
                         <div class="category-item" data-category="agendamentos">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Agendamentos</span>
-                            <span class="badge">5</span>
+                            <span class="badge">1</span>
                         </div>
                         <div class="category-item" data-category="barbeiros">
                             <i class="fas fa-cut"></i>
                             <span>Barbeiros</span>
-                            <span class="badge">3</span>
+                            <span class="badge">0</span>
                         </div>
                         <div class="category-item" data-category="produtos">
                             <i class="fas fa-box"></i>
                             <span>Produtos</span>
-                            <span class="badge">2</span>
+                            <span class="badge">1</span>
                         </div>
                     </div>
                 </div>
@@ -128,7 +128,30 @@
                     </div>
                 </div>
 
-                <div class="report-card" data-category="financeiro" data-complexity="simples">
+                <!-- Adicionando card de relatório de despesas na categoria financeiro -->
+                <div class="report-card" data-category="financeiro" data-complexity="detalhado">
+                    <div class="report-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="report-content">
+                        <h5>Despesas</h5>
+                        <p>Análise completa das despesas por período, categoria e forma de pagamento.</p>
+                        <div class="report-tags">
+                            <span class="tag tag-financeiro">Financeiro</span>
+                            <span class="tag tag-detalhado">Detalhado</span>
+                        </div>
+                        <div class="report-params">
+                            <small><i class="fas fa-cog me-1"></i>Parâmetros: Período, Categoria, Forma de Pagamento</small>
+                        </div>
+                    </div>
+                    <div class="report-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('despesas')">
+                            <i class="fas fa-play"></i> Gerar
+                        </button>
+                    </div>
+                </div>
+
+                {{-- <div class="report-card" data-category="financeiro" data-complexity="simples">
                     <div class="report-icon">
                         <i class="fas fa-hand-holding-usd"></i>
                     </div>
@@ -149,9 +172,9 @@
                         </button>
                        
                     </div>
-                </div>
+                </div> --}}
 
-                <div class="report-card" data-category="financeiro" data-complexity="detalhado">
+                {{-- <div class="report-card" data-category="financeiro" data-complexity="detalhado">
                     <div class="report-icon">
                         <i class="fas fa-credit-card"></i>
                     </div>
@@ -172,10 +195,10 @@
                         </button>
                        
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Relatórios de Clientes -->
-                <div class="report-card" data-category="clientes" data-complexity="simples">
+                {{-- <div class="report-card" data-category="clientes" data-complexity="simples">
                     <div class="report-icon">
                         <i class="fas fa-user-plus"></i>
                     </div>
@@ -196,7 +219,7 @@
                         </button>
                         
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="report-card" data-category="clientes" data-complexity="simples">
                     <div class="report-icon">
@@ -221,7 +244,7 @@
                     </div>
                 </div>
 
-                <div class="report-card" data-category="clientes" data-complexity="detalhado">
+                {{-- <div class="report-card" data-category="clientes" data-complexity="detalhado">
                     <div class="report-icon">
                         <i class="fas fa-chart-pie"></i>
                     </div>
@@ -242,10 +265,37 @@
                         </button>
                        
                     </div>
+                </div> --}}
+
+                <!-- Adicionando card de Análise Geral de Clientes sem parâmetros -->
+                <div class="report-card" data-category="clientes" data-complexity="detalhado">
+                    <div class="report-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <div class="report-content">
+                        <h5>Análise Geral de Clientes</h5>
+                        <p>Relatório completo com estatísticas, perfil demográfico, top clientes e tendências.</p>
+                        <div class="report-tags">
+                            <span class="tag tag-clientes">Clientes</span>
+                            <span class="tag tag-detalhado">Detalhado</span>
+                        </div>
+                        <div class="report-params">
+                            <small><i class="fas fa-info-circle me-1"></i>Sem parâmetros - Análise completa do sistema</small>
+                        </div>
+                    </div>
+                    <div class="report-actions">
+                        <form action="{{ route('admin.relatorios.analise-clientes') }}" method="POST" target="_blank" style="display: inline;">
+                            @csrf
+                            <input type="hidden" name="formato" value="pdf">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-play"></i> Gerar
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <!-- Relatórios de Agendamentos -->
-                <div class="report-card" data-category="agendamentos" data-complexity="detalhado">
+                {{-- <div class="report-card" data-category="agendamentos" data-complexity="detalhado">
                     <div class="report-icon">
                         <i class="fas fa-calendar-check"></i>
                     </div>
@@ -289,10 +339,33 @@
                         </button>
                        
                     </div>
+                </div> --}}
+
+                <!-- Adicionando card de Serviços Realizados por Filial -->
+                <div class="report-card" data-category="agendamentos" data-complexity="detalhado">
+                    <div class="report-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="report-content">
+                        <h5>Serviços Realizados por Filial</h5>
+                        <p>Análise completa dos serviços realizados por filial com ranking, barbeiros e distribuição por dia da semana.</p>
+                        <div class="report-tags">
+                            <span class="tag tag-agendamentos">Agendamentos</span>
+                            <span class="tag tag-detalhado">Detalhado</span>
+                        </div>
+                        <div class="report-params">
+                            <small><i class="fas fa-cog me-1"></i>Parâmetros: Período</small>
+                        </div>
+                    </div>
+                    <div class="report-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="openReportModal('servicos-realizados')">
+                            <i class="fas fa-play"></i> Gerar
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Relatórios de Barbeiros -->
-                <div class="report-card" data-category="barbeiros" data-complexity="detalhado">
+                {{-- <div class="report-card" data-category="barbeiros" data-complexity="detalhado">
                     <div class="report-icon">
                         <i class="fas fa-trophy"></i>
                     </div>
@@ -313,7 +386,7 @@
                         </button>
                         
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Relatórios de Produtos -->
                 <div class="report-card" data-category="produtos" data-complexity="simples">
@@ -435,8 +508,81 @@
     </div>
 </div>
 
+<!-- Modal Despesas -->
+<div class="modal fade" id="despesasModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
+            <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
+                <h5 class="modal-title">
+                    <i class="fas fa-money-bill-wave me-2"></i>Relatório de Despesas
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('admin.relatorios.despesas') }}" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Data Inicial</label>
+                            <input type="date" class="form-control" name="data_inicio" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Data Final</label>
+                            <input type="date" class="form-control" name="data_fim" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Categoria</label>
+                            <select class="form-select" name="categoria_id">
+                                <option value="">Todas as categorias</option>
+                                @foreach($categorias ?? [] as $categoria)
+                                    @if($categoria->tipo === 'saida' || $categoria->tipo === 'ambos')
+                                        <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Forma de Pagamento</label>
+                            <select class="form-select" name="forma_pagamento_id">
+                                <option value="">Todas as formas</option>
+                                @foreach($formaPagamento ?? [] as $forma)
+                                    <option value="{{ $forma->id }}">{{ $forma->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Situação</label>
+                        <select class="form-select" name="situacao">
+                            <option value="">Todas as situações</option>
+                            <option value="pago">Pago</option>
+                            <option value="em_aberto">Em Aberto</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    {{-- <div class="mb-3">
+                        <label class="form-label">Formato do Relatório</label>
+                        <select class="form-select" name="formato">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div> --}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Comissões dos Barbeiros -->
-<div class="modal fade" id="comissoesBarbeirosModal" tabindex="-1">
+{{-- <div class="modal fade" id="comissoesBarbeirosModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
             <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
@@ -496,10 +642,10 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 <!-- Modal Formas de Pagamento -->
-<div class="modal fade" id="formasPagamentoModal" tabindex="-1">
+{{-- <div class="modal fade" id="formasPagamentoModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
             <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
@@ -571,10 +717,10 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 <!-- Modal Novos Clientes -->
-<div class="modal fade" id="novosClientesModal" tabindex="-1">
+{{-- <div class="modal fade" id="novosClientesModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
             <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
@@ -622,7 +768,7 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 <!-- Modal Aniversariantes -->
 <div class="modal fade" id="aniversariantesModal" tabindex="-1">
@@ -634,7 +780,7 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="" method="POST" target="_blank">
+            <form action="{{ route('admin.relatorios.aniversariantes') }}" method="POST" target="_blank">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
@@ -656,44 +802,6 @@
                                 <option value="12">Dezembro</option>
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Ano</label>
-                            <select class="form-select" name="ano" required>
-                                <option value="2024">2024</option>
-                                <option value="2025">2025</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Filial</label>
-                        <select class="form-select" name="filial_id">
-                            <option value="">Todas as filiais</option>
-                            <option value="1">Filial Centro</option>
-                            <option value="2">Filial Shopping</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Incluir Informações</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="incluir_telefone" id="telefone" checked>
-                            <label class="form-check-label" for="telefone">Telefone</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="incluir_email" id="email" checked>
-                            <label class="form-check-label" for="email">E-mail</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="incluir_ultima_visita" id="ultima_visita">
-                            <label class="form-check-label" for="ultima_visita">Data da Última Visita</label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Formato do Relatório</label>
-                        <select class="form-select" name="formato">
-                            <option value="pdf">PDF</option>
-                            <option value="excel">Excel</option>
-                            <option value="csv">CSV</option>
-                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -708,7 +816,7 @@
 </div>
 
 <!-- Modal Perfil dos Clientes -->
-<div class="modal fade" id="perfilClientesModal" tabindex="-1">
+{{-- <div class="modal fade" id="perfilClientesModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
             <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
@@ -801,10 +909,10 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 <!-- Modal Taxa de Ocupação -->
-<div class="modal fade" id="taxaOcupacaoModal" tabindex="-1">
+{{-- <div class="modal fade" id="taxaOcupacaoModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
             <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
@@ -901,10 +1009,10 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 <!-- Modal Agendamentos Cancelados -->
-<div class="modal fade" id="cancelamentosModal" tabindex="-1">
+{{-- <div class="modal fade" id="cancelamentosModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
             <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
@@ -980,10 +1088,10 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 <!-- Modal Performance dos Barbeiros -->
-<div class="modal fade" id="performanceBarbeirosModal" tabindex="-1">
+{{-- <div class="modal fade" id="performanceBarbeirosModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
             <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
@@ -1075,10 +1183,10 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 <!-- Modal Produtos Mais Vendidos -->
-<div class="modal fade" id="produtosVendidosModal" tabindex="-1">
+{{-- <div class="modal fade" id="produtosVendidosModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
             <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
@@ -1152,6 +1260,83 @@
                             <option value="excel">Excel</option>
                             <option value="csv">CSV</option>
                         </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> --}}
+
+<!-- Modal Produtos Mais Vendidos -->
+<div class="modal fade" id="produtosVendidosModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
+            <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
+                <h5 class="modal-title">
+                    <i class="fas fa-box-open me-2"></i>Relatório de Produtos Mais Vendidos
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('admin.relatorios.produtos-mais-vendidos') }}" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Data Inicial</label>
+                            <input type="date" class="form-control" name="data_inicio" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Data Final</label>
+                            <input type="date" class="form-control" name="data_fim" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Filial</label>
+                        <select class="form-select" name="filial_id">
+                            <option value="">Todas as filiais</option>
+                             Filiais serão carregadas dinamicamente 
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play me-1"></i>Gerar Relatório
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Serviços Realizados -->
+<div class="modal fade" id="servicosRealizadosModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 2px solid #60a5fa; border-radius: 12px;">
+            <div class="modal-header" style="background: var(--card-header-bg); border-bottom: 1px solid #60a5fa;">
+                <h5 class="modal-title">
+                    <i class="fas fa-clipboard-check me-2"></i>Relatório de Serviços Realizados por Filial
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('admin.relatorios.servicos-realizados') }}" method="POST" target="_blank">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Data Inicial</label>
+                            <input type="date" class="form-control" name="data_inicio" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Data Final</label>
+                            <input type="date" class="form-control" name="data_fim" required>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1591,7 +1776,9 @@
             'taxa-ocupacao': 'taxaOcupacaoModal',
             'cancelamentos': 'cancelamentosModal',
             'performance-barbeiros': 'performanceBarbeirosModal',
-            'produtos-vendidos': 'produtosVendidosModal'
+            'produtos-vendidos': 'produtosVendidosModal',
+            'despesas': 'despesasModal',
+            'servicos-realizados': 'servicosRealizadosModal'
         };
 
         const modalId = modalMap[reportType];
