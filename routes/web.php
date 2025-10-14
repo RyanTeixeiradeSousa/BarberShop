@@ -90,6 +90,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/perfil', [App\Http\Controllers\UserController::class, 'perfilIndex'])->name('perfilindex');
 
     Route::get('/admin/relatorios',  [App\Http\Controllers\RelatorioController::class, 'index'])->name('relatorios.index');
+    Route::get('/admin/treinamentos',  function(){
+        return view('admin.treinamentos.index');
+    })->name('treinamentos.index');
 
     Route::prefix('relatorios')->group(function() {
         Route::get('/', [App\Http\Controllers\RelatorioController::class, 'index'])->name('index');
