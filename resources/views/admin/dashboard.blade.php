@@ -126,7 +126,7 @@
                             </div>
                             <div>
                                 <span class="version-label">Última Atualização</span>
-                                <h3 class="version-number">15/01/2025</h3>
+                                <h3 class="version-number">14/10/2025</h3>
                             </div>
                         </div>
                     </div>
