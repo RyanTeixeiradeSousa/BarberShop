@@ -24,9 +24,9 @@
         <!-- Dashboard -->
         <div class="nav-item">
             {{-- Corrigido: removido segundo parâmetro duplicado e adicionado 'active' no retorno --}}
-            <a href="{{route('dashboard')}}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" title="Dashboard">
+            <a href="{{route('dashboard')}}"  class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" title="Dashboard">
                 <i class="fas fa-home"></i>
-                <span class="nav-text">Dashboard</span>
+                <span class="nav-text">Início</span>
             </a>
         </div>
 
@@ -67,7 +67,7 @@
                 <div class="nav-item">
                     <a href="{{route('treinamentos.index')}}" class="nav-link {{ request()->routeIs('treinamentos.index') ? 'active' : '' }}" title="Treinamentos">
                         <i class="fas fa-tv" style="margin-right: 5px;"></i>
-                        <span class="nav-text me-2">Treinamentos</span> 
+                        <span class="nav-text me-2">Treinamentos</span>   <span class="badge bg-primary">Novo</span>
                     </a>
                 </div>
             </div>
@@ -155,6 +155,58 @@
                     <a href="{{route('financeiro.index')}}" class="nav-link {{ request()->routeIs('financeiro.index') ? 'active' : '' }}" title="Movimentações Financeiras">
                         <i class="fas fa-arrows-rotate"></i>
                         <span class="nav-text">Movimentações Financeiras</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nova Categoria: Comunicação -->
+        <div class="nav-category">
+            <button class="nav-category-toggle" data-target="communication-menu" title="Comunicação">
+                <div class="nav-category-header">
+                    <i class="fas fa-comments me-2"></i>
+                    <span class="nav-text ml-2">Comunicação</span> 
+                </div>
+                <span class="badge bg-primary">Em breve</span>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </button>
+            <div class="nav-submenu" id="communication-menu">
+                <div class="nav-item">
+                    <a href="#" class="nav-link" title="Templates Mensagens">
+                        <i class="fas fa-envelope"></i>
+                        <span class="nav-text">Templates Mensagens</span> 
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" title="Campanhas">
+                        <i class="fas fa-bullhorn"></i>
+                        <span class="nav-text">Campanhas</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" title="Histórico">
+                        <i class="fas fa-history"></i>
+                        <span class="nav-text">Histórico</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nova Categoria: Integrações -->
+        <div class="nav-category">
+            <button class="nav-category-toggle" data-target="integrations-menu" title="Integrações">
+                <div class="nav-category-header">
+                    <i class="fas fa-plug me-2"></i>
+                    <span class="nav-text ml-2">Integrações</span>
+                </div>
+                <span class="badge bg-primary">Em breve</span>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </button>
+            <div class="nav-submenu" id="integrations-menu">
+                <div class="nav-item">
+                    <a href="#" class="nav-link" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                        <span class="nav-text">WhatsApp</span>
                     </a>
                 </div>
             </div>
