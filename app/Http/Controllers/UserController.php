@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Action;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -134,5 +135,45 @@ class UserController extends Controller
         $user = Auth::user();
         
         return view('admin.perfil.index', compact('user'));
+    }
+
+    public function getPermissoes(User $user)
+    {
+        // Buscar todas as actions ativas agrupadas por controller
+        $actions = Action::where('ativo', true)
+            ->orderBy('controller')
+            ->orderBy('nome')
+            ->get()
+            ->groupBy('controller');
+
+        // Buscar permissões atuais do usuário
+        $userActions = $user->actions()->pluck('actions.id')->toArray();
+
+        return response()->json([
+            'actions' => $actions,
+            'userActions' => $userActions
+        ]);
+    }
+
+    public function salvarPermissoes(Request $request, User $user)
+    {
+        $request->validate([
+            'actions' => 'array',
+            'actions.*' => 'exists:actions,id',
+            'controller' => 'required|string' // Adicionando validação do controller
+        ]);
+
+        $controllerActions = Action::where('controller', $request->controller)
+            ->pluck('id')
+            ->toArray();
+
+        $user->actions()->detach($controllerActions);
+
+        if ($request->has('actions')) {
+            $user->actions()->attach($request->input('actions'));
+        }
+
+        return redirect()->route('users.index')
+            ->with(['type' => 'success', 'message' => 'Permissões atualizadas com sucesso!']);
     }
 }
