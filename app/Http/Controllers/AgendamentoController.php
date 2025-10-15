@@ -75,28 +75,28 @@ class AgendamentoController extends Controller
         ));
     }
 
-    public function criarSlot(Request $request)
-    {
-        $request->validate([
-            'data_agendamento' => 'required|date|after_or_equal:today',
-            'hora_inicio' => 'required|date_format:H:i',
-        ]);
+    // public function criarSlot(Request $request)
+    // {
+    //     $request->validate([
+    //         'data_agendamento' => 'required|date|after_or_equal:today',
+    //         'hora_inicio' => 'required|date_format:H:i',
+    //     ]);
     
-        $duracaoPadrao = Configuracao::get('duracao_servico_padrao', 60);
-        $horaInicio = Carbon::createFromFormat('H:i', $request->hora_inicio);
-        $horaFim = $horaInicio->copy()->addMinutes($duracaoPadrao);
+    //     $duracaoPadrao = Configuracao::get('duracao_servico_padrao', 60);
+    //     $horaInicio = Carbon::createFromFormat('H:i', $request->hora_inicio);
+    //     $horaFim = $horaInicio->copy()->addMinutes($duracaoPadrao);
 
-        $agendamento = Agendamento::create([
-            'data_agendamento' => $request->data_agendamento,
-            'hora_inicio' => $request->hora_inicio,
-            'hora_fim' => $horaFim->format('H:i'),
-            'status' => 'disponivel',
-            'user_created' => Auth::user()->id
-        ]);
+    //     $agendamento = Agendamento::create([
+    //         'data_agendamento' => $request->data_agendamento,
+    //         'hora_inicio' => $request->hora_inicio,
+    //         'hora_fim' => $horaFim->format('H:i'),
+    //         'status' => 'disponivel',
+    //         'user_created' => Auth::user()->id
+    //     ]);
 
-        return redirect()->route('agendamentos.index')
-            ->with('success', 'Slot criado com sucesso!');
-    }
+    //     return redirect()->route('agendamentos.index')
+    //         ->with('success', 'Slot criado com sucesso!');
+    // }
 
     public function associarSlot(Request $request, Agendamento $id)
     {

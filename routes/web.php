@@ -26,7 +26,7 @@ Route::post('/api/finalizar-agendamento-completo', [App\Http\Controllers\SiteCon
 Route::get('/admin/login', [App\Http\Controllers\AuthController::class, 'index'])->name('login');
 Route::post('/entrar', [ App\Http\Controllers\AuthController::class, 'entrar'])->name('login.entrar');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'permission'])->group(function () {
 
     Route::get('/logout', [ App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
@@ -88,6 +88,10 @@ Route::middleware(['auth'])->group(function () {
     // Usuários
     Route::resource('/admin/users', App\Http\Controllers\UserController::class);
     Route::get('/admin/perfil', [App\Http\Controllers\UserController::class, 'perfilIndex'])->name('perfilindex');
+
+    Route::get('/admin/users/{user}/permissoes', [App\Http\Controllers\UserController::class, 'getPermissoes'])->name('users.permissoes');
+    Route::post('/admin/users/{user}/permissoes', [App\Http\Controllers\UserController::class, 'salvarPermissoes'])->name('users.salvar-permissoes');
+    
 
     Route::get('/admin/relatorios',  [App\Http\Controllers\RelatorioController::class, 'index'])->name('relatorios.index');
     Route::get('/admin/treinamentos',  function(){

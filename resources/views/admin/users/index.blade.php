@@ -65,7 +65,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="col-xl-3 col-md-6">
                 <div class="product-card">
                     <div class="d-flex align-items-center">
@@ -208,7 +207,7 @@
                                 </td>
                                 <td>
                                     @if($user->last_acess)
-                                        {{ $user->last_acess}}
+                                        {{ $user->last_acess }}
                                     @else
                                         <span class="text-muted">Nunca</span>
                                     @endif
@@ -220,6 +219,9 @@
                                         </button>
                                         <button type="button" class="btn btn-sm btn-outline-primary" onclick="editarUsuario({{ $user->id }})" title="Editar">
                                             <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning" onclick="gerenciarPermissoes({{ $user->id }}, '{{ $user->nome }}')" title="Permissões">
+                                            <i class="fas fa-shield-alt"></i>
                                         </button>
                                         @if(!$user->master)
                                         <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmarExclusao({{ $user->id }}, '{{ $user->nome }}')" title="Excluir">
@@ -424,6 +426,70 @@
     </div>
 </div>
 
+<!-- Offcanvas de Permissões -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="permissoesOffcanvas" aria-labelledby="permissoesOffcanvasLabel" style="width: 500px; z-index: 1060;">
+    <div class="offcanvas-header" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-bottom: 1px solid rgba(59, 130, 246, 0.2); position: relative; z-index: 1061;">
+        <h5 class="offcanvas-title" id="permissoesOffcanvasLabel">
+            <i class="fas fa-shield-alt me-2" style="color: #60a5fa;"></i>
+            Gerenciar Permissões
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form id="permissoesForm" method="POST">
+            @csrf
+            <input type="hidden" name="controller" id="controllerInput" value="">
+            <div class="mb-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="product-avatar me-3" id="permissoesUsuarioAvatar">
+                        <!-- Avatar será preenchido via JavaScript -->
+                    </div>
+                    <div>
+                        <h6 class="mb-0" id="permissoesUsuarioNome"></h6>
+                        <small class="text-muted">Gerenciar permissões do usuário</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h6 class="mb-3">
+                    <i class="fas fa-cube me-2" style="color: #60a5fa;"></i>
+                    Selecione o Módulo
+                </h6>
+                <select class="form-control" id="moduloSelect" onchange="carregarFuncionalidades()" style="background: white; border: 1px solid rgba(59, 130, 246, 0.2); color: #1f2937; border-radius: 8px; padding: 0.75rem;">
+                    <option value="">-- Selecione um módulo --</option>
+                </select>
+            </div>
+
+            <div id="funcionalidadesContainer" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0" style="color: #1f2937;">
+                        <i class="fas fa-list me-2" style="color: #60a5fa;"></i>Funcionalidades
+                    </h6>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-success me-1" onclick="marcarTodas()">
+                            <i class="fas fa-check-double"></i> Todas
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="desmarcarTodas()">
+                            <i class="fas fa-times"></i> Nenhuma
+                        </button>
+                    </div>
+                </div>
+
+                <div id="funcionalidadesList">
+                    <!-- Funcionalidades serão carregadas aqui via JavaScript -->
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary-custom w-100">
+                        <i class="fas fa-save me-2"></i>Salvar Permissões
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('styles')
 <style>
     /* Adicionando estilos CSS que estavam faltantes */
@@ -585,6 +651,55 @@
             border-radius: 4px !important;
         }
     }
+
+    /* Melhorando estilo dos checkboxes no offcanvas de permissões */
+    .funcionalidade-checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        border: 2px solid #d1d5db;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .funcionalidade-checkbox:checked {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+    .funcionalidade-checkbox:hover {
+        border-color: #60a5fa;
+    }
+
+    .funcionalidade-checkbox:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #3b82f6;
+    }
+
+    .form-check-label {
+        margin-left: 0.5rem;
+        user-select: none;
+    }
+
+    .permission-item {
+        background: #f8fafc;
+        border-radius: 8px;
+        border-left: 3px solid #60a5fa;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .permission-item:hover {
+        background: #f1f5f9;
+        border-left-color: #3b82f6;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+    }
+
+    .permission-item.checked {
+        background: #eff6ff;
+        border-left-color: #3b82f6;
+    }
 </style>
 @endpush
 
@@ -680,6 +795,112 @@
         document.getElementById('usuarioNomeExcluir').textContent = nome;
         document.getElementById('excluirUsuarioForm').action = `/admin/users/${id}`;
         new bootstrap.Modal(document.getElementById('excluirUsuarioModal')).show();
+    }
+
+    // Funções para gerenciar permissões
+    let usuarioIdAtual = null;
+    let todasActions = {};
+    let permissoesAtuais = [];
+
+    function gerenciarPermissoes(userId, userName) {
+        usuarioIdAtual = userId;
+        document.getElementById('permissoesUsuarioNome').textContent = userName;
+        document.getElementById('moduloSelect').value = '';
+        document.getElementById('funcionalidadesContainer').style.display = 'none';
+        
+        // Atualizar action do formulário
+        document.getElementById('permissoesForm').action = `/admin/users/${userId}/permissoes`;
+        
+        // Carregar actions do backend
+        fetch(`/admin/users/${userId}/permissoes`)
+            .then(response => response.json())
+            .then(data => {
+                todasActions = data.actions;
+                permissoesAtuais = data.userActions;
+                
+                // Preencher select de módulos
+                const moduloSelect = document.getElementById('moduloSelect');
+                moduloSelect.innerHTML = '<option value="">-- Selecione um módulo --</option>';
+                
+                Object.keys(todasActions).forEach(controller => {
+                    const option = document.createElement('option');
+                    option.value = controller;
+                    option.textContent = formatControllerName(controller);
+                    moduloSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('[v0] Erro ao carregar permissões:', error);
+                alert('Erro ao carregar permissões. Tente novamente.');
+            });
+        
+        const offcanvas = new bootstrap.Offcanvas(document.getElementById('permissoesOffcanvas'));
+        offcanvas.show();
+    }
+
+    function formatControllerName(controller) {
+        // Formatar nome do controller para exibição
+        return controller
+            .replace('Controller', '')
+            .replace(/([A-Z])/g, ' $1')
+            .trim();
+    }
+
+    function carregarFuncionalidades() {
+        const controller = document.getElementById('moduloSelect').value;
+        
+        if (!controller) {
+            document.getElementById('funcionalidadesContainer').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('controllerInput').value = controller;
+        
+        const actions = todasActions[controller] || [];
+        const container = document.getElementById('funcionalidadesList');
+        
+        container.innerHTML = '';
+        
+        actions.forEach(action => {
+            const isChecked = permissoesAtuais.includes(action.id);
+            
+            const div = document.createElement('div');
+            div.className = `permission-item ${isChecked ? 'checked' : ''}`;
+            
+            div.innerHTML = `
+                <div class="form-check d-flex align-items-start">
+                    <input class="form-check-input funcionalidade-checkbox flex-shrink-0 mt-1" 
+                           type="checkbox" 
+                           name="actions[]" 
+                           value="${action.id}" 
+                           id="action_${action.id}"
+                           ${isChecked ? 'checked' : ''}
+                           onchange="togglePermissionItem(this)">
+                    <label class="form-check-label w-100" for="action_${action.id}" style="cursor: pointer;">
+                        <div>
+                            <strong style="color: #1f2937; font-size: 14px;">${action.nome}</strong>
+                            ${action.descricao ? `<p class="mb-1 text-muted small mt-1">${action.descricao}</p>` : ''}
+                            <p class="mb-0 text-muted" style="font-size: 11px;">
+                                <code style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px; color: #374151;">${action.controller}@${action.method}</code>
+                            </p>
+                        </div>
+                    </label>
+                </div>
+            `;
+            
+            container.appendChild(div);
+        });
+        
+        document.getElementById('funcionalidadesContainer').style.display = 'block';
+    }
+
+    function togglePermissionItem(checkbox) {
+        const permissionItem = checkbox.closest('.permission-item');
+        if (checkbox.checked) {
+            permissionItem.classList.add('checked');
+        } else {
+            permissionItem.classList.remove('checked');
+        }
     }
 </script>
 @endpush

@@ -77,4 +77,22 @@ class User extends Authenticatable
     {
         return $this->redefinir_senha_login;
     }
+
+    public function actions()
+    {
+        return $this->belongsToMany(Action::class, 'user_actions');
+    }
+
+    public function hasPermission($controller, $method)
+    {
+        if ($this->master) {
+            return true;
+        }
+
+        return $this->actions()
+            ->where('controller', $controller)
+            ->where('method', $method)
+            ->where('ativo', true)
+            ->exists();
+    }
 }
