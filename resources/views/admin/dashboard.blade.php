@@ -219,6 +219,16 @@
                             <p>Diversas correções e melhorias de estabilidade para garantir uma experiência mais fluida e confiável no uso do sistema.</p>
                         </div>
                     </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="current-feature-card">
+                            <div class="current-feature-icon" style="background: linear-gradient(135deg, #06b6d4, #67e8f9);">
+                                <i class="fas fa-shield"></i>
+                            </div>
+                            <h5>+ Segurança</h5>
+                            <p>Agora é possível gerenciar permissões de acesso por usuário, sendo assim, garantindo mais segurança a aplicação.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

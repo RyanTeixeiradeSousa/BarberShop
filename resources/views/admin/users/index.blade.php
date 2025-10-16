@@ -902,6 +902,24 @@
             permissionItem.classList.remove('checked');
         }
     }
+
+    function marcarTodas() {
+        const checkboxes = document.querySelectorAll('#funcionalidadesList .funcionalidade-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = true;
+            const permissionItem = checkbox.closest('.permission-item');
+            permissionItem.classList.add('checked');
+        });
+    }
+
+    function desmarcarTodas() {
+        const checkboxes = document.querySelectorAll('#funcionalidadesList .funcionalidade-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            const permissionItem = checkbox.closest('.permission-item');
+            permissionItem.classList.remove('checked');
+        });
+    }
 </script>
 @endpush
 @endsection
