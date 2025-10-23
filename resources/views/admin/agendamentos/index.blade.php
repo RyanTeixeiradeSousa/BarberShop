@@ -353,8 +353,7 @@
                         <div class="col-md-3">
                             <div class="mb-3">
                                 <label for="data_agendamento" class="form-label">Data *</label>
-                                <input type="date" class="form-control" id="data_agendamento" name="data_agendamento" 
-                                       min="{{ date('Y-m-d') }}" required>
+                                <input type="date" class="form-control" id="data_agendamento" name="data_agendamento"  required>
                             </div>
                         </div>
                         <div class="col-md-3">

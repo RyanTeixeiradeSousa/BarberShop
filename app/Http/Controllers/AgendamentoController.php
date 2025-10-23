@@ -162,7 +162,7 @@ class AgendamentoController extends Controller
             'servicos' => 'nullable|array',
             'servicos.*.produto_id' => 'required_with:servicos|exists:produtos,id',
             'servicos.*.quantidade' => 'required_with:servicos|integer|min:1',
-            'data_agendamento' => 'required|date|after_or_equal:today',
+            'data_agendamento' => 'required|date',
             'hora_inicio' => 'required|date_format:H:i',
             'observacoes' => 'nullable|string|max:1000'
         ]);
